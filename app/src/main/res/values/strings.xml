@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MaraudersMap</string>
+    <string name="loginHeader_text">Login</string>
+    <string name="usernameHint_text">username</string>
+    <string name="passwordHint_text">password</string>
+    <string name="loginButton_text">Login</string>
 </resources>
