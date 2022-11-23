@@ -4,4 +4,6 @@
     <string name="usernameHint_text">username</string>
     <string name="passwordHint_text">password</string>
     <string name="loginButton_text">Login</string>
+    <string name="dontHaveAnAccount_text">Don\'t have an Account ?</string>
+    <string name="registerLink_text">Register</string>
 </resources>
