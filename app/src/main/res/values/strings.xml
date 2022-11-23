@@ -6,4 +6,9 @@
     <string name="loginButton_text">Login</string>
     <string name="dontHaveAnAccount_text">Don\'t have an Account ?</string>
     <string name="registerLink_text">Register</string>
+    <string name="registerHeader_text">Register</string>
+    <string name="registerButton_text">Register</string>
+    <string name="alreadyHaveAnAccount_text">Already have an Account ?</string>
+    <string name="loginLink_text">Login</string>
+    <string name="confirmPasswordHint_text">confirm password</string>
 </resources>
