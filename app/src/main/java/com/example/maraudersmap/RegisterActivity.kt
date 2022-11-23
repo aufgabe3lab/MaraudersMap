@@ -8,6 +8,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 
+/**
+ * provides function to register a new user
+ * @author Felix Kuhbier
+ * @since 2022.11.23
+ */
 class RegisterActivity : AppCompatActivity() {
 
     lateinit var username: EditText

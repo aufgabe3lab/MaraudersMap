@@ -8,6 +8,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 
+/**
+ * provides function to login a user with its credentials
+ * @author Felix Kuhbier
+ * @since 2022.11.23
+ */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var username: EditText
