@@ -1,5 +1,6 @@
 package com.example.maraudersmap
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -30,7 +31,8 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerLink.setOnClickListener {
-            Toast.makeText(this@LoginActivity, "Register Link clicked", Toast.LENGTH_LONG).show()
+           val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
+            startActivity(intent)
         }
 
 
