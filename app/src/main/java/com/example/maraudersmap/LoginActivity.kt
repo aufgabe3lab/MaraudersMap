@@ -1,5 +1,6 @@
 package com.example.maraudersmap
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -32,14 +33,32 @@ class LoginActivity : AppCompatActivity() {
         registerLink = findViewById(R.id.registerLink_textView)
 
         loginButton.setOnClickListener {
-            Toast.makeText(this@LoginActivity, "${username.text}, ${password.text}", Toast.LENGTH_LONG).show()
+            makeToast("${username.text}", Toast.LENGTH_LONG)
         }
 
         registerLink.setOnClickListener {
-           val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-            startActivity(intent)
+           switchActivity(RegisterActivity::class.java)
         }
 
 
     }
+
+    /**
+     * Switches to activity
+     * @param destinationClass component class that is to be used for the intent
+     */
+    private fun switchActivity(destinationClass: Class<*>?){
+        val intent = Intent(this@LoginActivity, destinationClass)
+        startActivity(intent)
+    }
+
+    /**
+     * show toast with given msg and duration
+     * @param msg message of toast
+     * @param length duration of toast
+     */
+    private fun makeToast(msg: String, length: Int){
+        Toast.makeText(this@LoginActivity, msg, length).show()
+    }
+
 }

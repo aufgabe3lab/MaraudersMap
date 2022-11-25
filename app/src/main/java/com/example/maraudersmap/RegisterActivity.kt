@@ -33,18 +33,35 @@ class RegisterActivity : AppCompatActivity() {
 
         registerButton.setOnClickListener {
             if(passwordConfirmation.text.toString() == password.text.toString()){
-                Toast.makeText(this@RegisterActivity, "${username.text}, ${password.text}", Toast.LENGTH_LONG).show()
+                makeToast("${username.text}, ${password.text}", Toast.LENGTH_LONG)
 
             }else{
-                Toast.makeText(this@RegisterActivity, "Passwords do not match!", Toast.LENGTH_LONG).show()
+                makeToast("Passwords do not match!", Toast.LENGTH_LONG)
             }
         }
 
         loginLink.setOnClickListener {
-            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-            startActivity(intent)
+            switchActivity(LoginActivity::class.java)
         }
 
 
+    }
+
+    /**
+     * show toast with given msg and duration
+     * @param msg message of toast
+     * @param length duration of toast
+     */
+    private fun makeToast(msg: String, length: Int){
+        Toast.makeText(this@RegisterActivity, msg, length).show()
+    }
+
+    /**
+     * Switches to activity
+     * @param destinationClass component class that is to be used for the intent
+     */
+    private fun switchActivity(destinationClass: Class<*>?){
+        val intent = Intent(this@RegisterActivity, destinationClass)
+        startActivity(intent)
     }
 }
