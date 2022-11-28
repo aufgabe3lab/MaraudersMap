@@ -17,7 +17,7 @@ import androidx.core.widget.addTextChangedListener
 /**
  * provides function to register a new user
  * @author Felix Kuhbier
- * @since 2022.11.23
+ * @since 2022.11.28
  */
 class RegisterActivity : AppCompatActivity() {
 
@@ -96,6 +96,11 @@ class RegisterActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * validate input string
+     * @param inputString String to validate
+     * @return true if string is valid
+     */
     private fun validateInput(inputString: String) : Boolean{
         if(inputString.isEmpty() || inputString.isBlank()){
             return false
@@ -104,6 +109,10 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * validate registration
+     * @return true if registration is valid
+     */
     private fun validateRegistration(): Boolean{
        if(validateInput(username.text.toString()) && validateInput(password.text.toString()) && passwordConfirmation.backgroundTintList == ColorStateList.valueOf(Color.GREEN)){
             return true

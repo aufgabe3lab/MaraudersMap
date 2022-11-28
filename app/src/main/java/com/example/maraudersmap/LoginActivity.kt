@@ -12,7 +12,7 @@ import android.widget.Toast
 /**
  * provides function to login a user with its credentials
  * @author Felix Kuhbier
- * @since 2022.11.23
+ * @since 2022.11.28
  */
 class LoginActivity : AppCompatActivity() {
 
@@ -72,6 +72,11 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this@LoginActivity, msg, length).show()
     }
 
+    /**
+     * validate input string
+     * @param inputString String to validate
+     * @return true if string is valid
+     */
     private fun validateInput(inputString: String): Boolean{
         if(inputString.isEmpty() || inputString.isBlank()){
             return false
@@ -80,6 +85,10 @@ class LoginActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * validate login
+     * @return true if login is valid
+     */
     private fun validateLogin(): Boolean{
         if(validateInput(username.text.toString()) && validateInput(password.text.toString())){
             return true
