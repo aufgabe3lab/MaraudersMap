@@ -66,9 +66,7 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                if(!(validateInput(passwordConfirmation.text.toString()) && validateInput(password.text.toString()))){
-                    passwordConfirmation.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
-                }
+
             }
 
         })
