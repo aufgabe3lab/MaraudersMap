@@ -33,7 +33,13 @@ class LoginActivity : AppCompatActivity() {
         registerLink = findViewById(R.id.registerLink_textView)
 
         loginButton.setOnClickListener {
-            makeToast("${username.text}", Toast.LENGTH_LONG)
+            if(validateLogin()){
+                makeToast("Successfully", Toast.LENGTH_SHORT)
+            }else if(!validateInput(username.text.toString())){
+                makeToast("Invalid Username", Toast.LENGTH_SHORT)
+            }else {
+                makeToast("Invalid Password", Toast.LENGTH_SHORT)
+            }
         }
 
         registerLink.setOnClickListener {
@@ -48,8 +54,13 @@ class LoginActivity : AppCompatActivity() {
      * @param destinationClass component class that is to be used for the intent
      */
     private fun switchActivity(destinationClass: Class<*>?){
-        val intent = Intent(this@LoginActivity, destinationClass)
-        startActivity(intent)
+        try {
+            val intent = Intent(this@LoginActivity, destinationClass)
+            startActivity(intent)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
     }
 
     /**
@@ -59,6 +70,22 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun makeToast(msg: String, length: Int){
         Toast.makeText(this@LoginActivity, msg, length).show()
+    }
+
+    private fun validateInput(inputString: String): Boolean{
+        if(inputString.isEmpty() || inputString.isBlank()){
+            return false
+        }
+
+        return true
+    }
+
+    private fun validateLogin(): Boolean{
+        if(validateInput(username.text.toString()) && validateInput(password.text.toString())){
+            return true
+        }
+
+        return false
     }
 
 }
