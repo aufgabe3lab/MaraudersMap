@@ -1,12 +1,13 @@
 package com.example.maraudersmap
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
 
 /**
  * provides function to login a user with its credentials
@@ -40,6 +41,25 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // the part blow is for test purpose of Julian
+
+        val user = User()
+        user.description = "Empty description"
+        user.username = "EpixxxHD"
+        user.password = "1234"
+
+        /*val userXml = """
+            <userXTO>
+                <username>${user.username}</username>
+                <password>${user.password}</password>
+                <description>${user.description}</description>
+            </userXTO>
+        """.trimIndent()
+        println(userXml)*/
+
+        val generator = XmlGenerator()
+        val xmlString = generator.generateXml(user)
+        println(xmlString)
 
     }
 }
