@@ -7,6 +7,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
+import java.io.IOException
 
 
 /**
@@ -41,25 +45,25 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // the part blow is for test purpose of Julian
+        // the part below is for test purpose of Julian
 
-        val user = User()
-        user.description = "Empty description"
-        user.username = "EpixxxHD"
-        user.password = "1234"
 
-        /*val userXml = """
-            <userXTO>
-                <username>${user.username}</username>
-                <password>${user.password}</password>
-                <description>${user.description}</description>
-            </userXTO>
-        """.trimIndent()
-        println(userXml)*/
+        // callback methods are called after server responds to the request below (userController.createNewUser(...))
+        val callback = object : Callback {
 
-        val generator = XmlGenerator()
-        val xmlString = generator.generateXml(user)
-        println(xmlString)
+            override fun onFailure(call: Call, e: IOException) {
+                println("Error, the server is probably not responding")
+            }
 
+            override fun onResponse(call: Call, response: Response) {
+                val responseCode : Int = response.code
+                println(responseCode)
+
+                //todo please post your code here to handle the responseCode
+            }
+        }
+
+        val userController = UserController()
+        userController.createNewUser("Username112","password","description",callback)
     }
 }
