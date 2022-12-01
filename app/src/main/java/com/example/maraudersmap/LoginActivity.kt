@@ -68,8 +68,8 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
             val serializer: Serializer = Persister()
 
-            val userController1 = UserController()
-            val response : Response = userController1.loginUser(username,password)      // sends a login request to the server and returns a response
+            val userController = UserController()
+            val response : Response = userController.loginUser(username,password)      // sends a login request to the server and returns a response
 
             val xmlBody = response.body!!.string()
             val responseCode : Int = response.code      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
