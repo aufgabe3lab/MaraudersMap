@@ -24,17 +24,17 @@ class UserController {
         userXTO.description = description
 
 
-            val userXml = """
+            /*val userXml = """
              <userXTO>
                 <username>${userXTO.username}</username>
                 <password>${userXTO.password}</password>
                 <description>${userXTO.description}</description>
              </userXTO>
-            """.trimIndent()
+            """.trimIndent()*/
 
 
         val server = ServerCommunicator()
-        server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXml, callback)
+        server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO, callback)
     }
 
     /**
@@ -49,14 +49,14 @@ class UserController {
         userXTO.username = username
         userXTO.password = password
 
-        val userXml = """
+        /*val userXml = """
              <userXTO>
                 <username>${userXTO.username}</username>
                 <password>${userXTO.password}</password> 
              </userXTO>
-            """.trimIndent()
+            """.trimIndent()*/
 
         val server = ServerCommunicator()
-        server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXml, callback)
+        server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO, callback)
     }
 }
