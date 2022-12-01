@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -31,7 +32,12 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var password: EditText
     private lateinit var loginButton: Button
     private lateinit var registerLink: TextView
+    private lateinit var toastMessage: String
 
+    companion object{
+        var userID: String? = null
+        var jsonWebToken: String? = null
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +50,20 @@ class LoginActivity : AppCompatActivity() {
         registerLink = findViewById(R.id.registerLink_textView)
 
         loginButton.setOnClickListener {
-            Toast.makeText(this@LoginActivity, "${username.text}, ${password.text}", Toast.LENGTH_LONG).show()
+            if(validateLogin(username.text.toString(), password.text.toString())){
+                loginUser(username.text.toString(), password.text.toString())
+            }else if(!validateInput(username.text.toString())){
+                makeToast("Username is invalid", Toast.LENGTH_LONG)
+            }else{
+                makeToast("Password is invalid", Toast.LENGTH_LONG)
+            }
         }
 
         registerLink.setOnClickListener {
-           val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-            startActivity(intent)
+           switchActivity(RegisterActivity::class.java)
         }
 
-        loginUser("Username114","password")
+
     }
 
     /**
@@ -72,14 +83,23 @@ class LoginActivity : AppCompatActivity() {
             val response : Response = userController.loginUser(username,password)      // sends a login request to the server and returns a response
 
             val xmlBody = response.body!!.string()
-            val responseCode : Int = response.code      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
 
-            if(responseCode==200){
-                val userID: String = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
-                val jsonWebToken = response.headers.last().second
+            when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                200 ->{
+                    userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                    jsonWebToken = response.headers.last().second
+                    toastMessage = "Login successful"
+                }
+
+                403 -> toastMessage = "Login failed"
+
+                else -> toastMessage = "Unknown error"
             }
 
-            //todo maybe change local variables to instance variables to be able to use them outside of this method
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+
         }
     }
 
@@ -91,4 +111,30 @@ class LoginActivity : AppCompatActivity() {
         @field:Element(name = "id")
         var id: String? = null
     )
+
+    private fun validateInput(inputString: String): Boolean{
+
+        if(inputString.isBlank() || inputString.isBlank()){
+            return false
+        }
+
+        return true
+    }
+
+    private fun validateLogin(username: String, password: String): Boolean{
+        if(validateInput(username) && validateInput(password)){
+            return true
+        }
+
+        return false
+    }
+
+    private fun makeToast(msg: String, duration: Int){
+        Toast.makeText(this@LoginActivity, msg, duration).show()
+    }
+
+    private fun switchActivity(destinationClass: Class<*>){
+        val intent = Intent(this@LoginActivity, destinationClass)
+        startActivity(intent)
+    }
 }
