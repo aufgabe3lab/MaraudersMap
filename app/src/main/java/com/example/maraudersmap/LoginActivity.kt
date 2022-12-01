@@ -52,73 +52,69 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+
         // the part below is for test purpose of Julian
 
-
-        // callback methods are called after server responds to the request below (userController.createNewUser(...))
-        val callback = object : Callback {
-
-            override fun onFailure(call: Call, e: IOException) {
-                println("Error, the server is probably not responding")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseCode : Int = response.code      // response code: 200 = User was added, 409 = User already exists
-                loginUser()
-
-                //todo please post your code here to handle the responseCode
-            }
-        }
-
-        val userController = UserController()
-       // userController.createNewUser("Username114","password","description")
-        loginUser()
-
+        registerUser("Username114","password","description")
+        loginUser("Username114","passwordd")
     }
 
+    /**
+     * Sends a register request to the server and returns a response.
+     * The response code is saved in a variable
+     *
+     * @param username Username of the user
+     * @param password Password of the username
+     */
+    fun registerUser(username : String, password : String, description : String){
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.createNewUser(username,password,description)
+
+            val responseCode : Int = response.code         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
+
+            //todo maybe change local variables to instance variables to be able to use them outside of this method
+        }
+    }
+
+    /**
+     * Sends a login request to the server and returns a response. The important
+     * information get extracted out of the response and are saved in variables
+     *
+     * @param username Username of the user
+     * @param password Password of the username
+     */
+    fun loginUser(username : String, password : String){
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+            val serializer: Serializer = Persister()
+
+            val userController1 = UserController()
+            val response : Response = userController1.loginUser(username,password)      // sends a login request to the server and returns a response
+
+            val xmlBody = response.body!!.string()
+            val responseCode : Int = response.code      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+
+            if(responseCode==200){
+                val userID: String = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                val jasonWebToken = response.headers.last().second
+            }
+
+            //todo maybe change local variables to instance variables to be able to use them outside of this method
+        }
+    }
 
     /**
      * Extracts the user ID out of the response body
      */
     @Root(name = "userXTO", strict = false)
-    data class Command @JvmOverloads constructor(
+    data class ExtractUserID @JvmOverloads constructor(
         @field:Element(name = "id")
         var id: String? = null
     )
-
-    fun loginUser(){
-
-        val callbackLogin = object : Callback {
-
-            override fun onFailure(call: Call, e: IOException) {
-                println("Error, the server is probably not responding")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseCode : Int = response.code      // response code: 200 = Login successful, 403 = Forbidden / Login failed
-                val body = response.body
-                val xmlBody = body?.string()
-                var userID = ""
-
-                val serializer: Serializer = Persister()
-                userID = serializer.read(Command::class.java, xmlBody).id.toString()
-
-                //todo please post your code here to handle the responseCode
-
-            }
-        }
-
-        val scope3 = CoroutineScope(Dispatchers.Default)
-        scope3.launch {
-            val userController1 = UserController()
-            val response : Response = userController1.loginUser("Username114","password")
-
-            val xmlBody = response.body!!.string()
-            val responseCode : Int = response.code          // Response codes: 200 = User was added, 409 = User already exists
-
-            val serializer: Serializer = Persister()
-            val userID: String = serializer.read(Command::class.java, xmlBody).id.toString()
-            val jasonWebToken = response.headers.last().second
-        }
-    }
 }
