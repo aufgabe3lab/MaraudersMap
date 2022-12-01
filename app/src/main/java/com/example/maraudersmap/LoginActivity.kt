@@ -56,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseCode : Int = response.code
+                val responseCode : Int = response.code      // response code: 200 = User was added, 409 = User already exists
                 println(responseCode)
 
                 //todo please post your code here to handle the responseCode
@@ -64,6 +64,28 @@ class LoginActivity : AppCompatActivity() {
         }
 
         val userController = UserController()
-        userController.createNewUser("Username112","password","description",callback)
+        userController.createNewUser("Username111","password","description",callback)
+
+
+
+
+
+        val callbackLogin = object : Callback {
+
+            override fun onFailure(call: Call, e: IOException) {
+                println("Error, the server is probably not responding")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseCode : Int = response.code      // response code: 200 = Login successful, 403 = Forbidden / Login failed
+                println(responseCode)
+
+                //todo please post your code here to handle the responseCode
+            }
+        }
+
+        val userController1 = UserController()
+        userController1.loginUser("Username111","password",callbackLogin)
+
     }
 }

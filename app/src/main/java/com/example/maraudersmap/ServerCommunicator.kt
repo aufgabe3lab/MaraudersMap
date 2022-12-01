@@ -1,5 +1,7 @@
 package com.example.maraudersmap
 
+import android.util.Xml
+import androidx.annotation.XmlRes
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -19,7 +21,7 @@ class ServerCommunicator {
      */
     private fun <T> generateXml(input: T) : String {
 
-        val serializer: Serializer = Persister()
+        val serializer : Serializer = Persister()
 
         val writer = StringWriter()
         serializer.write(input,writer)
@@ -33,11 +35,11 @@ class ServerCommunicator {
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted
      * @param callback To put the response into (so program can continue without waiting for the servers response)
-     * @return call with the request as response ? todo not so sure about this part but it works
      */
-    fun <T> postRequest(url: String?, xmlObject: T, callback: Callback): Call {
+    fun <T> postRequest(url: String?, xmlObject: T, callback: Callback){
 
         val xml = generateXml(xmlObject)
+       // val xml : String = xmll
 
         val client = OkHttpClient()
         val mediaType : MediaType = "application/xml; charset=utf-8".toMediaType()
@@ -48,9 +50,5 @@ class ServerCommunicator {
 
         val call: Call = client.newCall(request)
         call.enqueue(callback)
-
-        println("adsf")
-
-        return call
     }
 }
