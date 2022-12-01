@@ -1,12 +1,11 @@
 package com.example.maraudersmap
 
-import android.util.Xml
-import androidx.annotation.XmlRes
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
+import ru.gildor.coroutines.okhttp.await
 import java.io.StringWriter
 
 
@@ -30,16 +29,15 @@ class ServerCommunicator {
     }
 
     /**
-     * Posts a request to the server
+     * Posts a request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
-     * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted
-     * @param callback To put the response into (so program can continue without waiting for the servers response)
+     * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
+     * @return Response of the request
      */
-    fun <T> postRequest(url: String?, xmlObject : T, callback: Callback){
+    suspend fun <T> postRequest(url: String?, xmlObject : T) : Response {
 
         val xml = generateXml(xmlObject)
-        // val xml : String = xmll
 
         val client = OkHttpClient()
         val mediaType : MediaType = "application/xml; charset=utf-8".toMediaType()
@@ -48,7 +46,8 @@ class ServerCommunicator {
         val request : Request = Request.Builder().url(url!!).post(body).build()
         println(request)
 
-        val call: Call = client.newCall(request)
-        call.enqueue(callback)
+        val response: Response = client.newCall(request).await()
+
+        return response
     }
 }

@@ -7,6 +7,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -61,14 +64,16 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseCode : Int = response.code      // response code: 200 = User was added, 409 = User already exists
-                deleteMeLater()
+                loginUser()
 
                 //todo please post your code here to handle the responseCode
             }
         }
 
         val userController = UserController()
-        userController.createNewUser("Username114","password","description",callback)
+       // userController.createNewUser("Username114","password","description")
+        loginUser()
+
     }
 
 
@@ -81,8 +86,7 @@ class LoginActivity : AppCompatActivity() {
         var id: String? = null
     )
 
-    fun deleteMeLater(){
-
+    fun loginUser(){
 
         val callbackLogin = object : Callback {
 
@@ -104,7 +108,17 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        val userController1 = UserController()
-        userController1.loginUser("Username114","password",callbackLogin)
+        val scope3 = CoroutineScope(Dispatchers.Default)
+        scope3.launch {
+            val userController1 = UserController()
+            val response : Response = userController1.loginUser("Username114","password")
+
+            val xmlBody = response.body!!.string()
+            val responseCode : Int = response.code          // Response codes: 200 = User was added, 409 = User already exists
+
+            val serializer: Serializer = Persister()
+            val userID: String = serializer.read(Command::class.java, xmlBody).id.toString()
+            val jasonWebToken = response.headers.last().second
+        }
     }
 }

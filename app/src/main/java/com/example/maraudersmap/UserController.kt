@@ -1,9 +1,6 @@
 package com.example.maraudersmap
 
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.Response
-import java.io.IOException
 
 class UserController {
 
@@ -15,8 +12,9 @@ class UserController {
      * @param username new username
      * @param password new password for the username
      * @param description small description, needed but not sure why
+     * @return Response of the request
      */
-    fun createNewUser(username : String, password : String, description : String, callback : Callback) {
+     suspend fun createNewUser(username : String, password : String, description : String): Response {
 
         val userXTO = UserXTO()
         userXTO.username = username
@@ -34,7 +32,9 @@ class UserController {
 
 
         val server = ServerCommunicator()
-        server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO, callback)
+        val response = server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)
+        return response
+
     }
 
     /**
@@ -42,9 +42,9 @@ class UserController {
      *
      * @param username username
      * @param password password for the username
-     * @return response code of request: 200 = User was added, 409 = User already exists
+     * @return Response of the request
      */
-    fun loginUser(username : String, password : String, callback : Callback){
+    suspend fun loginUser(username: String, password: String): Response {
         val userXTO = UserXTO()
         userXTO.username = username
         userXTO.password = password
@@ -57,6 +57,9 @@ class UserController {
             """.trimIndent()*/
 
         val server = ServerCommunicator()
-        server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO, callback)
+
+        val response = server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
+
+        return response
     }
 }
