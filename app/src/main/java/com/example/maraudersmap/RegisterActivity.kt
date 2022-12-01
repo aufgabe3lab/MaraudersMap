@@ -7,10 +7,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Response
 
 /**
  * provides function to register a new user
- * @author Felix Kuhbier
+ * @author Felix Kuhbier & Julian Ertle
  * @since 2022.11.23
  */
 class RegisterActivity : AppCompatActivity() {
@@ -45,6 +49,28 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        registerUser("Username114","password","description")
+    }
 
+    /**
+     * Sends a register request to the server and returns a response.
+     * The response code is saved in a variable
+     *
+     * @param username Username of the user
+     * @param password Password of the username
+     * @param description small description, needed but not sure why
+     */
+    private fun registerUser(username : String, password : String, description : String){
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.createNewUser(username,password,description)
+
+            val responseCode : Int = response.code         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
+
+            //todo maybe change local variables to instance variables to be able to use them outside of this method
+        }
     }
 }
