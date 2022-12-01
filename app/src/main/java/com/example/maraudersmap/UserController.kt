@@ -10,6 +10,8 @@ import okhttp3.Response
 
 class UserController {
 
+    private val server : ServerCommunicator = ServerCommunicator()
+
     /**
      * Creates a new User from the given parameters, converts its information
      * with the help of the ServerCommunicator class to a xml String and posts it to
@@ -27,7 +29,6 @@ class UserController {
         userXTO.password = password
         userXTO.description = description
 
-        val server = ServerCommunicator()
         val response = server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)
         return response
     }
@@ -44,7 +45,6 @@ class UserController {
         userXTO.username = username
         userXTO.password = password
 
-        val server = ServerCommunicator()
         val response = server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
         return response
     }

@@ -50,7 +50,6 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         registerUser("Username114","password","description")
-
     }
 
     /**
@@ -59,6 +58,7 @@ class RegisterActivity : AppCompatActivity() {
      *
      * @param username Username of the user
      * @param password Password of the username
+     * @param description small description, needed but not sure why
      */
     private fun registerUser(username : String, password : String, description : String){
 

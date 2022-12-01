@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
 
             if(responseCode==200){
                 val userID: String = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
-                val jasonWebToken = response.headers.last().second
+                val jsonWebToken = response.headers.last().second
             }
 
             //todo maybe change local variables to instance variables to be able to use them outside of this method
