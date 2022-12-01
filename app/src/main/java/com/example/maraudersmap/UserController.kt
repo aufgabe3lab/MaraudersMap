@@ -45,7 +45,6 @@ class UserController {
         userXTO.username = username
         userXTO.password = password
 
-        val response = server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
-        return response
+        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
     }
 }

@@ -39,19 +39,17 @@ class ServerCommunicator {
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
      * @return Response of the request
      */
-    suspend fun <T> postRequest(url: String?, xmlObject : T) : Response {
+    suspend fun <T> postRequest(url: String?, xmlObject: T): Response {
 
         val xml = generateXml(xmlObject)
 
         val client = OkHttpClient()
-        val mediaType : MediaType = "application/xml; charset=utf-8".toMediaType()
+        val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
 
-        val request : Request = Request.Builder().url(url!!).post(body).build()
+        val request: Request = Request.Builder().url(url!!).post(body).build()
         println(request)
 
-        val response: Response = client.newCall(request).await()
-
-        return response
+        return client.newCall(request).await()
     }
 }
