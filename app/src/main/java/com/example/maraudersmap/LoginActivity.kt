@@ -22,7 +22,7 @@ import java.io.IOException
 
 /**
  * provides function to login a user with its credentials
- * @author Felix Kuhbier
+ * @author Felix Kuhbier & Julian Ertle
  * @since 2022.11.23
  */
 class LoginActivity : AppCompatActivity() {
@@ -52,33 +52,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-
-        // the part below is for test purpose of Julian
-
-        registerUser("Username114","password","description")
-        loginUser("Username114","passwordd")
-    }
-
-    /**
-     * Sends a register request to the server and returns a response.
-     * The response code is saved in a variable
-     *
-     * @param username Username of the user
-     * @param password Password of the username
-     */
-    fun registerUser(username : String, password : String, description : String){
-
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch {
-
-            val userController = UserController()
-            val response : Response = userController.createNewUser(username,password,description)
-
-            val responseCode : Int = response.code         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
-
-            //todo maybe change local variables to instance variables to be able to use them outside of this method
-        }
+        loginUser("Username114","password")
     }
 
     /**
@@ -88,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
      * @param username Username of the user
      * @param password Password of the username
      */
-    fun loginUser(username : String, password : String){
+    private fun loginUser(username : String, password : String){
 
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {

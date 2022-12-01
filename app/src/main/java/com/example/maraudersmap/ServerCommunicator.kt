@@ -8,7 +8,11 @@ import org.simpleframework.xml.core.Persister
 import ru.gildor.coroutines.okhttp.await
 import java.io.StringWriter
 
-
+/**
+ * Provides methods to be able to communicate with a server
+ * @author Julian Ertle
+ * @since 2022.11.30
+ */
 
 class ServerCommunicator {
 
