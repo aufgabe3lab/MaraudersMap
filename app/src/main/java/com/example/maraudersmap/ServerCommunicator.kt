@@ -36,10 +36,10 @@ class ServerCommunicator {
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted
      * @param callback To put the response into (so program can continue without waiting for the servers response)
      */
-    fun <T> postRequest(url: String?, xmlObject: T, callback: Callback){
+    fun postRequest(url: String?, xmll : String, callback: Callback){
 
-        val xml = generateXml(xmlObject)
-       // val xml : String = xmll
+        //val xml = generateXml(xmlObject)
+        val xml : String = xmll
 
         val client = OkHttpClient()
         val mediaType : MediaType = "application/xml; charset=utf-8".toMediaType()
