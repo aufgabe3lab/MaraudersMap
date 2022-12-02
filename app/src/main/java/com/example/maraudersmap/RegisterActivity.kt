@@ -46,13 +46,13 @@ class RegisterActivity : AppCompatActivity() {
            if(validateRegister(username.text.toString(),password.text.toString(), passwordConfirmation.text.toString())){
                registerUser(username.text.toString(),password.text.toString(),"description")
            }else if(!validateInput(username.text.toString())){
-               makeToast("Username is invalid", Toast.LENGTH_SHORT)
+               makeToast(getString(R.string.invalidUsername_text), Toast.LENGTH_SHORT)
            }else if(!validateInput(password.text.toString())){
-               makeToast("Password is invalid", Toast.LENGTH_SHORT)
+               makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_SHORT)
            }else if(!validateInput(passwordConfirmation.text.toString())){
-               makeToast("Confirm password", Toast.LENGTH_SHORT)
+               makeToast(getString(R.string.confirmPassword_text), Toast.LENGTH_SHORT)
            }else{
-               makeToast("Passwords do not match!", Toast.LENGTH_SHORT)
+               makeToast(getString(R.string.passwordsDoNotMatch_text), Toast.LENGTH_SHORT)
            }
         }
 
@@ -105,14 +105,14 @@ class RegisterActivity : AppCompatActivity() {
 
             when(response.code){         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
                 200 -> {
-                    toastMessage = "Registration successful"
+                    toastMessage = getString(R.string.successfulRegistration_text)
                     switchActivity(LoginActivity::class.java)
                 }
 
-                409 -> toastMessage = "User already exists"
+                409 -> toastMessage = getString(R.string.userAlreadyExists_text)
 
 
-                else -> toastMessage = "Unknown error"
+                else -> toastMessage = getString(R.string.unknownError_text)
             }
 
             withContext(Dispatchers.Main){

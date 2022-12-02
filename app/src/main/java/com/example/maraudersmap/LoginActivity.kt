@@ -53,9 +53,9 @@ class LoginActivity : AppCompatActivity() {
             if(validateLogin(username.text.toString(), password.text.toString())){
                 loginUser(username.text.toString(), password.text.toString())
             }else if(!validateInput(username.text.toString())){
-                makeToast("Username is invalid", Toast.LENGTH_LONG)
+                makeToast(getString(R.string.invalidUsername_text), Toast.LENGTH_LONG)
             }else{
-                makeToast("Password is invalid", Toast.LENGTH_LONG)
+                makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_LONG)
             }
         }
 
@@ -88,12 +88,12 @@ class LoginActivity : AppCompatActivity() {
                 200 ->{
                     userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
                     jsonWebToken = response.headers.last().second
-                    toastMessage = "Login successful"
+                    toastMessage = getString(R.string.successfulLogin)
                 }
 
-                403 -> toastMessage = "Login failed"
+                403 -> toastMessage = getString(R.string.failedLogin_text)
 
-                else -> toastMessage = "Unknown error"
+                else -> toastMessage = getString(R.string.unknownError_text)
             }
 
             withContext(Dispatchers.Main){
