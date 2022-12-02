@@ -116,7 +116,7 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun validateInput(inputString: String): Boolean{
 
-        if(inputString.isBlank() || inputString.isBlank()){
+        if(inputString.isEmpty() || inputString.isBlank()){
             return false
         }
 
