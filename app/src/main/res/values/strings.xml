@@ -11,4 +11,13 @@
     <string name="alreadyHaveAnAccount_text">Already have an Account ?</string>
     <string name="loginLink_text">Login</string>
     <string name="confirmPasswordHint_text">confirm password</string>
+    <string name="invalidUsername_text">Username is invalid</string>
+    <string name="invalidPassword_text">Password is invalid</string>
+    <string name="successfulLogin">Login successful</string>
+    <string name="failedLogin_text">Login failed</string>
+    <string name="unknownError_text">Unknown error</string>
+    <string name="userAlreadyExists_text">User already exists</string>
+    <string name="successfulRegistration_text">Registration successful</string>
+    <string name="confirmPassword_text">Confirm password</string>
+    <string name="passwordsDoNotMatch_text">Passwords do not match!</string>
 </resources>

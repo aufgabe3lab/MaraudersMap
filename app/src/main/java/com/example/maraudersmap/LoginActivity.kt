@@ -10,20 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
+import kotlinx.coroutines.withContext
 import okhttp3.Response
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
-import java.io.IOException
 
 
 /**
  * provides function to login a user with its credentials
  * @author Felix Kuhbier & Julian Ertle
- * @since 2022.11.23
+ * @since 2022.12.02
  */
 class LoginActivity : AppCompatActivity() {
 
@@ -31,7 +29,12 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var password: EditText
     private lateinit var loginButton: Button
     private lateinit var registerLink: TextView
+    private lateinit var toastMessage: String
 
+    companion object{
+        var userID: String? = null
+        var jsonWebToken: String? = null
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +47,20 @@ class LoginActivity : AppCompatActivity() {
         registerLink = findViewById(R.id.registerLink_textView)
 
         loginButton.setOnClickListener {
-            Toast.makeText(this@LoginActivity, "${username.text}, ${password.text}", Toast.LENGTH_LONG).show()
+            if(validateLogin(username.text.toString(), password.text.toString())){
+                loginUser(username.text.toString(), password.text.toString())
+            }else if(!validateInput(username.text.toString())){
+                makeToast(getString(R.string.invalidUsername_text), Toast.LENGTH_LONG)
+            }else{
+                makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_LONG)
+            }
         }
 
         registerLink.setOnClickListener {
-           val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-            startActivity(intent)
+           switchActivity(RegisterActivity::class.java)
         }
 
-        loginUser("Username114","password")
+
     }
 
     /**
@@ -68,18 +76,27 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
             val serializer: Serializer = Persister()
 
-            val userController1 = UserController()
-            val response : Response = userController1.loginUser(username,password)      // sends a login request to the server and returns a response
+            val userController = UserController()
+            val response : Response = userController.loginUser(username,password)      // sends a login request to the server and returns a response
 
             val xmlBody = response.body!!.string()
-            val responseCode : Int = response.code      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
 
-            if(responseCode==200){
-                val userID: String = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
-                val jsonWebToken = response.headers.last().second
+            when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                200 ->{
+                    userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                    jsonWebToken = response.headers.last().second
+                    toastMessage = getString(R.string.successfulLogin)
+                }
+
+                403 -> toastMessage = getString(R.string.failedLogin_text)
+
+                else -> toastMessage = getString(R.string.unknownError_text)
             }
 
-            //todo maybe change local variables to instance variables to be able to use them outside of this method
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+
         }
     }
 
@@ -91,4 +108,50 @@ class LoginActivity : AppCompatActivity() {
         @field:Element(name = "id")
         var id: String? = null
     )
+
+    /**
+     * validates input string
+     * @param inputString String to validate
+     * @return True if input is valid
+     */
+    private fun validateInput(inputString: String): Boolean{
+
+        if(inputString.isEmpty() || inputString.isBlank()){
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * validates registration
+     * @param username username to validate
+     * @param password password to validate
+     * @return True if valid
+     */
+    private fun validateLogin(username: String, password: String): Boolean{
+        if(validateInput(username) && validateInput(password)){
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * makes Toast
+     * @param msg message to show
+     * @param duration display time
+     */
+    private fun makeToast(msg: String, duration: Int){
+        Toast.makeText(this@LoginActivity, msg, duration).show()
+    }
+
+    /**
+     * Switch to activity
+     * @param destinationClass destination activity
+     */
+    private fun switchActivity(destinationClass: Class<*>){
+        val intent = Intent(this@LoginActivity, destinationClass)
+        startActivity(intent)
+    }
 }
