@@ -24,7 +24,7 @@ import java.io.IOException
 /**
  * provides function to login a user with its credentials
  * @author Felix Kuhbier & Julian Ertle
- * @since 2022.11.23
+ * @since 2022.12.02
  */
 class LoginActivity : AppCompatActivity() {
 
