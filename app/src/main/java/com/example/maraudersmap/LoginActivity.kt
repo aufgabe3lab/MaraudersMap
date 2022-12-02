@@ -11,14 +11,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.Response
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
-import java.io.IOException
 
 
 /**
@@ -130,7 +127,6 @@ class LoginActivity : AppCompatActivity() {
      * validates registration
      * @param username username to validate
      * @param password password to validate
-     * @param passwordConfirmation confirmation password to validate
      * @return True if valid
      */
     private fun validateLogin(username: String, password: String): Boolean{
