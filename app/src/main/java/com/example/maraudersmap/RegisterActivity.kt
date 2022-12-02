@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Response
+import java.net.SocketTimeoutException
 
 /**
  * provides function to register a new user
@@ -100,19 +101,25 @@ class RegisterActivity : AppCompatActivity() {
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
 
-            val userController = UserController()
-            val response : Response = userController.createNewUser(username,password,description)
+            try {
 
-            when(response.code){         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
-                200 -> {
-                    toastMessage = getString(R.string.successfulRegistration_text)
-                    switchActivity(LoginActivity::class.java)
+                val userController = UserController()
+                val response : Response = userController.createNewUser(username,password,description)
+
+                when(response.code){         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
+                    200 -> {
+                        toastMessage = getString(R.string.successfulRegistration_text)
+                        switchActivity(LoginActivity::class.java)
+                    }
+
+                    409 -> toastMessage = getString(R.string.userAlreadyExists_text)
+
+
+                    else -> toastMessage = getString(R.string.unknownError_text)
                 }
-
-                409 -> toastMessage = getString(R.string.userAlreadyExists_text)
-
-
-                else -> toastMessage = getString(R.string.unknownError_text)
+            }catch (e: SocketTimeoutException){
+                e.printStackTrace()
+                toastMessage = getString(R.string.noInternetConnection_text)
             }
 
             withContext(Dispatchers.Main){

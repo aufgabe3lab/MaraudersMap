@@ -2,11 +2,15 @@ package com.example.maraudersmap
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.ContentView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ContentInfoCompat.Flags
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +20,7 @@ import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
+import java.net.SocketTimeoutException
 
 
 /**
@@ -74,23 +79,29 @@ class LoginActivity : AppCompatActivity() {
 
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
-            val serializer: Serializer = Persister()
+            try {
 
-            val userController = UserController()
-            val response : Response = userController.loginUser(username,password)      // sends a login request to the server and returns a response
+                val serializer: Serializer = Persister()
 
-            val xmlBody = response.body!!.string()
+                val userController = UserController()
+                val response : Response = userController.loginUser(username,password)      // sends a login request to the server and returns a response
 
-            when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
-                200 ->{
-                    userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
-                    jsonWebToken = response.headers.last().second
-                    toastMessage = getString(R.string.successfulLogin)
+                val xmlBody = response.body!!.string()
+
+                when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                    200 ->{
+                        userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                        jsonWebToken = response.headers.last().second
+                        toastMessage = getString(R.string.successfulLogin)
+                    }
+
+                    403 -> toastMessage = getString(R.string.failedLogin_text)
+
+                    else -> toastMessage = getString(R.string.unknownError_text)
                 }
-
-                403 -> toastMessage = getString(R.string.failedLogin_text)
-
-                else -> toastMessage = getString(R.string.unknownError_text)
+            }catch (e: SocketTimeoutException){
+                e.printStackTrace()
+                toastMessage = getString(R.string.noInternetConnection_text)
             }
 
             withContext(Dispatchers.Main){
@@ -151,7 +162,9 @@ class LoginActivity : AppCompatActivity() {
      * @param destinationClass destination activity
      */
     private fun switchActivity(destinationClass: Class<*>){
+
         val intent = Intent(this@LoginActivity, destinationClass)
         startActivity(intent)
+
     }
 }
