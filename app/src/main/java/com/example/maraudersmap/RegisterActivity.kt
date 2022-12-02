@@ -122,6 +122,11 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * validates input string
+     * @param inputString String to validate
+     * @return True if input is valid
+     */
     private fun validateInput(inputString: String): Boolean{
 
         if(inputString.isBlank() || inputString.isBlank()){
@@ -131,6 +136,13 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * validates registration
+     * @param username username to validate
+     * @param password password to validate
+     * @param passwordConfirmation confirmation password to validate
+     * @return True if valid
+     */
     private fun validateRegister(username: String, password: String, passwordConfirmation: String): Boolean{
         if(validateInput(username) && validateInput(password) && validateInput(passwordConfirmation) && passwordConfirmation == password){
             return true
@@ -139,10 +151,19 @@ class RegisterActivity : AppCompatActivity() {
         return false
     }
 
+    /**
+     * makes Toast
+     * @param msg message to show
+     * @param duration display time
+     */
     private fun makeToast(msg: String, duration: Int){
         Toast.makeText(this@RegisterActivity, msg, duration).show()
     }
 
+    /**
+     * Switch to activity
+     * @param destinationClass destination activity
+     */
     private fun switchActivity(destinationClass: Class<*>){
         val intent = Intent(this@RegisterActivity, destinationClass)
         startActivity(intent)
