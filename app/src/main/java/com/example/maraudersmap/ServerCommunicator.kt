@@ -42,13 +42,27 @@ class ServerCommunicator {
      * @return Response of the request
      */
     suspend fun <T> postRequest(url: String?, xmlObject: T): Response {
-
         val xml = generateXml(xmlObject)
+        return postRequest(url, "", xml)
+    }
+
+    suspend fun <T> postRequest(url: String?, xmlObject: T, jsonWebToken: String): Response {
+        val xml = generateXml(xmlObject)
+        return postRequest(url, jsonWebToken, xml)
+    }
+
+    private suspend fun postRequest(url: String?,jsonWebToken: String, xml: String): Response {
+        val request: Request
 
         val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
 
-        val request: Request = Request.Builder().url(url!!).post(body).build()
+        if(jsonWebToken.isEmpty()){
+            request = Request.Builder().url(url!!).post(body).build()
+        }
+        else{
+            request = Request.Builder().url(url!!).post(body).addHeader("Authorization", jsonWebToken).build()
+        }
 
         return client.newCall(request).await()
     }

@@ -69,4 +69,11 @@ class UserController {
 
         return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", jsonWebToken)
     }
+
+    suspend fun updateUserGpsPosition(latitude: Long, longitude: Long, userID: String, jsonWebToken: String): Response{
+        val userXTO = UserXTO()
+        userXTO.latitude = latitude
+        userXTO.longitude = longitude
+        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID/location", userXTO, jsonWebToken)
+    }
 }
