@@ -22,6 +22,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var intervalEditText: EditText
     private lateinit var privacyRadiusEditText: EditText
     private lateinit var deleteButton: Button
+    private lateinit var changePassword: EditText
+    private lateinit var confirmChangedPassword: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +35,9 @@ class SettingsActivity : AppCompatActivity() {
         intervalEditText = findViewById(R.id.interval_editTextNumber)
         privacyRadiusEditText = findViewById(R.id.privacyRadius_editTextNumber)
         deleteButton =  findViewById(R.id.deleteAccount_button)
+        changePassword = findViewById(R.id.changePassword_editText)
+        confirmChangedPassword = findViewById(R.id.confirmChangedPassword_editText)
+
 
         autoSendPosSwitch.setOnCheckedChangeListener{_, isChecked->
             if(isChecked){
@@ -77,6 +82,8 @@ class SettingsActivity : AppCompatActivity() {
         deleteButton.setOnClickListener {
             makeToast("Account Deleted", Toast.LENGTH_SHORT)
         }
+
+
     }
 
 

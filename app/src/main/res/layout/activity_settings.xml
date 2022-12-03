@@ -95,6 +95,7 @@
         android:layout_marginStart="8dp"
         android:text="@string/automaticSendingOfPosition_text"
         android:textColor="#191919"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline17"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline16" />
@@ -105,10 +106,10 @@
         android:layout_height="wrap_content"
         android:backgroundTint="#FA0A0A"
         android:text="@string/deleteAccount_buttonText"
-        app:layout_constraintBottom_toTopOf="@+id/guideline15"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline14"
+        app:layout_constraintTop_toTopOf="@+id/guideline8"
         tools:ignore="TextContrastCheck" />
 
     <androidx.appcompat.widget.SwitchCompat
@@ -150,13 +151,13 @@
 
     <EditText
         android:id="@+id/interval_editTextNumber"
-        android:layout_width="138dp"
+        android:layout_width="140dp"
         android:layout_height="48dp"
         android:ems="10"
         android:hint="@string/interval_hintText"
         android:importantForAutofill="no"
         android:inputType="number"
-        android:textColorHint="@android:color/darker_gray"
+        android:textColorHint="#757575"
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline18"
@@ -169,6 +170,7 @@
         android:layout_marginStart="8dp"
         android:text="@string/privacyRadius_text"
         android:textColor="#191919"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline19" />
@@ -180,8 +182,63 @@
         android:layout_marginStart="8dp"
         android:text="@string/interval_text"
         android:textColor="#191919"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline17" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <TextView
+        android:id="@+id/passwordChange_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/changePassword_text"
+        android:textColor="#191919"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline14" />
+
+    <EditText
+        android:id="@+id/changePassword_editText"
+        android:layout_width="140dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/newPassword_hintText"
+        app:layout_constraintBottom_toTopOf="@+id/guideline15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline18"
+        app:layout_constraintTop_toTopOf="@+id/guideline14"
+        android:importantForAutofill="no"
+        tools:ignore="TextFields" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9302326" />
+
+    <EditText
+        android:id="@+id/confirmChangedPassword_editText"
+        android:layout_width="140dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/confirm_hintText"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline18"
+        app:layout_constraintTop_toTopOf="@+id/guideline15"
+        android:importantForAutofill="no"
+        tools:ignore="TextFields" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
