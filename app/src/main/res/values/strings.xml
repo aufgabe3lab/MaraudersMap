@@ -20,5 +20,22 @@
     <string name="successfulRegistration_text">Registration successful</string>
     <string name="confirmPassword_text">Confirm password</string>
     <string name="passwordsDoNotMatch_text">Passwords do not match!</string>
-    <string name="noInternetConnection_text">No Internet connection</string>
+    <string name="login_label">Login</string>
+    <string name="register_label">Register</string>
+
+    <!-- Settings Activity -->
+    <string name="automaticSendingOfPosition_text">Auto sending</string>
+    <string name="interval_text">Interval</string>
+    <string name="privacyRadius_text">Privacy radius</string>
+    <string name="deleteAccount_text">Delete Account</string>
+    <string name="deleteAccount_buttonText">Delete Account</string>
+    <string name="position_headerText">Position</string>
+    <string name="visibility_headerText">Visibility</string>
+    <string name="account_headerText">Account</string>
+    <string name="interval_hintText">mm:ss</string>
+    <string name="privacyRadius_hintText">1km</string>
+    <string name="newPassword_hintText">new password</string>
+    <string name="changePassword_text">Change Password</string>
+    <string name="confirm_hintText">confirm</string>
+    <string name="settings_label">Settings</string>
 </resources>
