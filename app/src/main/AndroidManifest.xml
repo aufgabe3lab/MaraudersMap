@@ -17,7 +17,7 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:label="Settings">
+            android:label="@string/settings_label">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -25,7 +25,7 @@
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
-            android:label="Register">
+            android:label="@string/register_label">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -33,7 +33,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:label="Login">
+            android:label="@string/login_label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
