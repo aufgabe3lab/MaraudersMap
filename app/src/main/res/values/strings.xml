@@ -47,4 +47,7 @@
 
     <string name="interval_hintText">mm:ss</string>
     <string name="privacyRadius_hintText">1km</string>
+    <string name="newPassword_hintText">new password</string>
+    <string name="changePassword_text">Change Password</string>
+    <string name="confirm_hintText">confirm</string>
 </resources>
