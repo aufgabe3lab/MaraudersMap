@@ -59,4 +59,10 @@ class UserController {
         userXTO.privacyRadius = privacyRadius
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
     }
+
+    suspend fun changeUserDescription(description: String, userID: String, jsonWebToken: String): Response{
+        val userXTO = UserXTO()
+        userXTO.description = description
+        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
+    }
 }
