@@ -31,6 +31,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var registerLink: TextView
     private lateinit var toastMessage: String
 
+    private lateinit var registerButton: Button
+
     companion object{
         var userID: String? = null
         var jsonWebToken: String? = null
@@ -46,6 +48,8 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerLink = findViewById(R.id.registerLink_textView)
 
+        registerButton = findViewById(R.id.password_button)
+
         loginButton.setOnClickListener {
             if(validateLogin(username.text.toString(), password.text.toString())){
                 loginUser(username.text.toString(), password.text.toString())
@@ -60,7 +64,20 @@ class LoginActivity : AppCompatActivity() {
            switchActivity(RegisterActivity::class.java)
         }
 
+        registerButton.setOnClickListener {
+            changePassword("123", userID!!, jsonWebToken!!)
+        }
 
+    }
+
+    private fun changePassword(newPassword: String, userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.changeUserPassword(newPassword,userID,jsonWebToken)
+            println(response)
+        }
     }
 
     /**

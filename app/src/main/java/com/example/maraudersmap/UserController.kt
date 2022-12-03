@@ -22,15 +22,14 @@ class UserController {
      * @param description small description, needed but not sure why
      * @return Response of the request
      */
-     suspend fun createNewUser(username : String, password : String, description : String): Response {
+    suspend fun createNewUser(username: String, password: String, description: String): Response {
 
         val userXTO = UserXTO()
         userXTO.username = username
         userXTO.password = password
         userXTO.description = description
 
-        val response = server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)
-        return response
+        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)
     }
 
     /**
@@ -46,5 +45,18 @@ class UserController {
         userXTO.password = password
 
         return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
+    }
+
+
+    suspend fun changeUserPassword(newPassword: String, userID: String, jsonWebToken: String): Response{
+        val userXTO = UserXTO()
+        userXTO.password = newPassword
+        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
+    }
+
+    suspend fun changeUserPrivacyRadius(privacyRadius: Long, userID: String, jsonWebToken: String): Response{
+        val userXTO = UserXTO()
+        userXTO.privacyRadius = privacyRadius
+        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
     }
 }

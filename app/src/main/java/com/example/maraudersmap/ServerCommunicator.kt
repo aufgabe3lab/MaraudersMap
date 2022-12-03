@@ -52,4 +52,16 @@ class ServerCommunicator {
 
         return client.newCall(request).await()
     }
+
+    suspend fun <T> putRequest(url: String?, xmlObject: T, jsonWebToken: String): Response{
+        val xml = generateXml(xmlObject)
+
+        val client = OkHttpClient()
+        val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
+        val body: RequestBody = xml.toRequestBody(mediaType)
+        val request: Request = Request.Builder().url(url!!).put(body).addHeader("Authorization", jsonWebToken).build()
+        println(request)
+
+        return client.newCall(request).await()
+    }
 }
