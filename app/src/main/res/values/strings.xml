@@ -20,4 +20,31 @@
     <string name="successfulRegistration_text">Registration successful</string>
     <string name="confirmPassword_text">Confirm password</string>
     <string name="passwordsDoNotMatch_text">Passwords do not match!</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="automaticSendingOfPosition_text">Auto sending of position</string>
+    <string name="interval_text">Interval</string>
+    <string name="privacyRadius_text">Privacy radius</string>
+    <string name="deleteAccount_text">Delete Account</string>
+    <string name="deleteAccount_buttonText">Delete Account</string>
+    <string name="position_headerText">Position</string>
+    <string name="visibility_headerText">Visibility</string>
+    <string name="account_headerText">Account</string>
+
+    <string name="interval_hintText">mm:ss</string>
+    <string name="privacyRadius_hintText">1km</string>
 </resources>
