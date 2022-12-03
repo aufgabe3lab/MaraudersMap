@@ -47,7 +47,6 @@ class UserController {
         return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
     }
 
-
     suspend fun changeUserPassword(newPassword: String, userID: String, jsonWebToken: String): Response{
         val userXTO = UserXTO()
         userXTO.password = newPassword
@@ -64,5 +63,10 @@ class UserController {
         val userXTO = UserXTO()
         userXTO.description = description
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
+    }
+
+    suspend fun deleteUser(userID: String, jsonWebToken: String): Response{
+
+        return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", jsonWebToken)
     }
 }

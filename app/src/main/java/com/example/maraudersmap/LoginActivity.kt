@@ -69,7 +69,8 @@ class LoginActivity : AppCompatActivity() {
         changePasswordButton.setOnClickListener {                     //todo needs to be deleted in future
             if(userID!=null){
                 //changePassword("123", userID!!, jsonWebToken!!)
-                changePassword("123", userID!!, jsonWebToken!!)
+                //changePassword("123", userID!!, jsonWebToken!!)
+                deleteUser(userID!!, jsonWebToken!!)
             }
         }
     }
@@ -155,7 +156,31 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun deleteUser(userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
 
+            val userController = UserController()
+            val response : Response = userController.deleteUser(userID,jsonWebToken)
+            println(response)
+
+            when(response.code){         // Response codes: 200 = Password changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid) ? = other unknown error codes possible
+                200 -> {
+                    toastMessage = getString(R.string.deletedUser_text)
+                    switchActivity(LoginActivity::class.java)
+                }
+
+                403 -> toastMessage = getString(R.string.permissionDenied_text)
+
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
+    }
 
     /**
      * Sends a login request to the server and returns a response. The important

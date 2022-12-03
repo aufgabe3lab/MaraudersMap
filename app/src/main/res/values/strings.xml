@@ -25,4 +25,5 @@
     <string name="passwordChanged_text">Password changed</string>
     <string name="privacyRadiusChanged_text">Privacy radius changed</string>
     <string name="descriptionChanged_text">Description changed</string>
+    <string name="deletedUser_text">User deleted</string>
 </resources>

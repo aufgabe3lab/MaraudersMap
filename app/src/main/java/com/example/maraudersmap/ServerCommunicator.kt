@@ -16,6 +16,8 @@ import java.io.StringWriter
 
 class ServerCommunicator {
 
+    private val client = OkHttpClient()
+
     /**
      * Generates a xml string out of an object
      *
@@ -43,24 +45,28 @@ class ServerCommunicator {
 
         val xml = generateXml(xmlObject)
 
-        val client = OkHttpClient()
         val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
 
         val request: Request = Request.Builder().url(url!!).post(body).build()
-        println(request)
 
         return client.newCall(request).await()
     }
 
     suspend fun <T> putRequest(url: String?, xmlObject: T, jsonWebToken: String): Response{
+
         val xml = generateXml(xmlObject)
 
-        val client = OkHttpClient()
         val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
         val request: Request = Request.Builder().url(url!!).put(body).addHeader("Authorization", jsonWebToken).build()
-        println(request)
+
+        return client.newCall(request).await()
+    }
+
+    suspend fun deleteRequest(url: String?, jsonWebToken: String): Response{
+
+        val request: Request = Request.Builder().url(url!!).delete().addHeader("Authorization", jsonWebToken).build()
 
         return client.newCall(request).await()
     }
