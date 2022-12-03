@@ -36,7 +36,6 @@ class SettingsActivity : AppCompatActivity() {
         privacyRadiusEditText = findViewById(R.id.privacyRadius_editTextNumber)
         deleteButton =  findViewById(R.id.deleteAccount_button)
         changePassword = findViewById(R.id.changePassword_editText)
-        confirmChangedPassword = findViewById(R.id.confirmChangedPassword_editText)
 
 
         autoSendPosSwitch.setOnCheckedChangeListener{_, isChecked->
