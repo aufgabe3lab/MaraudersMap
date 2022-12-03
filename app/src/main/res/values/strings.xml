@@ -20,4 +20,5 @@
     <string name="successfulRegistration_text">Registration successful</string>
     <string name="confirmPassword_text">Confirm password</string>
     <string name="passwordsDoNotMatch_text">Passwords do not match!</string>
+    <string name="noInternetConnection_text">No Internet connection</string>
 </resources>
