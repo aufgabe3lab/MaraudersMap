@@ -47,29 +47,63 @@ class UserController {
         return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
     }
 
+    /**
+     * Sends a request to the server to change the users password
+     *
+     * @param userID id of user (received after a successful login)
+     * @param newPassword new password for the user
+     * @return Response of the request
+     */
     suspend fun changeUserPassword(newPassword: String, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.password = newPassword
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
     }
 
+    /**
+     * Sends a request to the server to change the users privacy radius
+     *
+     * @param userID id of user (received after a successful login)
+     * @param privacyRadius new privacy radius of the user
+     * @return Response of the request
+     */
     suspend fun changeUserPrivacyRadius(privacyRadius: Long, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
     }
 
+    /**
+     * Sends a request to the server to change the users description
+     *
+     * @param userID id of user (received after a successful login)
+     * @param description new description of the user
+     * @return Response of the request
+     */
     suspend fun changeUserDescription(description: String, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.description = description
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
     }
 
+    /**
+     * Sends a delete request to the server to remove the users account (and all the users information on the server)
+     *
+     * @param userID id of user (received after a successful login)
+     * @return Response of the request
+     */
     suspend fun deleteUser(userID: String): Response{
-
         return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID")
     }
 
+    /**
+     * Sends a request to the server to change the users position
+     *
+     * @param userID id of user (received after a successful login)
+     * @param latitude updated latitude of the user
+     * @param longitude updated longitude of the user
+     * @return Response of the request
+     */
     suspend fun updateUserGpsPosition(latitude: Long, longitude: Long, userID: String): Response{
         val locationXTO = LocationXTO()
         locationXTO.latitude = latitude

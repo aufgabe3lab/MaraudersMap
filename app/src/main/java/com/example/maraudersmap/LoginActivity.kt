@@ -36,8 +36,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var changePasswordButton: Button                //todo needs to be deleted in future
 
     companion object{
-        var userID: String? = null
-        var jsonWebToken: String? = null
+        var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var jsonWebToken: String? = null                             //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
     }
 
 
