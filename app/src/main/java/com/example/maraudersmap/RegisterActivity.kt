@@ -11,11 +11,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.Response
+import java.net.SocketTimeoutException
 
 /**
  * provides function to register a new user
@@ -43,33 +41,38 @@ class RegisterActivity : AppCompatActivity() {
         loginLink = findViewById(R.id.loginLink_textView)
 
         registerButton.setOnClickListener {
-           if(validateRegister(username.text.toString(),password.text.toString(), passwordConfirmation.text.toString())){
-               registerUser(username.text.toString(),password.text.toString(),"description")
-           }else if(!validateInput(username.text.toString())){
-               makeToast(getString(R.string.invalidUsername_text), Toast.LENGTH_SHORT)
-           }else if(!validateInput(password.text.toString())){
-               makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_SHORT)
-           }else if(!validateInput(passwordConfirmation.text.toString())){
-               makeToast(getString(R.string.confirmPassword_text), Toast.LENGTH_SHORT)
-           }else{
-               makeToast(getString(R.string.passwordsDoNotMatch_text), Toast.LENGTH_SHORT)
-           }
+            if (validateRegister(
+                    username.text.toString(),
+                    password.text.toString(),
+                    passwordConfirmation.text.toString()
+                )
+            ) {
+                registerUser(username.text.toString(), password.text.toString(), "description")
+            } else if (!validateInput(username.text.toString())) {
+                makeToast(getString(R.string.invalidUsername_text), Toast.LENGTH_SHORT)
+            } else if (!validateInput(password.text.toString())) {
+                makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_SHORT)
+            } else if (!validateInput(passwordConfirmation.text.toString())) {
+                makeToast(getString(R.string.confirmPassword_text), Toast.LENGTH_SHORT)
+            } else {
+                makeToast(getString(R.string.passwordsDoNotMatch_text), Toast.LENGTH_SHORT)
+            }
         }
 
         loginLink.setOnClickListener {
-           switchActivity(LoginActivity::class.java)
+            switchActivity(LoginActivity::class.java)
         }
 
-        passwordConfirmation.addTextChangedListener(object : TextWatcher{
+        passwordConfirmation.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if(p0.toString() == password.text.toString()){
+                if (p0.toString() == password.text.toString()) {
                     passwordConfirmation.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
                     password.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
-                }else if (p0.toString() != password.text.toString()){
+                } else if (p0.toString() != password.text.toString()) {
                     passwordConfirmation.backgroundTintList = ColorStateList.valueOf(Color.RED)
                     password.backgroundTintList = ColorStateList.valueOf(Color.RED)
                 }
@@ -95,31 +98,40 @@ class RegisterActivity : AppCompatActivity() {
      * @param password Password of the username
      * @param description small description, needed but not sure why
      */
-    private fun registerUser(username : String, password : String, description : String){
+    private fun registerUser(username: String, password: String, description: String) {
 
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch {
+        try {
+            val scope = CoroutineScope(Job() + Dispatchers.IO)
+            scope.launch {
 
-            val userController = UserController()
-            val response : Response = userController.createNewUser(username,password,description)
 
-            when(response.code){         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
-                200 -> {
-                    toastMessage = getString(R.string.successfulRegistration_text)
-                    switchActivity(LoginActivity::class.java)
+                val userController = UserController()
+                val response: Response =
+                    userController.createNewUser(username, password, description)
+
+                when (response.code) {         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
+                    200 -> {
+                        toastMessage = getString(R.string.successfulRegistration_text)
+                        switchActivity(LoginActivity::class.java)
+                    }
+
+                    409 -> toastMessage = getString(R.string.userAlreadyExists_text)
+
+
+                    else -> toastMessage = getString(R.string.unknownError_text)
                 }
 
-                409 -> toastMessage = getString(R.string.userAlreadyExists_text)
 
 
-                else -> toastMessage = getString(R.string.unknownError_text)
+                withContext(Dispatchers.Main) {
+                    makeToast(toastMessage, Toast.LENGTH_SHORT)
+                }
+
             }
-
-            withContext(Dispatchers.Main){
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
-            }
-
+        } catch (e: CancellationException) {
+            e.printStackTrace()
         }
+
     }
 
     /**
@@ -127,9 +139,9 @@ class RegisterActivity : AppCompatActivity() {
      * @param inputString String to validate
      * @return True if input is valid
      */
-    private fun validateInput(inputString: String): Boolean{
+    private fun validateInput(inputString: String): Boolean {
 
-        if(inputString.isEmpty() || inputString.isBlank()){
+        if (inputString.isEmpty() || inputString.isBlank()) {
             return false
         }
 
@@ -143,8 +155,12 @@ class RegisterActivity : AppCompatActivity() {
      * @param passwordConfirmation confirmation password to validate
      * @return True if valid
      */
-    private fun validateRegister(username: String, password: String, passwordConfirmation: String): Boolean{
-        if(validateInput(username) && validateInput(password) && validateInput(passwordConfirmation) && passwordConfirmation == password){
+    private fun validateRegister(
+        username: String,
+        password: String,
+        passwordConfirmation: String
+    ): Boolean {
+        if (validateInput(username) && validateInput(password) && validateInput(passwordConfirmation) && passwordConfirmation == password) {
             return true
         }
 
@@ -156,7 +172,7 @@ class RegisterActivity : AppCompatActivity() {
      * @param msg message to show
      * @param duration display time
      */
-    private fun makeToast(msg: String, duration: Int){
+    private fun makeToast(msg: String, duration: Int) {
         Toast.makeText(this@RegisterActivity, msg, duration).show()
     }
 
@@ -164,7 +180,7 @@ class RegisterActivity : AppCompatActivity() {
      * Switch to activity
      * @param destinationClass destination activity
      */
-    private fun switchActivity(destinationClass: Class<*>){
+    private fun switchActivity(destinationClass: Class<*>) {
         val intent = Intent(this@RegisterActivity, destinationClass)
         startActivity(intent)
     }
