@@ -5,6 +5,4 @@ class UserXTO {
     var password: String? = null
     var description: String? = null
     var privacyRadius: Long? = null
-    var latitude: Long? = null
-    var longitude: Long? = null
 }

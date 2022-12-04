@@ -71,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
                 //changePassword("123", userID!!, jsonWebToken!!)
                 //changePassword("123", userID!!, jsonWebToken!!)
                 //deleteUser(userID!!, jsonWebToken!!)
-                updateUserPosition(10L,10L,userID!!, jsonWebToken!!)
+                updateUserPosition(15L,15L,userID!!, jsonWebToken!!)
             }
         }
     }
@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
 
             val userController = UserController()
-            val response : Response = userController.changeUserPassword(newPassword,userID,jsonWebToken)
+            val response : Response = userController.changeUserPassword(newPassword,userID)
             println(response)
 
             when(response.code){         // Response codes: 200 = Password changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
 
             val userController = UserController()
-            val response : Response = userController.changeUserPrivacyRadius(privacyRadius,userID,jsonWebToken)
+            val response : Response = userController.changeUserPrivacyRadius(privacyRadius,userID)
             println(response)
 
             when(response.code){         // Response codes: 200 = privacy radius changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
@@ -135,7 +135,7 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
 
             val userController = UserController()
-            val response : Response = userController.changeUserDescription(description,userID,jsonWebToken)
+            val response : Response = userController.changeUserDescription(description,userID)
             println(response)
 
             when(response.code){         // Response codes: 200 = description changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
@@ -162,7 +162,7 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
 
             val userController = UserController()
-            val response : Response = userController.deleteUser(userID,jsonWebToken)
+            val response : Response = userController.deleteUser(userID)
             println(response)
 
             when(response.code){         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
@@ -188,7 +188,7 @@ class LoginActivity : AppCompatActivity() {
         scope.launch {
 
             val userController = UserController()
-            val response : Response = userController.updateUserGpsPosition(latitude,longitude,userID,jsonWebToken)
+            val response : Response = userController.updateUserGpsPosition(latitude,longitude,userID)
             println(response)
 
             when(response.code){         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible

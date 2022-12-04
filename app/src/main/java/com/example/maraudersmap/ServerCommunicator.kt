@@ -1,5 +1,6 @@
 package com.example.maraudersmap
 
+import com.example.maraudersmap.LoginActivity.Companion.jsonWebToken
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -42,45 +43,36 @@ class ServerCommunicator {
      * @return Response of the request
      */
     suspend fun <T> postRequest(url: String?, xmlObject: T): Response {
-        val xml = generateXml(xmlObject)
-        return postRequest(url, "", xml)
-    }
 
-    suspend fun <T> postRequest(url: String?, xmlObject: T, jsonWebToken: String): Response {
         val xml = generateXml(xmlObject)
-        return postRequest(url, jsonWebToken, xml)
-    }
-
-    private suspend fun postRequest(url: String?,jsonWebToken: String, xml: String): Response {
         val request: Request
-
         val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
 
-        if(jsonWebToken.isEmpty()){
+        if(jsonWebToken==null){     // if user is not logged in
             request = Request.Builder().url(url!!).post(body).build()
         }
-        else{
-            request = Request.Builder().url(url!!).post(body).addHeader("Authorization", jsonWebToken).build()
+        else{                       // if user is logged in
+            request = Request.Builder().url(url!!).post(body).addHeader("Authorization", jsonWebToken!!).build()
         }
 
         return client.newCall(request).await()
     }
 
-    suspend fun <T> putRequest(url: String?, xmlObject: T, jsonWebToken: String): Response{
+    suspend fun <T> putRequest(url: String?, xmlObject: T): Response{
 
         val xml = generateXml(xmlObject)
 
         val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
-        val request: Request = Request.Builder().url(url!!).put(body).addHeader("Authorization", jsonWebToken).build()
+        val request: Request = Request.Builder().url(url!!).put(body).addHeader("Authorization", jsonWebToken!!).build()
 
         return client.newCall(request).await()
     }
 
-    suspend fun deleteRequest(url: String?, jsonWebToken: String): Response{
+    suspend fun deleteRequest(url: String?): Response{
 
-        val request: Request = Request.Builder().url(url!!).delete().addHeader("Authorization", jsonWebToken).build()
+        val request: Request = Request.Builder().url(url!!).delete().addHeader("Authorization", jsonWebToken!!).build()
 
         return client.newCall(request).await()
     }

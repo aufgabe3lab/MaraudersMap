@@ -47,33 +47,33 @@ class UserController {
         return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
     }
 
-    suspend fun changeUserPassword(newPassword: String, userID: String, jsonWebToken: String): Response{
+    suspend fun changeUserPassword(newPassword: String, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.password = newPassword
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
+        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
     }
 
-    suspend fun changeUserPrivacyRadius(privacyRadius: Long, userID: String, jsonWebToken: String): Response{
+    suspend fun changeUserPrivacyRadius(privacyRadius: Long, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
+        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
     }
 
-    suspend fun changeUserDescription(description: String, userID: String, jsonWebToken: String): Response{
+    suspend fun changeUserDescription(description: String, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.description = description
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO, jsonWebToken)
+        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
     }
 
-    suspend fun deleteUser(userID: String, jsonWebToken: String): Response{
+    suspend fun deleteUser(userID: String): Response{
 
-        return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", jsonWebToken)
+        return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID")
     }
 
-    suspend fun updateUserGpsPosition(latitude: Long, longitude: Long, userID: String, jsonWebToken: String): Response{
-        val userXTO = UserXTO()
-        userXTO.latitude = latitude
-        userXTO.longitude = longitude
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID/location", userXTO, jsonWebToken)
+    suspend fun updateUserGpsPosition(latitude: Long, longitude: Long, userID: String): Response{
+        val locationXTO = LocationXTO()
+        locationXTO.latitude = latitude
+        locationXTO.longitude = longitude
+        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID/location", locationXTO)
     }
 }
