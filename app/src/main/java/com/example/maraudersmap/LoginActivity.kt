@@ -71,7 +71,8 @@ class LoginActivity : AppCompatActivity() {
                 //changePassword("123", userID!!, jsonWebToken!!)
                 //changePassword("123", userID!!, jsonWebToken!!)
                 //deleteUser(userID!!, jsonWebToken!!)
-                updateUserPosition(15L,15L,userID!!, jsonWebToken!!)
+                //updateUserPosition(15L,15L,userID!!, jsonWebToken!!)
+                getLocations(10L,50L,10L)
             }
         }
     }
@@ -82,12 +83,10 @@ class LoginActivity : AppCompatActivity() {
 
             val userController = UserController()
             val response : Response = userController.changeUserPassword(newPassword,userID)
-            println(response)
 
             when(response.code){         // Response codes: 200 = Password changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
                 200 -> {
                     toastMessage = getString(R.string.passwordChanged_text)
-                    switchActivity(LoginActivity::class.java)
                 }
 
                 304 -> toastMessage = getString(R.string.notModified_text)
@@ -109,12 +108,10 @@ class LoginActivity : AppCompatActivity() {
 
             val userController = UserController()
             val response : Response = userController.changeUserPrivacyRadius(privacyRadius,userID)
-            println(response)
 
             when(response.code){         // Response codes: 200 = privacy radius changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
                 200 -> {
                     toastMessage = getString(R.string.privacyRadiusChanged_text)
-                    switchActivity(LoginActivity::class.java)
                 }
 
                 304 -> toastMessage = getString(R.string.notModified_text)
@@ -136,12 +133,11 @@ class LoginActivity : AppCompatActivity() {
 
             val userController = UserController()
             val response : Response = userController.changeUserDescription(description,userID)
-            println(response)
 
             when(response.code){         // Response codes: 200 = description changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
                 200 -> {
                     toastMessage = getString(R.string.descriptionChanged_text)
-                    switchActivity(LoginActivity::class.java)
+
                 }
 
                 304 -> toastMessage = getString(R.string.notModified_text)
@@ -163,12 +159,11 @@ class LoginActivity : AppCompatActivity() {
 
             val userController = UserController()
             val response : Response = userController.deleteUser(userID)
-            println(response)
 
             when(response.code){         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
                 200 -> {
                     toastMessage = getString(R.string.deletedUser_text)
-                    switchActivity(LoginActivity::class.java)
+
                 }
 
                 403 -> toastMessage = getString(R.string.permissionDenied_text)
@@ -189,12 +184,10 @@ class LoginActivity : AppCompatActivity() {
 
             val userController = UserController()
             val response : Response = userController.updateUserGpsPosition(latitude,longitude,userID)
-            println(response)
 
             when(response.code){         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
                 200 -> {
                     toastMessage = getString(R.string.updatedPosition_text)
-                    switchActivity(LoginActivity::class.java)
                 }
 
                 403 -> toastMessage = getString(R.string.permissionDenied_text)
@@ -232,6 +225,35 @@ class LoginActivity : AppCompatActivity() {
                     userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
                     jsonWebToken = response.headers.last().second
                     toastMessage = getString(R.string.successfulLogin)
+
+                }
+
+                403 -> toastMessage = getString(R.string.failedLogin_text)
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+
+        }
+    }
+
+    private fun getLocations(radius: Long, latitude: Long, longitude: Long){
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+            val serializer: Serializer = Persister()
+
+            val userController = UserController()
+            val response : Response = userController.getLocationsWithinRadius(radius,latitude,longitude)      // sends a get request to the server and returns a response
+
+            val xmlBody = response.body!!.string()
+
+            when(response.code){      // Response codes: 200 = locations read successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                200 ->{
+                    toastMessage = getString(R.string.succesfulLocationReading_text)
 
                 }
 

@@ -27,4 +27,5 @@
     <string name="descriptionChanged_text">Description changed</string>
     <string name="deletedUser_text">User deleted</string>
     <string name="updatedPosition_text">User position updated</string>
+    <string name="succesfulLocationReading_text">Locations loaded</string>
 </resources>

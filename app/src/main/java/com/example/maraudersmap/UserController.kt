@@ -29,7 +29,7 @@ class UserController {
         userXTO.password = password
         userXTO.description = description
 
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)
+        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)    //todo replace link with base link variable
     }
 
     /**
@@ -109,5 +109,17 @@ class UserController {
         locationXTO.latitude = latitude
         locationXTO.longitude = longitude
         return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID/location", locationXTO)
+    }
+
+    /**
+     * Sends a request to the server to load all users position within a radius at a position
+     *
+     * @param radius radius in which we want to load all users
+     * @param latitude position where we want to load the users from
+     * @param longitude position where we want to load the users from
+     * @return Response of the request
+     */
+    suspend fun getLocationsWithinRadius(radius: Long, latitude: Long, longitude: Long): Response{
+        return server.getRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/location/$radius/$latitude/$longitude")
     }
 }

@@ -36,7 +36,7 @@ class ServerCommunicator {
     }
 
     /**
-     * Posts a request to the server and returns the response
+     * Sends a posts request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
@@ -60,7 +60,7 @@ class ServerCommunicator {
     }
 
     /**
-     * Posts a put request to the server and returns the response
+     * Sends a put request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
@@ -78,7 +78,7 @@ class ServerCommunicator {
     }
 
     /**
-     * Posts a delete request to the server and returns the response
+     * Sends a delete request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
      * @return Response of the request
@@ -86,6 +86,19 @@ class ServerCommunicator {
     suspend fun deleteRequest(url: String?): Response{
 
         val request: Request = Request.Builder().url(url!!).delete().addHeader("Authorization", jsonWebToken!!).build()
+
+        return client.newCall(request).await()
+    }
+
+    /**
+     * Send a get request to the server and returns the response
+     *
+     * @param url Server address that needs to be communicated with
+     * @return Response of the request
+     */
+    suspend fun getRequest(url: String?): Response{
+
+        val request: Request = Request.Builder().url(url!!).get().addHeader("Authorization", jsonWebToken!!).build()
 
         return client.newCall(request).await()
     }
