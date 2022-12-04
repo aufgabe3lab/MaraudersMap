@@ -68,16 +68,16 @@ class SettingsActivity : AppCompatActivity() {
             editText.isSingleLine = false
 
             AlertDialog.Builder(this@SettingsActivity)
-                .setTitle("Description")
+                .setTitle(getString(R.string.descriptionSetting_headerText))
                 .setView(editText)
-                .setPositiveButton("Save") { dialog, id ->
+                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, id ->
 
                     changeDescription(editText.text.toString(), userID!!)
 
                     dialog.dismiss()
 
                 }
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, which ->
                     editText.text.clear()
                     dialog.cancel()
                 }
@@ -93,9 +93,9 @@ class SettingsActivity : AppCompatActivity() {
             editText.isSingleLine = true
 
             AlertDialog.Builder(this@SettingsActivity)
-                .setTitle("Interval")
+                .setTitle(getString(R.string.intervalSetting_headerText))
                 .setView(editText)
-                .setPositiveButton("Save") { dialog, id ->
+                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, id ->
 
                     if (editText.text.toString().isEmpty() || editText.text.toString().isBlank()) {
                         makeToast(getString(R.string.invalidInterval_text), Toast.LENGTH_SHORT)
@@ -107,7 +107,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
                 }
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, which ->
                     editText.text.clear()
                     dialog.cancel()
                 }
@@ -122,9 +122,9 @@ class SettingsActivity : AppCompatActivity() {
             editText.isSingleLine = true
 
             AlertDialog.Builder(this@SettingsActivity)
-                .setTitle("Change Password")
+                .setTitle(getString(R.string.changePasswordSetting_headerText))
                 .setView(editText)
-                .setPositiveButton("Save") { dialog, id ->
+                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, id ->
 
                     if(editText.text.toString().isEmpty() || editText.text.toString().isBlank()){
                         makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_SHORT)
@@ -136,7 +136,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
                 }
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, which ->
                     editText.text.clear()
                     dialog.cancel()
                 }
@@ -157,9 +157,9 @@ class SettingsActivity : AppCompatActivity() {
             editText.isSingleLine = true
 
             AlertDialog.Builder(this@SettingsActivity)
-                .setTitle("Privacy Radius")
+                .setTitle(getString(R.string.privacyRadiusSetting_headerText))
                 .setView(editText)
-                .setPositiveButton("Save") { dialog, id ->
+                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, id ->
 
                     if (editText.text.toString().isEmpty() || editText.text.toString().isBlank()) {
                         makeToast(getString(R.string.invalidRadius_text), Toast.LENGTH_SHORT)
@@ -171,7 +171,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
                 }
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, which ->
                     editText.text.clear()
                     dialog.cancel()
                 }
