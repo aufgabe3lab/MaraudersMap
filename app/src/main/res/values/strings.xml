@@ -51,5 +51,15 @@
     <string name="confirm_hintText">confirm</string>
     <string name="settings_label">Settings</string>
     <string name="confirmPasswordChange_text">confirm</string>
+    <string name="changeDescription_hintText">I am Groot</string>
+    <string name="description_text">Description</string>
+    <string name="invalidRadius_text">Invalid radius</string>
+    <string name="invalidInterval_text">Invalid interval</string>
+    <string name="privacyRadiusSetting_headerText">Privacy Radius</string>
+    <string name="cancelSetting_text">Cancel</string>
+    <string name="saveSetting_text">Save</string>
+    <string name="descriptionSetting_headerText">Description</string>
+    <string name="intervalSetting_headerText">Interval</string>
+    <string name="changePasswordSetting_headerText">Change Password</string>
 
 </resources>
