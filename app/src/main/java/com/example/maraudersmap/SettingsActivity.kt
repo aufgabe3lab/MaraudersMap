@@ -16,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Response
+import com.example.maraudersmap.LoginActivity.Companion.description
+import com.example.maraudersmap.LoginActivity.Companion.privacyRadius
 
 /**
  * Provides functions to individualize the app
@@ -29,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var deleteButton: Button
     private lateinit var changePassword: EditText
     private lateinit var toastMessage: String
-    private lateinit var description: EditText
+    private lateinit var descriptionEditText: EditText
 
     companion object{
         var interval: Long? = null
@@ -44,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
         initSettings()
 
         autoSendPosSetting(autoSendPosSwitch)
-        descriptionSetting(description)
+        descriptionSetting(descriptionEditText)
         intervalSetting(intervalEditText)
         privacyRadiusSetting(privacyRadiusEditText)
         changePasswordSetting(changePassword)
@@ -73,7 +75,7 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.saveSetting_text)) { dialog,_ ->
 
                     changeDescription(editText.text.toString(), userID!!)
-
+                    descriptionEditText.setText(editText.text.toString())
                     dialog.dismiss()
 
                 }
@@ -82,6 +84,7 @@ class SettingsActivity : AppCompatActivity() {
                     dialog.cancel()
                 }
                 .show()
+
 
         }
     }
@@ -156,18 +159,20 @@ class SettingsActivity : AppCompatActivity() {
             editText.inputType = InputType.TYPE_NUMBER_VARIATION_NORMAL
             editText.isSingleLine = true
 
-            AlertDialog.Builder(this@SettingsActivity)
-                .setTitle(getString(R.string.privacyRadiusSetting_headerText))
-                .setView(editText)
-                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog,_ ->
 
-                    if (editText.text.toString().isEmpty() || editText.text.toString().isBlank()) {
-                        makeToast(getString(R.string.invalidRadius_text), Toast.LENGTH_SHORT)
-                    } else {
+                AlertDialog.Builder(this@SettingsActivity)
+                    .setTitle(getString(R.string.privacyRadiusSetting_headerText))
+                    .setView(editText)
+                    .setPositiveButton(getString(R.string.saveSetting_text)) { dialog,_ ->
 
-                        changePrivacyRadius(editText.text.toString().toLong(), userID!!)
-                        dialog.dismiss()
-                    }
+                        if (editText.text.toString().isEmpty() || editText.text.toString().isBlank()) {
+                            makeToast(getString(R.string.invalidRadius_text), Toast.LENGTH_SHORT)
+                        } else {
+
+                            changePrivacyRadius(editText.text.toString().toLong(), userID!!)
+                            privacyRadiusEditText.setText(editText.text.toString())
+                            dialog.dismiss()
+                        }
 
 
                 }
@@ -347,7 +352,7 @@ class SettingsActivity : AppCompatActivity() {
         privacyRadiusEditText = findViewById(R.id.privacyRadius_editTextNumber)
         deleteButton =  findViewById(R.id.deleteAccount_button)
         changePassword = findViewById(R.id.changePassword_editText)
-        description = findViewById(R.id.changeDescription_editText)
+        descriptionEditText = findViewById(R.id.changeDescription_editText)
 
         intervalEditText.isEnabled = false
         intervalEditText.isFocusable = false
@@ -355,12 +360,14 @@ class SettingsActivity : AppCompatActivity() {
 
         privacyRadiusEditText.isFocusable = false
         privacyRadiusEditText.isClickable = true
+        privacyRadiusEditText.setText(privacyRadius.toString())
 
         changePassword.isFocusable = false
         changePassword.isClickable = true
 
-        description.isFocusable = false
-        description.isClickable = true
+        descriptionEditText.isFocusable = false
+        descriptionEditText.isClickable = true
+        descriptionEditText.setText(description)
 
     }
 }
