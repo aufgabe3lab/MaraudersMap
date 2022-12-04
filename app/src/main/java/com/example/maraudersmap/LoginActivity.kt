@@ -36,10 +36,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var toastMessage: String
 
     companion object {
-        var userID: String? =
-            null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
-        var jsonWebToken: String? =
-            null                             //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var description: String? = null
+        var privacyRadius: String? = null
     }
 
 
@@ -91,6 +91,9 @@ class LoginActivity : AppCompatActivity() {
                 when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
                     200 ->{
                         userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                        description = serializer.read(ExtractDescription::class.java, xmlBody).description
+                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).privacyRadius
+
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
 
@@ -119,6 +122,18 @@ class LoginActivity : AppCompatActivity() {
     data class ExtractUserID @JvmOverloads constructor(
         @field:Element(name = "id")
         var id: String? = null
+    )
+
+    @Root(name = "userXTO", strict = false)
+    data class ExtractDescription @JvmOverloads constructor(
+        @field:Element(name = "description")
+        var description: String? = null
+    )
+
+    @Root(name = "userXTO", strict = false)
+    data class ExtractPrivacyRadius @JvmOverloads constructor(
+        @field:Element(name = "privacyRadius")
+        var privacyRadius: String? = null
     )
 
     /**
