@@ -156,7 +156,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun privacyRadiusSetting(privacyRadiusEditText: EditText){
         privacyRadiusEditText.setOnClickListener {
             val editText = EditText(this@SettingsActivity)
-            editText.inputType = InputType.TYPE_NUMBER_VARIATION_NORMAL
+            editText.inputType = InputType.TYPE_NUMBER_FLAG_SIGNED
             editText.isSingleLine = true
 
 
@@ -170,7 +170,7 @@ class SettingsActivity : AppCompatActivity() {
                         } else {
 
                             changePrivacyRadius(editText.text.toString().toLong(), userID!!)
-                            privacyRadiusEditText.setText(editText.text.toString())
+                            privacyRadiusEditText.setText(editText.text.toString().toLong().toString())
                             dialog.dismiss()
                         }
 
@@ -360,14 +360,14 @@ class SettingsActivity : AppCompatActivity() {
 
         privacyRadiusEditText.isFocusable = false
         privacyRadiusEditText.isClickable = true
-        privacyRadiusEditText.setText(privacyRadius.toString())
+        privacyRadiusEditText.setText(privacyRadius!!)
 
         changePassword.isFocusable = false
         changePassword.isClickable = true
 
         descriptionEditText.isFocusable = false
         descriptionEditText.isClickable = true
-        descriptionEditText.setText(description)
+        descriptionEditText.setText(description!!)
 
     }
 }
