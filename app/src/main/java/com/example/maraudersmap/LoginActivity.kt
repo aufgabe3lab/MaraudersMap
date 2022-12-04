@@ -33,9 +33,12 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var registerLink: TextView
     private lateinit var toastMessage: String
 
-    companion object {
-        var userID: String? = null
-        var jsonWebToken: String? = null
+
+    private lateinit var testBackendButton: Button                //todo needs to be deleted in future
+
+    companion object{
+        var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var jsonWebToken: String? = null                             //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
     }
 
 
@@ -47,6 +50,8 @@ class LoginActivity : AppCompatActivity() {
         password = findViewById(R.id.loginPassword_editText)
         loginButton = findViewById(R.id.loginButton)
         registerLink = findViewById(R.id.registerLink_textView)
+
+        testBackendButton = findViewById(R.id.test_button)     //todo needs to be deleted in future
 
         loginButton.setOnClickListener {
             if (validateLogin(username.text.toString(), password.text.toString())) {
@@ -62,7 +67,140 @@ class LoginActivity : AppCompatActivity() {
             switchActivity(RegisterActivity::class.java)
         }
 
+        testBackendButton.setOnClickListener {                     //todo needs to be deleted in future
+            if(userID!=null){
+                //changePassword("123", userID!!, jsonWebToken!!)
+                //changePassword("123", userID!!, jsonWebToken!!)
+                //deleteUser(userID!!, jsonWebToken!!)
+                //updateUserPosition(15L,15L,userID!!, jsonWebToken!!)
+                //getLocations(10L,50L,10L)
+            }
+        }
+    }
 
+    private fun changePassword(newPassword: String, userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.changeUserPassword(newPassword,userID)
+
+            when(response.code){         // Response codes: 200 = Password changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> {
+                    toastMessage = getString(R.string.passwordChanged_text)
+                }
+
+                304 -> toastMessage = getString(R.string.notModified_text)
+                403 -> toastMessage = getString(R.string.permissionDenied_text)
+
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
+    }
+
+    private fun changePrivacyRadius(privacyRadius: Long, userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.changeUserPrivacyRadius(privacyRadius,userID)
+
+            when(response.code){         // Response codes: 200 = privacy radius changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> {
+                    toastMessage = getString(R.string.privacyRadiusChanged_text)
+                }
+
+                304 -> toastMessage = getString(R.string.notModified_text)
+                403 -> toastMessage = getString(R.string.permissionDenied_text)
+
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
+    }
+
+    private fun changeDescription(description: String, userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.changeUserDescription(description,userID)
+
+            when(response.code){         // Response codes: 200 = description changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> {
+                    toastMessage = getString(R.string.descriptionChanged_text)
+
+                }
+
+                304 -> toastMessage = getString(R.string.notModified_text)
+                403 -> toastMessage = getString(R.string.permissionDenied_text)
+
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
+    }
+
+    private fun deleteUser(userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.deleteUser(userID)
+
+            when(response.code){         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> {
+                    toastMessage = getString(R.string.deletedUser_text)
+
+                }
+
+                403 -> toastMessage = getString(R.string.permissionDenied_text)
+
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
+    }
+
+    private fun updateUserPosition(latitude: Long, longitude: Long, userID: String, jsonWebToken: String){
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            val userController = UserController()
+            val response : Response = userController.updateUserGpsPosition(latitude,longitude,userID)
+
+            when(response.code){         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> {
+                    toastMessage = getString(R.string.updatedPosition_text)
+                }
+
+                403 -> toastMessage = getString(R.string.permissionDenied_text)
+
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
     }
 
     /**
@@ -78,14 +216,44 @@ class LoginActivity : AppCompatActivity() {
             val scope = CoroutineScope(Job() + Dispatchers.IO)
             scope.launch {
 
-
                 val serializer: Serializer = Persister()
 
-                val userController = UserController()
-                val response: Response = userController.loginUser(
-                    username,
-                    password
-                )      // sends a login request to the server and returns a response
+            when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                200 ->{
+                    userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                    jsonWebToken = response.headers.last().second
+                    toastMessage = getString(R.string.successfulLogin)
+
+                }
+
+                403 -> toastMessage = getString(R.string.failedLogin_text)
+
+                else -> toastMessage = getString(R.string.unknownError_text)
+            }
+
+            withContext(Dispatchers.Main){
+                makeToast(toastMessage, Toast.LENGTH_SHORT)
+            }
+        }
+    }
+
+    private fun getLocations(radius: Long, latitude: Long, longitude: Long){
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+            val serializer: Serializer = Persister()
+
+            val userController = UserController()
+            val response : Response = userController.getLocationsWithinRadius(radius,latitude,longitude)      // sends a get request to the server and returns a response
+
+            val xmlBody = response.body!!.string()
+
+            when(response.code){      // Response codes: 200 = locations read successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                200 ->{
+                    toastMessage = getString(R.string.succesfulLocationReading_text)
+
+                }
+
 
                 val xmlBody = response.body!!.string()
 

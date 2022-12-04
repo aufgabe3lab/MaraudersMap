@@ -22,6 +22,16 @@
     <string name="successfulRegistration_text">Registration successful</string>
     <string name="confirmPassword_text">Confirm password</string>
     <string name="passwordsDoNotMatch_text">Passwords do not match!</string>
+
+    <string name="notModified_text">No changes were made</string>
+    <string name="permissionDenied_text">Permission denied</string>
+    <string name="passwordChanged_text">Password changed</string>
+    <string name="privacyRadiusChanged_text">Privacy radius changed</string>
+    <string name="descriptionChanged_text">Description changed</string>
+    <string name="deletedUser_text">User deleted</string>
+    <string name="updatedPosition_text">User position updated</string>
+    <string name="succesfulLocationReading_text">Locations loaded</string>
+
     <string name="login_label">Login</string>
     <string name="register_label">Register</string>
 
@@ -40,4 +50,5 @@
     <string name="changePassword_text">Change Password</string>
     <string name="confirm_hintText">confirm</string>
     <string name="settings_label">Settings</string>
+
 </resources>
