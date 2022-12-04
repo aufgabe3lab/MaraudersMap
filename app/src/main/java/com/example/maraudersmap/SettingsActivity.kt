@@ -23,7 +23,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var privacyRadiusEditText: EditText
     private lateinit var deleteButton: Button
     private lateinit var changePassword: EditText
-    private lateinit var confirmChangedPassword: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
