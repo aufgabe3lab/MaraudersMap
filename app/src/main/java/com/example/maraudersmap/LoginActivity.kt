@@ -7,6 +7,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ContentInfoCompat.Flags
+import com.example.maraudersmap.LoginActivity.Companion.jsonWebToken
+import com.example.maraudersmap.LoginActivity.Companion.userID
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import okhttp3.Response
 import org.simpleframework.xml.Element
@@ -29,8 +33,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var toastMessage: String
 
     companion object {
-        var userID: String? = null
-        var jsonWebToken: String? = null
+        var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var description: String? = null
+        var privacyRadius: String? = null
     }
 
 
@@ -43,6 +49,7 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerLink = findViewById(R.id.registerLink_textView)
 
+
         loginButton.setOnClickListener {
             if (validateLogin(username.text.toString(), password.text.toString())) {
                 loginUser(username.text.toString(), password.text.toString())
@@ -54,11 +61,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerLink.setOnClickListener {
-            switchActivity(RegisterActivity::class.java)
+            switchActivity(SettingsActivity::class.java)
         }
 
-
     }
+
 
     /**
      * Sends a login request to the server and returns a response. The important
@@ -73,22 +80,20 @@ class LoginActivity : AppCompatActivity() {
             val scope = CoroutineScope(Job() + Dispatchers.IO)
             scope.launch {
 
-
                 val serializer: Serializer = Persister()
-
                 val userController = UserController()
-                val response: Response = userController.loginUser(
-                    username,
-                    password
-                )      // sends a login request to the server and returns a response
-
+                val response : Response = userController.loginUser(username, password)
                 val xmlBody = response.body!!.string()
 
-                when (response.code) {      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
-                    200 -> {
+                when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                    200 ->{
                         userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                        description = serializer.read(ExtractDescription::class.java, xmlBody).description
+                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).privacyRadius
+
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
+
                     }
 
                     403 -> toastMessage = getString(R.string.failedLogin_text)
@@ -96,16 +101,16 @@ class LoginActivity : AppCompatActivity() {
                     else -> toastMessage = getString(R.string.unknownError_text)
                 }
 
-                withContext(Dispatchers.Main) {
+                withContext(Dispatchers.Main){
                     makeToast(toastMessage, Toast.LENGTH_SHORT)
                 }
-
             }
-        } catch (e: CancellationException) {
+        }catch (e: CancellationException){
             e.printStackTrace()
         }
-
     }
+
+
 
     /**
      * Extracts the user ID out of the response body
@@ -114,6 +119,18 @@ class LoginActivity : AppCompatActivity() {
     data class ExtractUserID @JvmOverloads constructor(
         @field:Element(name = "id")
         var id: String? = null
+    )
+
+    @Root(name = "userXTO", strict = false)
+    data class ExtractDescription @JvmOverloads constructor(
+        @field:Element(name = "description")
+        var description: String? = null
+    )
+
+    @Root(name = "userXTO", strict = false)
+    data class ExtractPrivacyRadius @JvmOverloads constructor(
+        @field:Element(name = "privacyRadius")
+        var privacyRadius: String? = null
     )
 
     /**
@@ -164,3 +181,4 @@ class LoginActivity : AppCompatActivity() {
 
     }
 }
+
