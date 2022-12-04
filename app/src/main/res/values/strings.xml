@@ -50,5 +50,6 @@
     <string name="changePassword_text">Change Password</string>
     <string name="confirm_hintText">confirm</string>
     <string name="settings_label">Settings</string>
+    <string name="confirmPasswordChange_text">confirm</string>
 
 </resources>
