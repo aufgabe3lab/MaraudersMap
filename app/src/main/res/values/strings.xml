@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MaraudersMap</string>
+
+    <!-- Login & Register Activity -->
     <string name="loginHeader_text">Login</string>
     <string name="usernameHint_text">username</string>
     <string name="passwordHint_text">password</string>
