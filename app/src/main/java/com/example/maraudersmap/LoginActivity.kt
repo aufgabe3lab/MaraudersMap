@@ -1,9 +1,7 @@
 package com.example.maraudersmap
 
-import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -33,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var registerLink: TextView
     private lateinit var toastMessage: String
 
-    private lateinit var changePasswordButton: Button                //todo needs to be deleted in future
+    private lateinit var testBackendButton: Button                //todo needs to be deleted in future
 
     companion object{
         var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
@@ -50,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerLink = findViewById(R.id.registerLink_textView)
 
-        changePasswordButton = findViewById(R.id.password_button)     //todo needs to be deleted in future
+        testBackendButton = findViewById(R.id.test_button)     //todo needs to be deleted in future
 
         loginButton.setOnClickListener {
             if(validateLogin(username.text.toString(), password.text.toString())){
@@ -66,13 +64,13 @@ class LoginActivity : AppCompatActivity() {
            switchActivity(RegisterActivity::class.java)
         }
 
-        changePasswordButton.setOnClickListener {                     //todo needs to be deleted in future
+        testBackendButton.setOnClickListener {                     //todo needs to be deleted in future
             if(userID!=null){
                 //changePassword("123", userID!!, jsonWebToken!!)
                 //changePassword("123", userID!!, jsonWebToken!!)
                 //deleteUser(userID!!, jsonWebToken!!)
                 //updateUserPosition(15L,15L,userID!!, jsonWebToken!!)
-                getLocations(10L,50L,10L)
+                //getLocations(10L,50L,10L)
             }
         }
     }
