@@ -20,7 +20,7 @@ import okhttp3.Response
 /**
  * Provides functions to individualize the app
  * @author Felix Kuhbier
- * @since 2022.12.03
+ * @since 2022.12.04
  */
 class SettingsActivity : AppCompatActivity() {
     private lateinit var autoSendPosSwitch: SwitchCompat
