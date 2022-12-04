@@ -132,7 +132,7 @@
                 android:ems="10"
                 android:hint="@string/privacyRadius_hintText"
                 android:importantForAutofill="no"
-                android:inputType="numberSigned|numberDecimal"
+                android:inputType="numberSigned"
                 android:textColorHint="#757575"
                 app:layout_constraintBottom_toTopOf="@+id/guideline20"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -177,16 +177,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/guideline20" />
-
-            Button
-                android:id="@+id/changePassword_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/confirmPasswordChange_text"
-                app:layout_constraintBottom_toTopOf="@+id/guideline8"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline18"
-                app:layout_constraintTop_toTopOf="@+id/guideline15" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline19"
