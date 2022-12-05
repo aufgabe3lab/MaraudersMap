@@ -61,5 +61,6 @@
     <string name="descriptionSetting_headerText">Description</string>
     <string name="intervalSetting_headerText">Interval</string>
     <string name="changePasswordSetting_headerText">Change Password</string>
+    <string name="zeroRadius_text">Radius cannot be 0</string>
 
 </resources>
