@@ -2,6 +2,7 @@ package com.example.maraudersmap
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.icu.number.NumberFormatter
 import android.os.Bundle
 import android.text.InputType
 import android.view.MenuItem
@@ -160,6 +161,7 @@ class SettingsActivity : AppCompatActivity() {
             editText.inputType = InputType.TYPE_NUMBER_FLAG_SIGNED
             editText.setText(privacyRadius)
 
+            try {
                 AlertDialog.Builder(this@SettingsActivity)
                     .setTitle(getString(R.string.privacyRadiusSetting_headerText))
                     .setView(editText)
@@ -174,12 +176,16 @@ class SettingsActivity : AppCompatActivity() {
                         }
 
 
-                }
-                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog,_ ->
-                    editText.text.clear()
-                    dialog.cancel()
-                }
-                .show()
+                    }
+                    .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog,_ ->
+                        editText.text.clear()
+                        dialog.cancel()
+                    }
+                    .show()
+            }catch (e: NumberFormatException){
+                e.printStackTrace()
+            }
+
         }
     }
 
