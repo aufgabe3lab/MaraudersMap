@@ -69,6 +69,7 @@ class SettingsActivity : AppCompatActivity() {
             editText.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
             editText.height = 250
             editText.isSingleLine = false
+            editText.setText(description)
 
             AlertDialog.Builder(this@SettingsActivity)
                 .setTitle(getString(R.string.descriptionSetting_headerText))
@@ -76,7 +77,6 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.saveSetting_text)) { dialog,_ ->
 
                     changeDescription(editText.text.toString(), userID!!)
-                    descriptionEditText.setText(editText.text.toString())
                     dialog.dismiss()
 
                 }
@@ -158,8 +158,7 @@ class SettingsActivity : AppCompatActivity() {
         privacyRadiusEditText.setOnClickListener {
             val editText = EditText(this@SettingsActivity)
             editText.inputType = InputType.TYPE_NUMBER_FLAG_SIGNED
-            editText.isSingleLine = true
-
+            editText.setText(privacyRadius)
 
                 AlertDialog.Builder(this@SettingsActivity)
                     .setTitle(getString(R.string.privacyRadiusSetting_headerText))
@@ -171,7 +170,6 @@ class SettingsActivity : AppCompatActivity() {
                         } else {
 
                             changePrivacyRadius(editText.text.toString().toLong(), userID!!)
-                            privacyRadiusEditText.setText(editText.text.toString().toLong().toString())
                             dialog.dismiss()
                         }
 
@@ -361,14 +359,13 @@ class SettingsActivity : AppCompatActivity() {
 
         privacyRadiusEditText.isFocusable = false
         privacyRadiusEditText.isClickable = true
-        privacyRadiusEditText.setText(privacyRadius!!)
 
         changePassword.isFocusable = false
         changePassword.isClickable = true
 
         descriptionEditText.isFocusable = false
         descriptionEditText.isClickable = true
-        descriptionEditText.setText(description!!)
+
 
     }
 }
