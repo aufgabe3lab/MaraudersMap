@@ -67,7 +67,7 @@ class UserController {
      * @param privacyRadius new privacy radius of the user
      * @return Response of the request
      */
-    suspend fun changeUserPrivacyRadius(privacyRadius: Long, userID: String): Response{
+    suspend fun changeUserPrivacyRadius(privacyRadius: String?, userID: String): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)

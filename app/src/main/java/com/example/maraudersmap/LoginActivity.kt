@@ -87,9 +87,9 @@ class LoginActivity : AppCompatActivity() {
 
                 when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
                     200 ->{
-                        userID = serializer.read(ExtractUserID::class.java, xmlBody).id.toString()
+                        userID = serializer.read(ExtractUserID::class.java, xmlBody).id
                         description = serializer.read(ExtractDescription::class.java, xmlBody).description
-                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).privacyRadius
+                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
@@ -130,7 +130,7 @@ class LoginActivity : AppCompatActivity() {
     @Root(name = "userXTO", strict = false)
     data class ExtractPrivacyRadius @JvmOverloads constructor(
         @field:Element(name = "privacyRadius")
-        var privacyRadius: String? = null
+        var radius: String? = null
     )
 
     /**
