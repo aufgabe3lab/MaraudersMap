@@ -11,4 +11,5 @@
     <string name="alreadyHaveAnAccount_text">Already have an Account ?</string>
     <string name="loginLink_text">Login</string>
     <string name="confirmPasswordHint_text">confirm password</string>
+    <string name="settings_btn">Settings</string>
 </resources>

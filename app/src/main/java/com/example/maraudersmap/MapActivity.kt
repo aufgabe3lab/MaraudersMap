@@ -1,19 +1,30 @@
 package com.example.maraudersmap
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.preference.PreferenceManager.*
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.preference.PreferenceManager.getDefaultSharedPreferences
+import org.osmdroid.api.IMapController
+import org.osmdroid.config.Configuration.getInstance
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
-import org.osmdroid.config.Configuration.*
-import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
-
+/**
+ * provides a map which shows your own location
+ * @author Leo Kalmbach
+ * @since 2022.12.06
+ */
 class MapActivity : AppCompatActivity() {
 
     private val requestPermissionRequestCode = 1
     private lateinit var map: MapView
+    private lateinit var mapController: IMapController
+    private lateinit var locationOverlay: MyLocationNewOverlay
+    private lateinit var settingsBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,33 +33,36 @@ class MapActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_map)
 
+        settingsBtn = findViewById(R.id.settings_btn)
+        settingsBtn.setOnClickListener {
+            val intent = Intent(this@MapActivity, LoginActivity::class.java)
+            startActivity(intent)
+        }
         map = findViewById(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
 
-        val mapController = map.controller
-        mapController.setZoom(9.5)
-        val startPoint = GeoPoint(48.8583, 2.2944)
-        mapController.setCenter(startPoint)
+        mapController = map.controller
+        mapController.setZoom(18.0)
+
+        locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(applicationContext), map)
+        map.overlays.add(locationOverlay)
+        map.postInvalidate()
     }
 
 
     override fun onResume() {
         super.onResume()
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-        map.onResume() //needed for compass, my location overlays, v6.0.0 and up
+        locationOverlay.enableMyLocation()
+        locationOverlay.enableFollowLocation()
+
+        map.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().save(this, prefs);
-        map.onPause() //needed for compass, my location overlays, v6.0.0 and up
+        locationOverlay.disableMyLocation()
+        map.onPause()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
