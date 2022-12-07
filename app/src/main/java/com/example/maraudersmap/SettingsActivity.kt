@@ -5,20 +5,20 @@ import android.content.Intent
 import android.icu.number.NumberFormatter
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar.DisplayOptions
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.example.maraudersmap.LoginActivity.Companion.userID
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.Response
 import com.example.maraudersmap.LoginActivity.Companion.description
 import com.example.maraudersmap.LoginActivity.Companion.privacyRadius
+import kotlinx.coroutines.*
 
 /**
  * Provides functions to individualize the app
@@ -31,20 +31,20 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var privacyRadiusEditText: EditText
     private lateinit var deleteButton: Button
     private lateinit var changePassword: EditText
-
-    private lateinit var toastMessage: String
+    private lateinit var saveButton: Button
     private lateinit var descriptionEditText: EditText
 
-    companion object {
-        var interval: Long? = null
-    }
+    private lateinit var toastMessage: String
 
+    private var descriptionString: String? = null
+    private var privacyRadiusString: Long? = null
+    private var newPasswordString: String? = null
+    private var interval: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         initSettings()
 
         autoSendPosSetting(autoSendPosSwitch)
@@ -53,6 +53,8 @@ class SettingsActivity : AppCompatActivity() {
         privacyRadiusSetting(privacyRadiusEditText)
         changePasswordSetting(changePassword)
         deleteAccountSetting(deleteButton)
+        saveSettings(userID!!, saveButton)
+
 
     }
 
@@ -63,6 +65,7 @@ class SettingsActivity : AppCompatActivity() {
 
         }
     }
+
 
     private fun descriptionSetting(descriptionEditText: EditText) {
         descriptionEditText.setOnClickListener {
@@ -76,7 +79,7 @@ class SettingsActivity : AppCompatActivity() {
                 .setView(editText)
                 .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
 
-                    changeDescription(editText.text.toString(), userID!!)
+                    descriptionString = editText.text.toString()
                     updateEditText(editText.text.toString(), descriptionEditText)
                     dialog.dismiss()
 
@@ -88,13 +91,12 @@ class SettingsActivity : AppCompatActivity() {
                 .show()
 
 
-
         }
 
 
     }
 
-    private fun updateEditText(text: String?, editText: EditText){
+    private fun updateEditText(text: String?, editText: EditText) {
         editText.text.clear()
         editText.setText(text)
     }
@@ -143,7 +145,7 @@ class SettingsActivity : AppCompatActivity() {
                         makeToast(getString(R.string.invalidPassword_text), Toast.LENGTH_SHORT)
                     } else {
 
-                        changePassword(editText.text.toString(), userID!!)
+                        newPasswordString = editText.text.toString()
                         dialog.dismiss()
                     }
 
@@ -181,7 +183,7 @@ class SettingsActivity : AppCompatActivity() {
                             makeToast(getString(R.string.invalidRadius_text), Toast.LENGTH_SHORT)
                         } else {
 
-                            changePrivacyRadius(editText.text.toString(), userID!!)
+                            privacyRadiusString = editText.text.toString().toLong()
                             updateEditText(editText.text.toString(), privacyRadiusEditText)
                             dialog.dismiss()
                         }
@@ -194,7 +196,6 @@ class SettingsActivity : AppCompatActivity() {
                     }
                     .show()
 
-                privacyRadiusEditText.setText(privacyRadius)
             } catch (e: NumberFormatException) {
                 e.printStackTrace()
             }
@@ -203,29 +204,34 @@ class SettingsActivity : AppCompatActivity() {
     }
 
 
-    private fun changePrivacyRadius(privacyRadius: String?, userID: String) {
-        val scope = CoroutineScope(Dispatchers.IO)
+    private fun changePrivacyRadius(privacyRadius: Long?, userID: String) {
+        val scope = CoroutineScope(Job() +  Dispatchers.IO)
         scope.launch {
 
             val userController = UserController()
-            val response: Response = userController.changeUserPrivacyRadius(privacyRadius, userID)
+            val response: Response = userController.changeUserPrivacyRadius(privacyRadius!!, userID)
+            when (response.code) {         // Response codes: 200 = privacy radius changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.privacyRadiusChanged_text)
+                ).toString()
 
-            toastMessage =
-                when (response.code) {         // Response codes: 200 = privacy radius changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
-                    200 -> {
-                        getString(R.string.privacyRadiusChanged_text)
-                    }
+                304 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.notModified_text)
+                ).toString()
+                403 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.permissionDenied_text)
+                ).toString()
 
-                    304 -> getString(R.string.notModified_text)
-                    403 -> getString(R.string.permissionDenied_text)
 
-
-                    else -> getString(R.string.unknownError_text)
-                }
-
-            withContext(Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
+                else -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.unknownError_text)
+                ).toString()
             }
+
         }
     }
 
@@ -255,56 +261,70 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun changePassword(newPassword: String, userID: String) {
+    private fun changePassword(newPassword: String?, userID: String) {
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
 
             val userController = UserController()
-            val response: Response = userController.changeUserPassword(newPassword, userID)
+            val response: Response = userController.changeUserPassword(newPassword!!, userID)
 
-            toastMessage =
-                when (response.code) {         // Response codes: 200 = Password changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
-                    200 -> {
-                        getString(R.string.passwordChanged_text)
-                    }
+            when (response.code) {         // Response codes: 200 = Password changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.passwordChanged_text)
+                ).toString()
 
-                    304 -> getString(R.string.notModified_text)
-                    403 -> getString(R.string.permissionDenied_text)
+                304 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.notModified_text)
+                ).toString()
+                403 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.permissionDenied_text)
+                ).toString()
 
 
-                    else -> getString(R.string.unknownError_text)
-                }
-
-            withContext(Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
+                else -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.unknownError_text)
+                ).toString()
             }
+
+
         }
     }
 
-    private fun changeDescription(description: String, userID: String) {
+    private fun changeDescription(description: String?, userID: String) {
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
 
             val userController = UserController()
-            val response: Response = userController.changeUserDescription(description, userID)
-
-            toastMessage =
-                when (response.code) {         // Response codes: 200 = description changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
-                    200 -> {
-                        getString(R.string.descriptionChanged_text)
-
-                    }
-
-                    304 -> getString(R.string.notModified_text)
-                    403 -> getString(R.string.permissionDenied_text)
+            val response: Response = userController.changeUserDescription(description!!, userID)
 
 
-                    else -> getString(R.string.unknownError_text)
-                }
+            when (response.code) {         // Response codes: 200 = description changed, 304 = no changes were made (not-modified), 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.descriptionChanged_text)
+                ).toString()
 
-            withContext(Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
+                304 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.notModified_text)
+                ).toString()
+                403 -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.permissionDenied_text)
+                ).toString()
+
+
+                else -> Log.i(
+                    SettingsActivity::class.java.simpleName,
+                    getString(R.string.unknownError_text)
+                ).toString()
             }
+
+
         }
     }
 
@@ -316,22 +336,33 @@ class SettingsActivity : AppCompatActivity() {
             val response: Response =
                 userController.updateUserGpsPosition(latitude, longitude, userID)
 
-            toastMessage =
-                when (response.code) {         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
-                    200 -> {
-                        getString(R.string.updatedPosition_text)
-                    }
 
-                    403 -> getString(R.string.permissionDenied_text)
+            when (response.code) {         // Response codes: 200 = deleted user, 403 = permission denied (forbidden, json token invalid), ? = other unknown error codes possible
+                200 -> Log.i(SettingsActivity::class.java.simpleName, "200").toString()
+
+                403 -> Log.i(SettingsActivity::class.java.simpleName, "403").toString()
 
 
-                    else -> getString(R.string.unknownError_text)
-                }
-
-            withContext(Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
+                else -> Log.i(SettingsActivity::class.java.simpleName, "?").toString()
             }
+
         }
+    }
+
+
+    private fun saveSettings(userIDString: String, saveButton: Button) {
+
+        saveButton.setOnClickListener {
+
+            changePrivacyRadius(privacyRadiusString, userIDString)
+            changePassword(newPasswordString, userIDString)
+            changeDescription(descriptionString, userIDString)
+
+            makeToast("Settings saved!", Toast.LENGTH_SHORT)
+
+
+        }
+
     }
 
 
@@ -374,6 +405,7 @@ class SettingsActivity : AppCompatActivity() {
         deleteButton = findViewById(R.id.deleteAccount_button)
         changePassword = findViewById(R.id.changePassword_editText)
         descriptionEditText = findViewById(R.id.changeDescription_editText)
+        saveButton = findViewById(R.id.saveSettings_button)
 
         intervalEditText.isEnabled = false
         intervalEditText.isFocusable = false
@@ -389,6 +421,11 @@ class SettingsActivity : AppCompatActivity() {
         descriptionEditText.isFocusable = false
         descriptionEditText.isClickable = true
         descriptionEditText.setText(description)
+
+        newPasswordString = ""
+        privacyRadiusString = 0L
+        descriptionString = ""
+        toastMessage = ""
 
     }
 }
