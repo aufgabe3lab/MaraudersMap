@@ -22,7 +22,7 @@ class UserController {
      * @param description small description, needed but not sure why
      * @return Response of the request
      */
-    suspend fun createNewUser(username: String, password: String, description: String): Response {
+    suspend fun createNewUser(username: String?, password: String?, description: String?): Response {
 
         val userXTO = UserXTO()
         userXTO.username = username
@@ -39,7 +39,7 @@ class UserController {
      * @param password password for the username
      * @return Response of the request
      */
-    suspend fun loginUser(username: String, password: String): Response {
+    suspend fun loginUser(username: String?, password: String?): Response {
         val userXTO = UserXTO()
         userXTO.username = username
         userXTO.password = password
@@ -54,7 +54,7 @@ class UserController {
      * @param newPassword new password for the user
      * @return Response of the request
      */
-    suspend fun changeUserPassword(newPassword: String, userID: String): Response{
+    suspend fun changeUserPassword(newPassword: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.password = newPassword
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
@@ -67,7 +67,7 @@ class UserController {
      * @param privacyRadius new privacy radius of the user
      * @return Response of the request
      */
-    suspend fun changeUserPrivacyRadius(privacyRadius: String?, userID: String): Response{
+    suspend fun changeUserPrivacyRadius(privacyRadius: Long?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
@@ -80,7 +80,7 @@ class UserController {
      * @param description new description of the user
      * @return Response of the request
      */
-    suspend fun changeUserDescription(description: String, userID: String): Response{
+    suspend fun changeUserDescription(description: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.description = description
         return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
@@ -92,7 +92,7 @@ class UserController {
      * @param userID id of user (received after a successful login)
      * @return Response of the request
      */
-    suspend fun deleteUser(userID: String): Response{
+    suspend fun deleteUser(userID: String?): Response{
         return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID")
     }
 
@@ -104,7 +104,7 @@ class UserController {
      * @param longitude updated longitude of the user
      * @return Response of the request
      */
-    suspend fun updateUserGpsPosition(latitude: Long, longitude: Long, userID: String): Response{
+    suspend fun updateUserGpsPosition(latitude: Long?, longitude: Long?, userID: String?): Response{
         val locationXTO = LocationXTO()
         locationXTO.latitude = latitude
         locationXTO.longitude = longitude
@@ -119,7 +119,7 @@ class UserController {
      * @param longitude position where we want to load the users from
      * @return Response of the request
      */
-    suspend fun getLocationsWithinRadius(radius: Long, latitude: Long, longitude: Long): Response{
+    suspend fun getLocationsWithinRadius(radius: Long?, latitude: Long?, longitude: Long?): Response{
         return server.getRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/location/$radius/$latitude/$longitude")
     }
 }

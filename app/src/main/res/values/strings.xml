@@ -51,7 +51,7 @@
     <string name="confirm_hintText">confirm</string>
     <string name="settings_label">Settings</string>
     <string name="confirmPasswordChange_text">confirm</string>
-    <string name="changeDescription_hintText">I am Groot</string>
+    <string name="changeDescription_hintText">description…</string>
     <string name="description_text">Description</string>
     <string name="invalidRadius_text">Invalid radius</string>
     <string name="invalidInterval_text">Invalid interval</string>
@@ -62,5 +62,6 @@
     <string name="intervalSetting_headerText">Interval</string>
     <string name="changePasswordSetting_headerText">Change Password</string>
     <string name="zeroRadius_text">Radius cannot be 0</string>
+    <string name="save_buttonText">Save</string>
 
 </resources>
