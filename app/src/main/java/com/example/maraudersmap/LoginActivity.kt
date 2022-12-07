@@ -61,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerLink.setOnClickListener {
+            Thread.sleep(500L)
             switchActivity(SettingsActivity::class.java)
         }
 
