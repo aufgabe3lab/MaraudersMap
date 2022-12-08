@@ -2,7 +2,6 @@ package com.example.maraudersmap
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.icu.number.NumberFormatter
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -10,15 +9,13 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar.DisplayOptions
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.content.ContextCompat.startActivity
-import com.example.maraudersmap.LoginActivity.Companion.userID
-import okhttp3.Response
 import com.example.maraudersmap.LoginActivity.Companion.description
 import com.example.maraudersmap.LoginActivity.Companion.privacyRadius
+import com.example.maraudersmap.LoginActivity.Companion.userID
 import kotlinx.coroutines.*
+import okhttp3.Response
 
 /**
  * Provides functions to individualize the app
@@ -40,6 +37,7 @@ class SettingsActivity : AppCompatActivity() {
     private var privacyRadiusString: Long? = null
     private var newPasswordString: String? = null
     private var interval: Long? = null
+    private var isSaved: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,8 +51,8 @@ class SettingsActivity : AppCompatActivity() {
         privacyRadiusSetting(privacyRadiusEditText)
         changePasswordSetting(changePassword)
         deleteAccountSetting(deleteButton)
-        saveSettings(userID!!, saveButton)
 
+        saveButton.setOnClickListener { saveSettings(userID!!) }
 
     }
 
@@ -205,7 +203,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
     private fun changePrivacyRadius(privacyRadius: Long?, userID: String) {
-        val scope = CoroutineScope(Job() +  Dispatchers.IO)
+        val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
 
             val userController = UserController()
@@ -350,18 +348,16 @@ class SettingsActivity : AppCompatActivity() {
     }
 
 
-    private fun saveSettings(userIDString: String, saveButton: Button) {
-
-        saveButton.setOnClickListener {
-
-            changePrivacyRadius(privacyRadiusString, userIDString)
-            changePassword(newPasswordString, userIDString)
-            changeDescription(descriptionString, userIDString)
-
-            makeToast("Settings saved!", Toast.LENGTH_SHORT)
+    private fun saveSettings(userIDString: String) {
 
 
-        }
+        isSaved = true
+        changePrivacyRadius(privacyRadiusString, userIDString)
+        changePassword(newPasswordString, userIDString)
+        changeDescription(descriptionString, userIDString)
+
+        makeToast("Settings saved!", Toast.LENGTH_SHORT)
+
 
     }
 
@@ -373,6 +369,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
+                if(!isSaved){
+                    saveSettings(userID!!)
+                }
                 switchActivity(LoginActivity::class.java)
                 true
             }
