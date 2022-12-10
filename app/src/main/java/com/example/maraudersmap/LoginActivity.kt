@@ -34,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
         var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var description: String? = null
-        var privacyRadius: Long? = null
+        var privacyRadius: String? = null
     }
 
 
@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     200 ->{
                         userID = serializer.read(ExtractUserID::class.java, xmlBody).id
                         description = serializer.read(ExtractDescription::class.java, xmlBody).description
-                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius?.toLong()
+                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
