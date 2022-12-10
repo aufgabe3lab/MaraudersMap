@@ -11,9 +11,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import com.example.maraudersmap.LoginActivity.Companion.description
-import com.example.maraudersmap.LoginActivity.Companion.privacyRadius
-import com.example.maraudersmap.LoginActivity.Companion.userID
+import com.example.maraudersmap.LoginActivity.UserInformation.description as DESCRIPTION
+import com.example.maraudersmap.LoginActivity.UserInformation.privacyRadius as PRIVACY_RADIUS
+import com.example.maraudersmap.LoginActivity.UserInformation.userID as USER_ID
 import kotlinx.coroutines.*
 import okhttp3.Response
 
@@ -52,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         changePasswordSetting(changePassword)
         deleteAccountSetting(deleteButton)
 
-        saveButton.setOnClickListener { saveSettings(userID!!) }
+        saveButton.setOnClickListener { saveSettings(USER_ID!!) }
 
     }
 
@@ -159,7 +159,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun deleteAccountSetting(deleteAccountButton: Button) {
         deleteAccountButton.setOnClickListener {
-            deleteUser(userID!!)
+            deleteUser(USER_ID!!)
         }
     }
 
@@ -168,7 +168,7 @@ class SettingsActivity : AppCompatActivity() {
             try {
                 val editText = EditText(this@SettingsActivity)
                 editText.inputType = InputType.TYPE_TEXT_VARIATION_NORMAL
-                editText.setText(privacyRadius)
+                editText.setText(PRIVACY_RADIUS.toString())
 
                 AlertDialog.Builder(this@SettingsActivity)
                     .setTitle(getString(R.string.privacyRadiusSetting_headerText))
@@ -370,7 +370,7 @@ class SettingsActivity : AppCompatActivity() {
         return when (item.itemId) {
             android.R.id.home -> {
                 if(!isSaved){
-                    saveSettings(userID!!)
+                    saveSettings(USER_ID!!)
                 }
                 switchActivity(LoginActivity::class.java)
                 true
@@ -412,14 +412,14 @@ class SettingsActivity : AppCompatActivity() {
 
         privacyRadiusEditText.isFocusable = false
         privacyRadiusEditText.isClickable = true
-        privacyRadiusEditText.setText(privacyRadius)
+        privacyRadiusEditText.setText(PRIVACY_RADIUS.toString())
 
         changePassword.isFocusable = false
         changePassword.isClickable = true
 
         descriptionEditText.isFocusable = false
         descriptionEditText.isClickable = true
-        descriptionEditText.setText(description)
+        descriptionEditText.setText(DESCRIPTION)
 
         newPasswordString = ""
         privacyRadiusString = 0L

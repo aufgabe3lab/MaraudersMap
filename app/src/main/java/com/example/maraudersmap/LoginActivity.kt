@@ -8,8 +8,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ContentInfoCompat.Flags
-import com.example.maraudersmap.LoginActivity.Companion.jsonWebToken
-import com.example.maraudersmap.LoginActivity.Companion.userID
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import okhttp3.Response
@@ -32,11 +30,11 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var registerLink: TextView
     private lateinit var toastMessage: String
 
-    companion object {
+    companion object UserInformation {
         var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var description: String? = null
-        var privacyRadius: String? = null
+        var privacyRadius: Long? = null
     }
 
 
@@ -90,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     200 ->{
                         userID = serializer.read(ExtractUserID::class.java, xmlBody).id
                         description = serializer.read(ExtractDescription::class.java, xmlBody).description
-                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius
+                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius?.toLong()
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)

@@ -1,6 +1,6 @@
 package com.example.maraudersmap
 
-import com.example.maraudersmap.LoginActivity.Companion.jsonWebToken
+import com.example.maraudersmap.LoginActivity.UserInformation.jsonWebToken
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -49,11 +49,10 @@ class ServerCommunicator {
         val mediaType: MediaType = "application/xml; charset=utf-8".toMediaType()
         val body: RequestBody = xml.toRequestBody(mediaType)
 
-        if(jsonWebToken==null){     // if user is not logged in
-            request = Request.Builder().url(url!!).post(body).build()
-        }
-        else{                       // if user is logged in
-            request = Request.Builder().url(url!!).post(body).addHeader("Authorization", jsonWebToken!!).build()
+        request = if(jsonWebToken==null){     // if user is not logged in
+            Request.Builder().url(url!!).post(body).build()
+        } else{                       // if user is logged in
+            Request.Builder().url(url!!).post(body).addHeader("Authorization", jsonWebToken!!).build()
         }
 
         return client.newCall(request).await()
