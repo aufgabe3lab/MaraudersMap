@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MaraudersMap</string>
+
+    <!-- Login & Register Activity -->
     <string name="loginHeader_text">Login</string>
     <string name="usernameHint_text">username</string>
     <string name="passwordHint_text">password</string>
@@ -11,5 +13,55 @@
     <string name="alreadyHaveAnAccount_text">Already have an Account ?</string>
     <string name="loginLink_text">Login</string>
     <string name="confirmPasswordHint_text">confirm password</string>
+
     <string name="settings_btn">Settings</string>
+    <string name="invalidUsername_text">Username is invalid</string>
+    <string name="invalidPassword_text">Password is invalid</string>
+    <string name="successfulLogin">Login successful</string>
+    <string name="failedLogin_text">Login failed</string>
+    <string name="unknownError_text">Unknown error</string>
+    <string name="userAlreadyExists_text">User already exists</string>
+    <string name="successfulRegistration_text">Registration successful</string>
+    <string name="confirmPassword_text">Confirm password</string>
+    <string name="passwordsDoNotMatch_text">Passwords do not match!</string>
+
+    <string name="notModified_text">No changes were made</string>
+    <string name="permissionDenied_text">Permission denied</string>
+    <string name="passwordChanged_text">Password changed</string>
+    <string name="privacyRadiusChanged_text">Privacy radius changed</string>
+    <string name="descriptionChanged_text">Description changed</string>
+    <string name="deletedUser_text">User deleted</string>
+    <string name="updatedPosition_text">User position updated</string>
+    <string name="succesfulLocationReading_text">Locations loaded</string>
+
+    <string name="login_label">Login</string>
+    <string name="register_label">Register</string>
+
+    <!-- Settings Activity -->
+    <string name="automaticSendingOfPosition_text">Auto sending</string>
+    <string name="interval_text">Interval</string>
+    <string name="privacyRadius_text">Privacy radius</string>
+    <string name="deleteAccount_text">Delete Account</string>
+    <string name="deleteAccount_buttonText">Delete Account</string>
+    <string name="position_headerText">Position</string>
+    <string name="visibility_headerText">Visibility</string>
+    <string name="account_headerText">Account</string>
+    <string name="interval_hintText">mm:ss</string>
+    <string name="privacyRadius_hintText">1km</string>
+    <string name="newPassword_hintText">new password</string>
+    <string name="changePassword_text">Change Password</string>
+    <string name="confirm_hintText">confirm</string>
+    <string name="settings_label">Settings</string>
+    <string name="confirmPasswordChange_text">confirm</string>
+    <string name="changeDescription_hintText">I am Groot</string>
+    <string name="description_text">Description</string>
+    <string name="invalidRadius_text">Invalid radius</string>
+    <string name="invalidInterval_text">Invalid interval</string>
+    <string name="privacyRadiusSetting_headerText">Privacy Radius</string>
+    <string name="cancelSetting_text">Cancel</string>
+    <string name="saveSetting_text">Save</string>
+    <string name="descriptionSetting_headerText">Description</string>
+    <string name="intervalSetting_headerText">Interval</string>
+    <string name="changePasswordSetting_headerText">Change Password</string>
+    <string name="zeroRadius_text">Radius cannot be 0</string>
 </resources>
