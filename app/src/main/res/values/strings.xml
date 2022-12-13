@@ -63,5 +63,14 @@
     <string name="changePasswordSetting_headerText">Change Password</string>
     <string name="zeroRadius_text">Radius cannot be 0</string>
     <string name="save_buttonText">Save</string>
+    <string name="radius_text">Radius</string>
+    <string name="radius_hintText">km</string>
+    <string name="visibilitRadius_headerText">Visibility Radius</string>
+    <string name="deleteAccount_headerText">Delete Account!</string>
+    <string name="deleteAccount_messageText">Do you really want to delete this account?</string>
+    <string name="yes_dialogText">Yes</string>
+    <string name="no_dialogText">No</string>
+    <string name="saveChanges_headerText">Save Changes</string>
+    <string name="saveChanges_messageText">Do you want to save all changes?</string>
 
 </resources>

@@ -125,14 +125,15 @@
             android:layout_width="140dp"
             android:layout_height="48dp"
             android:ems="10"
-            android:hint="@string/privacyRadius_hintText"
+            android:hint="@string/radius_hintText"
             android:importantForAutofill="no"
             android:inputType="numberSigned"
             android:textColorHint="#757575"
             app:layout_constraintBottom_toTopOf="@+id/guideline20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline18"
-            app:layout_constraintTop_toTopOf="@+id/guideline19" />
+            app:layout_constraintTop_toTopOf="@+id/guideline19"
+            tools:ignore="DuplicateSpeakableTextCheck" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline9"
@@ -171,7 +172,7 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline20" />
+            app:layout_constraintTop_toTopOf="@+id/guideline10" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline19"
@@ -274,6 +275,39 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline9" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.62" />
+
+        <TextView
+            android:id="@+id/radiusVisibility_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radius_text"
+            android:textColor="#191919"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline10"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline20" />
+
+        <EditText
+            android:id="@+id/radiusVisibilty_editTextNumber"
+            android:layout_width="140dp"
+            android:layout_height="48dp"
+            android:ems="10"
+            android:hint="@string/radius_hintText"
+            android:inputType="number"
+            android:textColorHint="#757575"
+            app:layout_constraintBottom_toTopOf="@+id/guideline10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline18"
+            app:layout_constraintTop_toBottomOf="@+id/privacyRadius_editTextNumber"
+            android:importantForAutofill="no" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
