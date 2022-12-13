@@ -64,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
             switchActivity(SettingsActivity::class.java)
         }
 
+
     }
 
 
