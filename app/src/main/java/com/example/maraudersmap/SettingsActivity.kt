@@ -40,6 +40,7 @@ class SettingsActivity : AppCompatActivity() {
     private  var dialogChangeDescriptionEditText: EditText? = null
     private  var dialogChangePrivacyRadiusEditText: EditText? = null
     private  var dialogVisibilityRadiusEditText: EditText? = null
+    private var dialogIntervalEditText: EditText? = null
 
     private var toastMessage: String = ""
 
@@ -93,6 +94,26 @@ class SettingsActivity : AppCompatActivity() {
                 .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
                     dialog.dismiss()
                 }.show()
+        }
+
+        visibilityRadiusEditText.setOnClickListener {
+            dialogVisibilityRadiusEditText = EditText(this@SettingsActivity)
+            dialogVisibilityRadiusEditText!!.inputType = InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
+            dialogVisibilityRadiusEditText!!.isSingleLine = true
+
+            AlertDialog.Builder(this@SettingsActivity)
+                .setTitle(getString(R.string.visibilitRadius_headerText))
+                .setView(dialogVisibilityRadiusEditText)
+                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
+                    updateEditTextContent(visibilityRadiusEditText,
+                        dialogVisibilityRadiusEditText!!
+                    )
+                    dialog.dismiss()
+                }
+                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
+
         }
 
         changePasswordEditText.setOnClickListener {
