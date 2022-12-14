@@ -17,6 +17,7 @@ import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
+import kotlin.math.roundToLong
 
 
 /**
@@ -36,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
         var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var description: String? = null
-        var privacyRadius: String? = null
+        var privacyRadius: Long? = null
     }
 
 
@@ -61,7 +62,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerLink.setOnClickListener {
-            Thread.sleep(1000L)
             switchActivity(SettingsActivity::class.java)
         }
 
@@ -88,9 +88,12 @@ class LoginActivity : AppCompatActivity() {
 
                 when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
                     200 ->{
-                        userID = serializer.read(ExtractUserID::class.java, xmlBody).id
-                        description = serializer.read(ExtractDescription::class.java, xmlBody).description
-                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius
+
+
+                        val userData = serializer.read(ExtractUserID::class.java, xmlBody)
+                        userID = userData.id
+                        description = userData.description
+                        privacyRadius = userData.radius?.toDouble()?.roundToLong() //converts the double value to a rounded long value
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
@@ -114,25 +117,20 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     * Extracts the user ID out of the response body
+     * Extracts the user data out of the response body
      */
     @Root(name = "userXTO", strict = false)
-    data class ExtractUserID @JvmOverloads constructor(
+    data class ExtractUserID(
         @field:Element(name = "id")
-        var id: String? = null
-    )
+        var id: String? = null,
 
-    @Root(name = "userXTO", strict = false)
-    data class ExtractDescription @JvmOverloads constructor(
         @field:Element(name = "description")
-        var description: String? = null
-    )
+        var description: String? = null,
 
-    @Root(name = "userXTO", strict = false)
-    data class ExtractPrivacyRadius @JvmOverloads constructor(
         @field:Element(name = "privacyRadius")
         var radius: String? = null
     )
+
 
     /**
      * validates input string

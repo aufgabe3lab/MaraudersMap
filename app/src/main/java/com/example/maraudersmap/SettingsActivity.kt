@@ -17,6 +17,7 @@ import com.example.maraudersmap.LoginActivity.Companion.privacyRadius
 import com.example.maraudersmap.LoginActivity.Companion.userID
 import kotlinx.coroutines.*
 import okhttp3.Response
+import org.simpleframework.xml.strategy.Value
 
 /**
  * Provides functions to individualize the app
@@ -36,12 +37,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var userController: UserController
     private lateinit var response: Response
 
-    private  var dialogChangePasswordEditText: EditText? = null
-    private  var dialogChangeDescriptionEditText: EditText? = null
-    private  var dialogChangePrivacyRadiusEditText: EditText? = null
-    private  var dialogVisibilityRadiusEditText: EditText? = null
-    private var dialogIntervalEditText: EditText? = null
-
     private var toastMessage: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,100 +53,23 @@ class SettingsActivity : AppCompatActivity() {
 
 
         descriptionEditText.setOnClickListener {
-            dialogChangeDescriptionEditText = EditText(this@SettingsActivity)
-            dialogChangeDescriptionEditText!!.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
-            dialogChangeDescriptionEditText!!.height = 250
-            dialogChangeDescriptionEditText!!.isSingleLine = false
-            dialogChangeDescriptionEditText!!.gravity = Gravity.TOP
-            dialogChangeDescriptionEditText!!.setText(description, TextView.BufferType.EDITABLE)
+            val dialogChangeDescriptionEditText = EditText(this@SettingsActivity)
+            dialogChangeDescriptionEditText.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            dialogChangeDescriptionEditText.height = 250
+            dialogChangeDescriptionEditText.isSingleLine = false
+            dialogChangeDescriptionEditText.gravity = Gravity.TOP
 
             AlertDialog.Builder(this@SettingsActivity)
                 .setTitle(getString(R.string.descriptionSetting_headerText))
                 .setView(dialogChangeDescriptionEditText)
                 .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
-                    updateEditTextContent(descriptionEditText, dialogChangeDescriptionEditText!!)
+                    updateEditTextContent(descriptionEditText, dialogChangeDescriptionEditText)
                     dialog.dismiss()
                 }
                 .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
                     dialog.dismiss()
                 }.show()
         }
-
-        privacyRadiusEditText.setOnClickListener {
-            dialogChangePrivacyRadiusEditText = EditText(this@SettingsActivity)
-            dialogChangePrivacyRadiusEditText!!.inputType = InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-            dialogChangePrivacyRadiusEditText!!.setText(privacyRadius, TextView.BufferType.EDITABLE)
-
-            AlertDialog.Builder(this@SettingsActivity)
-                .setTitle(getString(R.string.privacyRadiusSetting_headerText))
-                .setView(dialogChangePrivacyRadiusEditText)
-                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
-                    updateEditTextContent(privacyRadiusEditText,
-                        dialogChangePrivacyRadiusEditText!!
-                    )
-                    dialog.dismiss()
-                }
-                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
-        }
-
-        visibilityRadiusEditText.setOnClickListener {
-            dialogVisibilityRadiusEditText = EditText(this@SettingsActivity)
-            dialogVisibilityRadiusEditText!!.inputType = InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-            dialogVisibilityRadiusEditText!!.isSingleLine = true
-
-            AlertDialog.Builder(this@SettingsActivity)
-                .setTitle(getString(R.string.visibilitRadius_headerText))
-                .setView(dialogVisibilityRadiusEditText)
-                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
-                    updateEditTextContent(visibilityRadiusEditText,
-                        dialogVisibilityRadiusEditText!!
-                    )
-                    dialog.dismiss()
-                }
-                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
-
-        }
-
-        changePasswordEditText.setOnClickListener {
-            dialogChangePasswordEditText = EditText(this@SettingsActivity)
-            dialogChangePasswordEditText!!.inputType = InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-            dialogChangePasswordEditText!!.isSingleLine = true
-
-            AlertDialog.Builder(this@SettingsActivity)
-                .setTitle(getString(R.string.changePasswordSetting_headerText))
-                .setView(dialogChangePasswordEditText)
-                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
-        }
-
-        visibilityRadiusEditText.setOnClickListener {
-            dialogVisibilityRadiusEditText = EditText(this@SettingsActivity)
-            dialogVisibilityRadiusEditText!!.inputType = InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-            dialogVisibilityRadiusEditText!!.isSingleLine = true
-
-            AlertDialog.Builder(this@SettingsActivity)
-                .setTitle(getString(R.string.visibilitRadius_headerText))
-                .setView(dialogVisibilityRadiusEditText)
-                .setPositiveButton(getString(R.string.saveSetting_text)) { dialog, _ ->
-                    updateEditTextContent(visibilityRadiusEditText,
-                        dialogVisibilityRadiusEditText!!
-                    )
-                    dialog.dismiss()
-                }
-                .setNegativeButton(getString(R.string.cancelSetting_text)) { dialog, _ ->
-                    dialog.dismiss()
-                }.show()
-
-        }
-
 
         deleteButton.setOnClickListener {
             AlertDialog.Builder(this@SettingsActivity)
@@ -173,14 +91,11 @@ class SettingsActivity : AppCompatActivity() {
             AlertDialog.Builder(this@SettingsActivity)
                 .setTitle(getString(R.string.saveChanges_headerText))
                 .setMessage(getString(R.string.saveChanges_messageText))
-                .setPositiveButton(getString(R.string.yes_dialogText)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.yes_dialogText)) { dialog,_ ->
 
-                    changeDescription(dialogChangeDescriptionEditText?.text.toString(), userID)
-                    changePassword(dialogChangePasswordEditText?.text.toString(), userID)
-                    changePrivacyRadius(
-                        dialogChangePrivacyRadiusEditText?.text.toString().toLongOrNull(),
-                        userID)
-
+                    changePassword(changePasswordEditText.text.toString(), userID)
+                    changeDescription(descriptionEditText.text.toString(), userID)
+                    changePrivacyRadius(privacyRadiusEditText.text.toString().toLong(), userID)
 
                     dialog.dismiss()
                 }
@@ -341,7 +256,7 @@ class SettingsActivity : AppCompatActivity() {
         visibilityRadiusEditText = findViewById(R.id.radiusVisibilty_editTextNumber)
 
         descriptionEditText.setText(description, TextView.BufferType.EDITABLE)
-        privacyRadiusEditText.setText(privacyRadius, TextView.BufferType.EDITABLE)
+        privacyRadiusEditText.setText(privacyRadius.toString(), TextView.BufferType.EDITABLE)
 
 
     }
