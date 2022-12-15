@@ -60,6 +60,7 @@ class LoginActivity : AppCompatActivity() {
             switchActivity(RegisterActivity::class.java)
         }
 
+
     }
 
 

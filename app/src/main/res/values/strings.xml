@@ -13,6 +13,8 @@
     <string name="alreadyHaveAnAccount_text">Already have an Account ?</string>
     <string name="loginLink_text">Login</string>
     <string name="confirmPasswordHint_text">confirm password</string>
+
+    <string name="settings_btn">Settings</string>
     <string name="invalidUsername_text">Username is invalid</string>
     <string name="invalidPassword_text">Password is invalid</string>
     <string name="successfulLogin">Login successful</string>
@@ -63,6 +65,7 @@
     <string name="deletedUser_text">User deleted</string>
 
     <!-- Map Activity -->
+
 
 
 
