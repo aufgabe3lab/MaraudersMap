@@ -82,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
                 val userControllerAPI = UserControllerAPI()
                 val response : Response
 
-                try {
+                try { // todo implement try/catch blocks in other classes when using UserControllerAPI methods to catch SocketTimeoutException or UnknownHostException
                     response = userControllerAPI.loginUser(username, password)
                     val xmlBody = response.body!!.string()
 
@@ -109,13 +109,13 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
                 catch (e : SocketTimeoutException){
-                    toastMessage = getString(R.string.unknownError_text)                          // server not reachable
+                    toastMessage = getString(R.string.noServerConnection_text)                  // server not reachable
                     withContext(Dispatchers.Main){
                         makeToast(toastMessage, Toast.LENGTH_SHORT)
                     }
                 }
-                catch (e : UnknownHostException){                           // no internet connection
-                    toastMessage = getString(R.string.unknownError_text)
+                catch (e : UnknownHostException){                                               // no internet connection
+                    toastMessage = getString(R.string.noInternetConnection_text)
                     withContext(Dispatchers.Main){
                         makeToast(toastMessage, Toast.LENGTH_SHORT)
                     }
