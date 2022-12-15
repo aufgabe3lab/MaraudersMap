@@ -7,10 +7,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ContentInfoCompat.Flags
-import com.example.maraudersmap.LoginActivity.Companion.jsonWebToken
-import com.example.maraudersmap.LoginActivity.Companion.userID
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import okhttp3.Response
 import org.simpleframework.xml.Element
@@ -32,11 +28,11 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var registerLink: TextView
     private lateinit var toastMessage: String
 
-    companion object {
-        var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+    companion object UserInformation {
+        var userID: String? = null        //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var description: String? = null
-        var privacyRadius: String? = null
+        var privacyRadius: Long? = null
     }
 
 
@@ -61,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerLink.setOnClickListener {
-            switchActivity(SettingsActivity::class.java)
+            switchActivity(RegisterActivity::class.java)
         }
 
 
@@ -88,12 +84,16 @@ class LoginActivity : AppCompatActivity() {
 
                 when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
                     200 ->{
-                        userID = serializer.read(ExtractUserID::class.java, xmlBody).id
-                        description = serializer.read(ExtractDescription::class.java, xmlBody).description
-                        privacyRadius = serializer.read(ExtractPrivacyRadius::class.java, xmlBody).radius
+
+
+                        val userData = serializer.read(ExtractData::class.java, xmlBody)
+                        userID = userData.id
+                        description = userData.description
+                        privacyRadius = userData.radius?.toDouble()?.toLong() //converts the double value to a  long value
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
+                        switchActivity(MapActivity::class.java)
 
                     }
 
@@ -114,25 +114,24 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     * Extracts the user ID out of the response body
+     * Data class representing a user with an ID, description, and privacy radius.
+     *
+     * @property id The user's ID.
+     * @property description The user's description.
+     * @property radius The user's privacy radius.
      */
     @Root(name = "userXTO", strict = false)
-    data class ExtractUserID @JvmOverloads constructor(
+    data class ExtractData(
         @field:Element(name = "id")
-        var id: String? = null
-    )
+        var id: String? = null,
 
-    @Root(name = "userXTO", strict = false)
-    data class ExtractDescription @JvmOverloads constructor(
         @field:Element(name = "description")
-        var description: String? = null
-    )
+        var description: String? = null,
 
-    @Root(name = "userXTO", strict = false)
-    data class ExtractPrivacyRadius @JvmOverloads constructor(
         @field:Element(name = "privacyRadius")
         var radius: String? = null
     )
+
 
     /**
      * validates input string
@@ -163,17 +162,19 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * makes Toast
-     * @param msg message to show
-     * @param duration display time
+     * Displays a toast message with the specified text and duration.
+     *
+     * @param msg The text to be displayed in the toast message.
+     * @param duration The duration for which the toast message should be displayed.
      */
     private fun makeToast(msg: String, duration: Int) {
         Toast.makeText(this@LoginActivity, msg, duration).show()
     }
 
     /**
-     * Switch to activity
-     * @param destinationClass destination activity
+     * Switches the current activity to the specified destination activity.
+     *
+     * @param destinationClass The destination activity to switch to.
      */
     private fun switchActivity(destinationClass: Class<*>) {
 
