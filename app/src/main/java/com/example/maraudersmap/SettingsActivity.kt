@@ -52,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initSettings()
 
-        //Todo:
+
         autoSendPosSwitch.setOnCheckedChangeListener { _, isChecked ->
 
             intervalEditText.isEnabled = isChecked
@@ -355,3 +355,5 @@ class SettingsActivity : AppCompatActivity() {
 
     }
 }
+
+//TODO: Auto Sending Position, Visibility Radius
