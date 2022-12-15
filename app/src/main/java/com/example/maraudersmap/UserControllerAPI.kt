@@ -35,7 +35,7 @@ class UserControllerAPI {
         userXTO.password = password
         userXTO.description = description
 
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)    //todo replace link with base link variable
+        return server.postRequest(baseURL + "user", userXTO)    //todo replace link with base link variable
     }
 
     /**
@@ -69,7 +69,7 @@ class UserControllerAPI {
     suspend fun changeUserPassword(newPassword: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.password = newPassword
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
+        return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
     /**
@@ -85,7 +85,7 @@ class UserControllerAPI {
     suspend fun changeUserPrivacyRadius(privacyRadius: Long?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
+        return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
     /**
@@ -101,7 +101,7 @@ class UserControllerAPI {
     suspend fun changeUserDescription(description: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.description = description
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
+        return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
     /**
@@ -114,7 +114,7 @@ class UserControllerAPI {
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun deleteUser(userID: String?): Response{
-        return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID")
+        return server.deleteRequest(baseURL + "user/$userID")
     }
 
     /**
@@ -132,7 +132,7 @@ class UserControllerAPI {
         val locationXTO = LocationXTO()
         locationXTO.latitude = latitude
         locationXTO.longitude = longitude
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID/location", locationXTO)
+        return server.postRequest(baseURL + "user/$userID/location", locationXTO)
     }
 
     /**
@@ -147,6 +147,6 @@ class UserControllerAPI {
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun getLocationsWithinRadius(radius: Long?, latitude: Long?, longitude: Long?): Response{
-        return server.getRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/location/$radius/$latitude/$longitude")
+        return server.getRequest(baseURL + "location/$radius/$latitude/$longitude")
     }
 }
