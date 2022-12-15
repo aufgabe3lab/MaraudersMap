@@ -6,7 +6,7 @@
     <string name="usernameHint_text">username</string>
     <string name="passwordHint_text">password</string>
     <string name="loginButton_text">Login</string>
-    <string name="dontHaveAnAccount_text">Don\'t have an Account ?</string>
+    <string name="doNotHaveAnAccount_text">Don\'t have an Account ?</string>
     <string name="registerLink_text">Register</string>
     <string name="registerHeader_text">Register</string>
     <string name="registerButton_text">Register</string>
@@ -61,4 +61,10 @@
     <string name="privacyRadiusChanged_text">Privacy radius changed</string>
     <string name="descriptionChanged_text">Description changed</string>
     <string name="deletedUser_text">User deleted</string>
+
+    <!-- Map Activity -->
+
+
+
+
 </resources>
