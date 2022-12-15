@@ -96,7 +96,6 @@ class LoginActivity : AppCompatActivity() {
                             jsonWebToken = response.headers.last().second
                             toastMessage = getString(R.string.successfulLogin)
                             switchActivity(MapActivity::class.java)
-
                         }
 
                         403 -> toastMessage = getString(R.string.failedLogin_text)

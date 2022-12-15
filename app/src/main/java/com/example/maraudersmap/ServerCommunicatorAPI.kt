@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
  * @since 2022.11.30
  */
 
-class ServerCommunicator {
+class ServerCommunicatorAPI {
 
     private var client = OkHttpClient()
 

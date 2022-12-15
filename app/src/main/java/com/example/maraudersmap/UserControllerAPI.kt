@@ -12,7 +12,7 @@ import java.net.UnknownHostException
 
 class UserControllerAPI {
 
-    private val server : ServerCommunicator = ServerCommunicator()
+    private val server : ServerCommunicatorAPI = ServerCommunicatorAPI()
 
     /**
      * Creates a new User from the given parameters, converts its information
