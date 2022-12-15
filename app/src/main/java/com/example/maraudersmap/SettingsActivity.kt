@@ -1,9 +1,14 @@
 package com.example.maraudersmap
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
 import android.text.InputType
+import android.text.TextWatcher
+import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Button
@@ -12,17 +17,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import com.example.maraudersmap.LoginActivity.Companion.description
-import com.example.maraudersmap.LoginActivity.Companion.privacyRadius
-import com.example.maraudersmap.LoginActivity.Companion.userID
+import com.example.maraudersmap.LoginActivity.UserInformation.description
+import com.example.maraudersmap.LoginActivity.UserInformation.jsonWebToken
+import com.example.maraudersmap.LoginActivity.UserInformation.privacyRadius
+import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import kotlinx.coroutines.*
 import okhttp3.Response
-import org.simpleframework.xml.strategy.Value
+
 
 /**
- * Provides functions to individualize the app
+ * Provides the user with a way to change their user settings, such as their password, description, and privacy radius.
  * @author Felix Kuhbier
- * @since 2022.12.04
+ * @since 2022.12.15
  */
 class SettingsActivity : AppCompatActivity() {
     private lateinit var autoSendPosSwitch: SwitchCompat
@@ -33,6 +39,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var saveButton: Button
     private lateinit var descriptionEditText: EditText
     private lateinit var visibilityRadiusEditText: EditText
+    private lateinit var descriptionTextView: TextView
 
     private lateinit var userController: UserController
     private lateinit var response: Response
@@ -45,6 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initSettings()
 
+        //Todo:
         autoSendPosSwitch.setOnCheckedChangeListener { _, isChecked ->
 
             intervalEditText.isEnabled = isChecked
@@ -54,6 +62,7 @@ class SettingsActivity : AppCompatActivity() {
 
         descriptionEditText.setOnClickListener {
             val dialogChangeDescriptionEditText = EditText(this@SettingsActivity)
+            dialogChangeDescriptionEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(255))
             dialogChangeDescriptionEditText.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
             dialogChangeDescriptionEditText.height = 250
             dialogChangeDescriptionEditText.isSingleLine = false
@@ -87,16 +96,15 @@ class SettingsActivity : AppCompatActivity() {
 
         saveButton.setOnClickListener {
 
-
             AlertDialog.Builder(this@SettingsActivity)
                 .setTitle(getString(R.string.saveChanges_headerText))
                 .setMessage(getString(R.string.saveChanges_messageText))
                 .setPositiveButton(getString(R.string.yes_dialogText)) { dialog,_ ->
 
+                    changePrivacyRadius(privacyRadiusEditText.text.toString().toLong(), userID)
                     changePassword(changePasswordEditText.text.toString(), userID)
                     changeDescription(descriptionEditText.text.toString(), userID)
-                    changePrivacyRadius(privacyRadiusEditText.text.toString().toLong(), userID)
-
+                    makeToast(getString(R.string.saved_messageText), Toast.LENGTH_SHORT)
                     dialog.dismiss()
                 }
                 .setNegativeButton(getString(R.string.no_dialogText)) { dialog, _ ->
@@ -104,15 +112,35 @@ class SettingsActivity : AppCompatActivity() {
                 }.show()
         }
 
+
+        descriptionTextView.setOnClickListener {
+            AlertDialog.Builder(this@SettingsActivity)
+                .setTitle(getString(R.string.currentDescription_headerText))
+                .setMessage(description)
+                .setNegativeButton(getString(R.string.close_dialogText)) { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
+        }
+
     }
 
 
-
+    /**
+     * Updates the content of an edit text with the content of another edit text.
+     *
+     * @param editTextToUpdate The edit text to be updated.
+     * @param editText The edit text whose content will be used to update the other edit text.
+     */
     private fun updateEditTextContent(editTextToUpdate: EditText, editText: EditText){
         editTextToUpdate.text = editText.text
     }
 
-
+    /**
+     * Deletes a user with the specified ID.
+     *
+     * @param userID The ID of the user to be deleted.
+     *
+     */
     private fun deleteUser(userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
@@ -134,91 +162,151 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Changes the description of the user with the specified ID.
+     *
+     * @param description The new description for the user.
+     * @param userID The ID of the user whose description is being changed.
+     *
+     */
     private fun changeDescription(description: String?, userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
 
             response = userController.changeUserDescription(description, userID)
 
-            toastMessage = when(response.code){
+            when(response.code){
                 // Response codes:
                 // 200 = description changed,
                 // 304 = no changes were made (not-modified),
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
-                200 -> getString(R.string.descriptionChanged_text)
-                304 -> getString(R.string.notModified_text)
-                403 -> getString(R.string.permissionDenied_text)
+                200 -> Log.i(SettingsActivity::class.java.simpleName, getString(R.string.descriptionChanged_text))
+                    .toString()
+                304 ->{
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.notModifiedDescription_text), Toast.LENGTH_SHORT)
+                    }
+                }
+                403 ->{
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.permissionDenied_text), Toast.LENGTH_SHORT)}
+                }
 
 
-                else -> getString(R.string.unknownError_text)
+                else -> {
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.unknownError_text), Toast.LENGTH_SHORT)}
+                }
 
             }
 
-            withContext(Job() + Dispatchers.Main){
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
-            }
         }
 
     }
 
+
+    /**
+     * Changes the privacy radius of the user with the specified ID.
+     *
+     * @param privacyRadius The new privacy radius for the user.
+     * @param userID The ID of the user whose privacy radius is being changed.
+     *
+     */
     private fun changePrivacyRadius(privacyRadius: Long?, userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch{
             response = userController.changeUserPrivacyRadius(privacyRadius, userID)
 
-            toastMessage = when(response.code){
+            when(response.code){
                 // Response codes:
                 // 200 = privacy radius changed,
                 // 304 = no changes were made (not-modified),
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
-                200 -> getString(R.string.privacyRadiusChanged_text)
-                304 -> getString(R.string.notModified_text)
-                403 -> getString(R.string.permissionDenied_text)
+                200 -> Log.i(SettingsActivity::class.java.simpleName, getString(R.string.privacyRadiusChanged_text))
+                    .toString()
+                304 -> {
+
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.notModifiedPrivacyRadius_text), Toast.LENGTH_SHORT)
+                    }
+                }
+                403 -> {
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.permissionDenied_text), Toast.LENGTH_SHORT)
+                    }
+                }
 
 
-                else -> getString(R.string.unknownError_text)
+                else -> {
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.unknownError_text), Toast.LENGTH_SHORT)
+                    }
+                }
             }
 
-            withContext(Job() + Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
-            }
+
         }
     }
 
+    /**
+     * Changes the password of the user with the specified ID.
+     *
+     * @param newPassword The new password for the user.
+     * @param userID The ID of the user whose password is being changed.
+     *
+     */
     private fun changePassword(newPassword: String?, userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch{
             response = userController.changeUserPassword(newPassword, userID)
 
-            toastMessage = when(response.code){
+            when(response.code){
                 // Response codes:
                 // 200 = Password changed,
                 // 304 = no changes were made (not-modified),
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
-                200 -> getString(R.string.passwordChanged_text)
-                304 -> getString(R.string.notModified_text)
-                403 -> getString(R.string.permissionDenied_text)
+                200 -> Log.i(SettingsActivity::class.java.simpleName,getString(R.string.passwordChanged_text))
+                    .toString()
+                304 -> {
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.notModifiedPassword_text), Toast.LENGTH_SHORT)
+                    }
+                }
+                403 -> {
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.permissionDenied_text), Toast.LENGTH_SHORT)
+                    }
+                }
 
 
-                else -> getString(R.string.unknownError_text)
+                else -> {
+                    withContext(Job() + Dispatchers.Main) {
+                        makeToast(getString(R.string.unknownError_text), Toast.LENGTH_SHORT)
+                    }
+                }
             }
 
-            withContext(Job() + Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
-            }
         }
     }
 
     /**
-     * this event will enable the back function to the button on press
-     * @param item MenuItem
+     * Handles the selection of an item in the options menu.
+     *
+     * @param item The selected item in the options menu.
+     *
+     * @return A boolean indicating whether the selection was handled successfully.
+     * Possible return values are:
+     * - `true`: The selection was handled successfully and the activity should close the options menu.
+     * - `false`: The selection was not handled successfully and the options menu should remain open.
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
+                userID = null
+                jsonWebToken = null
                 switchActivity(LoginActivity::class.java)
                 true
             }
@@ -227,23 +315,28 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     /**
-     * makes Toast
-     * @param msg message to show
-     * @param duration display time
+     * Displays a toast message with the specified text and duration.
+     *
+     * @param msg The text to be displayed in the toast message.
+     * @param duration The duration for which the toast message should be displayed.
      */
     private fun makeToast(msg: String, duration: Int) {
         Toast.makeText(this@SettingsActivity, msg, duration).show()
     }
 
     /**
-     * Switch to activity
-     * @param destinationClass destination activity
+     * Switches the current activity to the specified destination activity.
+     *
+     * @param destinationClass The destination activity to switch to.
      */
     private fun switchActivity(destinationClass: Class<*>) {
         val intent = Intent(this@SettingsActivity, destinationClass)
         startActivity(intent)
     }
 
+    /**
+     * Initializes the settings in the activity
+     */
     private fun initSettings() {
         autoSendPosSwitch = findViewById(R.id.autoSendPos_switch)
         intervalEditText = findViewById(R.id.interval_editTextNumber)
@@ -254,8 +347,9 @@ class SettingsActivity : AppCompatActivity() {
         saveButton = findViewById(R.id.saveSettings_button)
         userController = UserController()
         visibilityRadiusEditText = findViewById(R.id.radiusVisibilty_editTextNumber)
+        descriptionTextView = findViewById(R.id.changeDescription_textView)
 
-        descriptionEditText.setText(description, TextView.BufferType.EDITABLE)
+        descriptionEditText.isFocusable = false
         privacyRadiusEditText.setText(privacyRadius.toString(), TextView.BufferType.EDITABLE)
 
 
