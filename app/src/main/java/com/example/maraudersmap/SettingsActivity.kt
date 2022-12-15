@@ -305,7 +305,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                (MapActivity::class.java)
+                switchActivity(MapActivity::class.java)
                 true
             }
             else -> super.onOptionsItemSelected(item)

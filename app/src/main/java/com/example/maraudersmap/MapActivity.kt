@@ -35,7 +35,7 @@ class MapActivity : AppCompatActivity() {
 
         settingsBtn = findViewById(R.id.settings_btn)
         settingsBtn.setOnClickListener {
-            val intent = Intent(this@MapActivity, LoginActivity::class.java)
+            val intent = Intent(this@MapActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
         map = findViewById(R.id.map)
