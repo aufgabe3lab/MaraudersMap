@@ -167,17 +167,19 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     /**
-     * makes Toast
-     * @param msg message to show
-     * @param duration display time
+     * Displays a toast message with the specified text and duration.
+     *
+     * @param msg The text to be displayed in the toast message.
+     * @param duration The duration for which the toast message should be displayed.
      */
     private fun makeToast(msg: String, duration: Int) {
         Toast.makeText(this@RegisterActivity, msg, duration).show()
     }
 
     /**
-     * Switch to activity
-     * @param destinationClass destination activity
+     * Switches the current activity to the specified destination activity.
+     *
+     * @param destinationClass The destination activity to switch to.
      */
     private fun switchActivity(destinationClass: Class<*>) {
         val intent = Intent(this@RegisterActivity, destinationClass)
