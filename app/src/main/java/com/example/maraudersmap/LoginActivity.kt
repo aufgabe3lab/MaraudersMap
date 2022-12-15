@@ -13,6 +13,8 @@ import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 
 /**
@@ -59,8 +61,6 @@ class LoginActivity : AppCompatActivity() {
         registerLink.setOnClickListener {
             switchActivity(RegisterActivity::class.java)
         }
-
-
     }
 
 
@@ -78,40 +78,53 @@ class LoginActivity : AppCompatActivity() {
             scope.launch {
 
                 val serializer: Serializer = Persister()
-                val userController = UserController()
-                val response : Response = userController.loginUser(username, password)
-                val xmlBody = response.body!!.string()
+                val userControllerAPI = UserControllerAPI()
+                val response : Response
 
-                when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
-                    200 ->{
+                try {
+                    response = userControllerAPI.loginUser(username, password)
+                    val xmlBody = response.body!!.string()
 
+                    when(response.code){      // Response codes: 200 = Login successful, 403 = Forbidden (Login failed), ? = Other unknown error codes possible
+                        200 ->{
 
-                        val userData = serializer.read(ExtractData::class.java, xmlBody)
-                        userID = userData.id
-                        description = userData.description
-                        privacyRadius = userData.radius?.toDouble()?.toLong() //converts the double value to a  long value
+                            val userData = serializer.read(ExtractData::class.java, xmlBody)
+                            userID = userData.id
+                            description = userData.description
+                            privacyRadius = userData.radius?.toDouble()?.toLong() //converts the double value to a  long value
 
-                        jsonWebToken = response.headers.last().second
-                        toastMessage = getString(R.string.successfulLogin)
-                        switchActivity(MapActivity::class.java)
+                            jsonWebToken = response.headers.last().second
+                            toastMessage = getString(R.string.successfulLogin)
+                            switchActivity(MapActivity::class.java)
 
+                        }
+
+                        403 -> toastMessage = getString(R.string.failedLogin_text)
+
+                        else -> toastMessage = getString(R.string.unknownError_text)
                     }
 
-                    403 -> toastMessage = getString(R.string.failedLogin_text)
-
-                    else -> toastMessage = getString(R.string.unknownError_text)
+                    withContext(Dispatchers.Main){
+                        makeToast(toastMessage, Toast.LENGTH_SHORT)
+                    }
                 }
-
-                withContext(Dispatchers.Main){
-                    makeToast(toastMessage, Toast.LENGTH_SHORT)
+                catch (e : SocketTimeoutException){
+                    toastMessage = getString(R.string.unknownError_text)                          // server not reachable
+                    withContext(Dispatchers.Main){
+                        makeToast(toastMessage, Toast.LENGTH_SHORT)
+                    }
+                }
+                catch (e : UnknownHostException){                           // no internet connection
+                    toastMessage = getString(R.string.unknownError_text)
+                    withContext(Dispatchers.Main){
+                        makeToast(toastMessage, Toast.LENGTH_SHORT)
+                    }
                 }
             }
         }catch (e: CancellationException){
             e.printStackTrace()
         }
     }
-
-
 
     /**
      * Data class representing a user with an ID, description, and privacy radius.
