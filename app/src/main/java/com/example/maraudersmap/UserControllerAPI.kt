@@ -1,5 +1,6 @@
 package com.example.maraudersmap
 
+import com.example.maraudersmap.LoginActivity.UserInformation.baseURL
 import okhttp3.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -52,7 +53,7 @@ class UserControllerAPI {
         userXTO.username = username
         userXTO.password = password
 
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
+        return server.postRequest(baseURL + "user/login", userXTO)
     }
 
     /**

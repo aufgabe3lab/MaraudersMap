@@ -35,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
         var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var description: String? = null
         var privacyRadius: Long? = null
+        const val baseURL : String = "https://maraudersmap-ext.hhn.dev/api/v0.2/"
     }
 
 
