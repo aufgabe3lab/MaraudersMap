@@ -305,9 +305,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                userID = null
-                jsonWebToken = null
-                switchActivity(LoginActivity::class.java)
+                //switchActivity(MapActivity::class.java) Todo: Remove the comment in the line
                 true
             }
             else -> super.onOptionsItemSelected(item)
