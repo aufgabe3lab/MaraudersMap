@@ -43,6 +43,8 @@ class ServerCommunicatorAPI {
      *
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -71,6 +73,8 @@ class ServerCommunicatorAPI {
      *
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -92,6 +96,8 @@ class ServerCommunicatorAPI {
      * Sends a delete request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -109,6 +115,8 @@ class ServerCommunicatorAPI {
      * Send a get request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)

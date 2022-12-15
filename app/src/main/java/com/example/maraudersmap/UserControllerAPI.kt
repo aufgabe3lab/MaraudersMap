@@ -22,6 +22,8 @@ class UserControllerAPI {
      * @param username new username
      * @param password new password for the username
      * @param description small description, needed but not sure why
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -40,6 +42,8 @@ class UserControllerAPI {
      *
      * @param username username
      * @param password password for the username
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -56,6 +60,8 @@ class UserControllerAPI {
      *
      * @param userID id of user (received after a successful login)
      * @param newPassword new password for the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -70,6 +76,8 @@ class UserControllerAPI {
      *
      * @param userID id of user (received after a successful login)
      * @param privacyRadius new privacy radius of the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -84,6 +92,8 @@ class UserControllerAPI {
      *
      * @param userID id of user (received after a successful login)
      * @param description new description of the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -97,6 +107,8 @@ class UserControllerAPI {
      * Sends a delete request to the server to remove the users account (and all the users information on the server)
      *
      * @param userID id of user (received after a successful login)
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -110,6 +122,8 @@ class UserControllerAPI {
      * @param userID id of user (received after a successful login)
      * @param latitude updated latitude of the user
      * @param longitude updated longitude of the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
@@ -126,6 +140,8 @@ class UserControllerAPI {
      * @param radius radius in which we want to load all users
      * @param latitude position where we want to load the users from
      * @param longitude position where we want to load the users from
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
