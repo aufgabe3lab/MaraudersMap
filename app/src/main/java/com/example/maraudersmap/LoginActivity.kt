@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
-                        //switchActivity(MapActivity::class.java) Todo: Remove the comment in the line
+                        switchActivity(MapActivity::class.java)
 
                     }
 
