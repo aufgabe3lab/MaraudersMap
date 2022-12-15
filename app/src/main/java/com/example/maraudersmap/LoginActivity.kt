@@ -7,15 +7,12 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ContentInfoCompat.Flags
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import okhttp3.Response
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
-import kotlin.math.roundToLong
 
 
 /**
@@ -32,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var toastMessage: String
 
     companion object UserInformation {
-        var userID: String? = null                                   //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
+        var userID: String? = null        //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var jsonWebToken: String? = null //todo after logging out this field needs to be set to null again to avoid a bad server request after logging in again
         var description: String? = null
         var privacyRadius: Long? = null
@@ -88,10 +85,10 @@ class LoginActivity : AppCompatActivity() {
                     200 ->{
 
 
-                        val userData = serializer.read(ExtractUserID::class.java, xmlBody)
+                        val userData = serializer.read(ExtractData::class.java, xmlBody)
                         userID = userData.id
                         description = userData.description
-                        privacyRadius = userData.radius?.toDouble()?.roundToLong() //converts the double value to a rounded long value
+                        privacyRadius = userData.radius?.toDouble()?.toLong() //converts the double value to a  long value
 
                         jsonWebToken = response.headers.last().second
                         toastMessage = getString(R.string.successfulLogin)
@@ -115,10 +112,14 @@ class LoginActivity : AppCompatActivity() {
 
 
     /**
-     * Extracts the user data out of the response body
+     * Data class representing a user with an ID, description, and privacy radius.
+     *
+     * @property id The user's ID.
+     * @property description The user's description.
+     * @property radius The user's privacy radius.
      */
     @Root(name = "userXTO", strict = false)
-    data class ExtractUserID(
+    data class ExtractData(
         @field:Element(name = "id")
         var id: String? = null,
 
@@ -159,17 +160,19 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * makes Toast
-     * @param msg message to show
-     * @param duration display time
+     * Displays a toast message with the specified text and duration.
+     *
+     * @param msg The text to be displayed in the toast message.
+     * @param duration The duration for which the toast message should be displayed.
      */
     private fun makeToast(msg: String, duration: Int) {
         Toast.makeText(this@LoginActivity, msg, duration).show()
     }
 
     /**
-     * Switch to activity
-     * @param destinationClass destination activity
+     * Switches the current activity to the specified destination activity.
+     *
+     * @param destinationClass The destination activity to switch to.
      */
     private fun switchActivity(destinationClass: Class<*>) {
 

@@ -1,6 +1,6 @@
 package com.example.maraudersmap
 
-import com.example.maraudersmap.LoginActivity.Companion.jsonWebToken
+import com.example.maraudersmap.LoginActivity.UserInformation.jsonWebToken
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -8,6 +8,7 @@ import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 import ru.gildor.coroutines.okhttp.await
 import java.io.StringWriter
+import java.nio.file.Files.delete
 import java.util.concurrent.TimeUnit
 
 /**
@@ -54,14 +55,13 @@ class ServerCommunicator {
             .connectTimeout(10, TimeUnit.SECONDS) // Timeout of 10 seconds for the connection.
             .build()
 
-        if(jsonWebToken==null){     // if user is not logged in
-            request = Request.Builder()
+        request = if(jsonWebToken==null){     // if user is not logged in
+            Request.Builder()
                 .url(url!!)
                 .post(body)
                 .build()
-        }
-        else{                       // if user is logged in
-            request = Request.Builder().url(url!!)
+        } else{                       // if user is logged in
+            Request.Builder().url(url!!)
                 .post(body)
                 .addHeader("Authorization", jsonWebToken!!)
                 .build()
@@ -104,7 +104,11 @@ class ServerCommunicator {
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
             .build()
-        val request: Request = Request.Builder().url(url!!).delete().addHeader("Authorization", jsonWebToken!!).build()
+        val request: Request = Request.Builder()
+            .url(url!!)
+            .delete()
+            .addHeader("Authorization", jsonWebToken!!)
+            .build()
 
         return client.newCall(request).await()
     }
