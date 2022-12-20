@@ -8,16 +8,17 @@ import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 import ru.gildor.coroutines.okhttp.await
 import java.io.StringWriter
-import java.nio.file.Files.delete
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 /**
  * Provides methods to be able to communicate with a server
- * @author Julian Ertle
+ * @author Julian Ertle & Felix Kuhbier
  * @since 2022.11.30
  */
 
-class ServerCommunicator {
+class ServerCommunicatorAPI {
 
     private var client = OkHttpClient()
 
@@ -42,8 +43,11 @@ class ServerCommunicator {
      *
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun <T> postRequest(url: String?, xmlObject: T): Response {
 
         val xml = generateXml(xmlObject)
@@ -55,18 +59,12 @@ class ServerCommunicator {
             .connectTimeout(10, TimeUnit.SECONDS) // Timeout of 10 seconds for the connection.
             .build()
 
-        request = if(jsonWebToken==null){     // if user is not logged in
-            Request.Builder()
-                .url(url!!)
-                .post(body)
-                .build()
-        } else{                       // if user is logged in
-            Request.Builder().url(url!!)
-                .post(body)
-                .addHeader("Authorization", jsonWebToken!!)
+        request = if (jsonWebToken == null) {                       // if user is not logged in
+            Request.Builder().url(url!!).post(body).build()
+        } else {                                                 // if user is logged in
+            Request.Builder().url(url!!).post(body).addHeader("Authorization", jsonWebToken!!)
                 .build()
         }
-
         return client.newCall(request).await()
     }
 
@@ -75,8 +73,11 @@ class ServerCommunicator {
      *
      * @param url Server address that needs to be communicated with
      * @param xmlObject Xml object that needs to be converted to an xml String. It contains the information that needs to be posted to the server
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun <T> putRequest(url: String?, xmlObject: T): Response{
 
         val xml = generateXml(xmlObject)
@@ -88,7 +89,6 @@ class ServerCommunicator {
             .connectTimeout(10, TimeUnit.SECONDS)
             .build()
         val request: Request = Request.Builder().url(url!!).put(body).addHeader("Authorization", jsonWebToken!!).build()
-
         return client.newCall(request).await()
     }
 
@@ -96,20 +96,18 @@ class ServerCommunicator {
      * Sends a delete request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun deleteRequest(url: String?): Response{
 
         client = OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
             .build()
-        val request: Request = Request.Builder()
-            .url(url!!)
-            .delete()
-            .addHeader("Authorization", jsonWebToken!!)
-            .build()
-
+        val request: Request = Request.Builder().url(url!!).delete().addHeader("Authorization", jsonWebToken!!).build()
         return client.newCall(request).await()
     }
 
@@ -117,8 +115,11 @@ class ServerCommunicator {
      * Send a get request to the server and returns the response
      *
      * @param url Server address that needs to be communicated with
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun getRequest(url: String?): Response{
 
         client = OkHttpClient.Builder()

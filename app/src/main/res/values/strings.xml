@@ -66,6 +66,10 @@
 
     <!-- Map Activity -->
 
+    <!-- Connection related Strings -->
+    <string name="noInternetConnection_text">No internet connection</string>
+    <string name="noServerConnection_text">Server not reachable</string>
+
 
 
 

@@ -1,13 +1,10 @@
 package com.example.maraudersmap
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
@@ -18,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.example.maraudersmap.LoginActivity.UserInformation.description
-import com.example.maraudersmap.LoginActivity.UserInformation.jsonWebToken
 import com.example.maraudersmap.LoginActivity.UserInformation.privacyRadius
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import kotlinx.coroutines.*
@@ -41,7 +37,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var visibilityRadiusEditText: EditText
     private lateinit var descriptionTextView: TextView
 
-    private lateinit var userController: UserController
+    private lateinit var userControllerAPI: UserControllerAPI
     private lateinit var response: Response
 
     private var toastMessage: String = ""
@@ -144,7 +140,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun deleteUser(userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
-            response = userController.deleteUser(userID)
+            response = userControllerAPI.deleteUser(userID)
 
             toastMessage = when (response.code){
                 // Response codes:
@@ -173,7 +169,7 @@ class SettingsActivity : AppCompatActivity() {
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
 
-            response = userController.changeUserDescription(description, userID)
+            response = userControllerAPI.changeUserDescription(description, userID)
 
             when(response.code){
                 // Response codes:
@@ -216,7 +212,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun changePrivacyRadius(privacyRadius: Long?, userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch{
-            response = userController.changeUserPrivacyRadius(privacyRadius, userID)
+            response = userControllerAPI.changeUserPrivacyRadius(privacyRadius, userID)
 
             when(response.code){
                 // Response codes:
@@ -260,7 +256,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun changePassword(newPassword: String?, userID: String?){
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch{
-            response = userController.changeUserPassword(newPassword, userID)
+            response = userControllerAPI.changeUserPassword(newPassword, userID)
 
             when(response.code){
                 // Response codes:
@@ -343,7 +339,7 @@ class SettingsActivity : AppCompatActivity() {
         changePasswordEditText = findViewById(R.id.changePassword_editText)
         descriptionEditText = findViewById(R.id.changeDescription_editText)
         saveButton = findViewById(R.id.saveSettings_button)
-        userController = UserController()
+        userControllerAPI = UserControllerAPI()
         visibilityRadiusEditText = findViewById(R.id.radiusVisibilty_editTextNumber)
         descriptionTextView = findViewById(R.id.changeDescription_textView)
 

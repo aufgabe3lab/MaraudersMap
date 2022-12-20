@@ -104,9 +104,9 @@ class RegisterActivity : AppCompatActivity() {
             scope.launch {
 
 
-                val userController = UserController()
+                val userControllerAPI = UserControllerAPI()
                 val response: Response =
-                    userController.createNewUser(username, password, description)
+                    userControllerAPI.createNewUser(username, password, description)
 
                 when (response.code) {         // Response codes: 200 = User was added, 409 = User already exists, ? = other unknown error codes possible
                     200 -> {

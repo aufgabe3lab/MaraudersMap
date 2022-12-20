@@ -1,6 +1,9 @@
 package com.example.maraudersmap
 
+import com.example.maraudersmap.LoginActivity.UserInformation.baseURL
 import okhttp3.Response
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 /**
  * Provides methods to let the client communicate with the backend
@@ -8,9 +11,9 @@ import okhttp3.Response
  * @since 2022.11.30
  */
 
-class UserController {
+class UserControllerAPI {
 
-    private val server : ServerCommunicator = ServerCommunicator()
+    private val server : ServerCommunicatorAPI = ServerCommunicatorAPI()
 
     /**
      * Creates a new User from the given parameters, converts its information
@@ -20,8 +23,11 @@ class UserController {
      * @param username new username
      * @param password new password for the username
      * @param description small description, needed but not sure why
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun createNewUser(username: String?, password: String?, description: String?): Response {
 
         val userXTO = UserXTO()
@@ -29,7 +35,7 @@ class UserController {
         userXTO.password = password
         userXTO.description = description
 
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user", userXTO)    //todo replace link with base link variable
+        return server.postRequest(baseURL + "user", userXTO)    //todo replace link with base link variable
     }
 
     /**
@@ -37,14 +43,17 @@ class UserController {
      *
      * @param username username
      * @param password password for the username
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun loginUser(username: String?, password: String?): Response {
         val userXTO = UserXTO()
         userXTO.username = username
         userXTO.password = password
 
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/login", userXTO)
+        return server.postRequest(baseURL + "user/login", userXTO)
     }
 
     /**
@@ -52,12 +61,15 @@ class UserController {
      *
      * @param userID id of user (received after a successful login)
      * @param newPassword new password for the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun changeUserPassword(newPassword: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.password = newPassword
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
+        return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
     /**
@@ -65,12 +77,15 @@ class UserController {
      *
      * @param userID id of user (received after a successful login)
      * @param privacyRadius new privacy radius of the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun changeUserPrivacyRadius(privacyRadius: Long?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
+        return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
     /**
@@ -78,22 +93,28 @@ class UserController {
      *
      * @param userID id of user (received after a successful login)
      * @param description new description of the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun changeUserDescription(description: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.description = description
-        return server.putRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID", userXTO)
+        return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
     /**
      * Sends a delete request to the server to remove the users account (and all the users information on the server)
      *
      * @param userID id of user (received after a successful login)
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun deleteUser(userID: String?): Response{
-        return server.deleteRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID")
+        return server.deleteRequest(baseURL + "user/$userID")
     }
 
     /**
@@ -102,13 +123,16 @@ class UserController {
      * @param userID id of user (received after a successful login)
      * @param latitude updated latitude of the user
      * @param longitude updated longitude of the user
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun updateUserGpsPosition(latitude: Long?, longitude: Long?, userID: String?): Response{
         val locationXTO = LocationXTO()
         locationXTO.latitude = latitude
         locationXTO.longitude = longitude
-        return server.postRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/user/$userID/location", locationXTO)
+        return server.postRequest(baseURL + "user/$userID/location", locationXTO)
     }
 
     /**
@@ -117,9 +141,12 @@ class UserController {
      * @param radius radius in which we want to load all users
      * @param latitude position where we want to load the users from
      * @param longitude position where we want to load the users from
+     * @throws SocketTimeoutException if server not reachable
+     * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
     suspend fun getLocationsWithinRadius(radius: Long?, latitude: Long?, longitude: Long?): Response{
-        return server.getRequest("https://maraudersmap-ext.hhn.dev/api/v0.2/location/$radius/$latitude/$longitude")
+        return server.getRequest(baseURL + "location/$radius/$latitude/$longitude")
     }
 }
