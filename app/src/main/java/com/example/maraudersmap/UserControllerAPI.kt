@@ -128,7 +128,7 @@ class UserControllerAPI {
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
-    suspend fun updateUserGpsPosition(latitude: Long?, longitude: Long?, userID: String?): Response{
+    suspend fun updateUserGpsPosition(latitude: Double?, longitude: Double?, userID: String?): Response{
         val locationXTO = LocationXTO()
         locationXTO.latitude = latitude
         locationXTO.longitude = longitude
@@ -146,7 +146,7 @@ class UserControllerAPI {
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
-    suspend fun getLocationsWithinRadius(radius: Long?, latitude: Long?, longitude: Long?): Response{
+    suspend fun getLocationsWithinRadius(radius: Double?, latitude: Double?, longitude: Double?): Response{
         return server.getRequest(baseURL + "location/$radius/$latitude/$longitude")
     }
 }
