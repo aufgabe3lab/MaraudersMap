@@ -9,6 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import okhttp3.Response
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration.getInstance
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -68,6 +73,7 @@ class MapActivity : AppCompatActivity() {
            // val response1 : Response = userController.updateUserGpsPosition(latitude,longitude, userID)
             //val responseString1 : String = response1.body!!.toString()
 
+
             val response : Response = userController.getLocationsWithinRadius(5L, latitude, longitude)
             val xmlBody = response.body!!.string()
         }
@@ -76,7 +82,6 @@ class MapActivity : AppCompatActivity() {
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
-
 
     }
 

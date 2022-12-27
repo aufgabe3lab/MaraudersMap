@@ -128,6 +128,7 @@ class UserControllerAPI {
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
+
     suspend fun updateUserGpsPosition(latitude: Double, longitude: Double, userID: String?): Response{
         val locationXTO = LocationXTO()
         locationXTO.latitude = latitude
