@@ -43,6 +43,7 @@ class SettingsActivity : AppCompatActivity() {
 
     companion object SettingsCompanion {
         var interval: Long = 0L
+        var visibilityRadius: Int = 5               // Standard search radius set to 5
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,15 +94,28 @@ class SettingsActivity : AppCompatActivity() {
                 .setMessage(getString(R.string.saveChanges_messageText))
                 .setPositiveButton(getString(R.string.yes_dialogText)) { dialog, _ ->
 
-                    changePrivacyRadius(privacyRadiusEditText.text.toString().toLong(), userID)
-                    changePassword(changePasswordEditText.text.toString(), userID)
-                    changeDescription(descriptionEditText.text.toString(), userID)
+                    if(privacyRadiusEditText.text.isNotEmpty()){
+                        changePrivacyRadius(privacyRadiusEditText.text.toString().toLong(), userID)
+                    }
+                    if(changePasswordEditText.text.isNotEmpty()){
+                        changePassword(changePasswordEditText.text.toString(), userID)
+                    }
+                    if(descriptionEditText.text.isNotEmpty()){
+                        changeDescription(descriptionEditText.text.toString(), userID)
+                    }
+                    if(visibilityRadiusEditText.text.isNotEmpty()){
+                        changeVisibilityRadius(visibilityRadiusEditText.text.toString())
+                    }
+
                     if (intervalEditText.text.isNotEmpty()) {
 
                         interval = intervalEditText.text.toString().toLong()
                     } else {
                         interval = 0L
                     }
+                    intervalEditText.hint = interval.toString()
+                    intervalEditText.text.clear()
+
                     makeToast(getString(R.string.saved_messageText), Toast.LENGTH_SHORT)
                     dialog.dismiss()
                 }
@@ -119,7 +133,6 @@ class SettingsActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }.show()
         }
-
     }
 
 
@@ -181,6 +194,8 @@ class SettingsActivity : AppCompatActivity() {
                 // else = other unknown error codes possible
                 200 -> { Log.i(SettingsActivity::class.java.simpleName, getString(R.string.descriptionChanged_text)).toString()
                     LoginActivity.description = description
+                    descriptionEditText.hint = description
+                    descriptionEditText.text.clear()
                 }
                 304 -> {
                     withContext(Job() + Dispatchers.Main) {
@@ -199,8 +214,10 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> {
                     withContext(Job() + Dispatchers.Main) {
-                        makeToast(getString(R.string.unknownError_text), Toast.LENGTH_SHORT)
+                        makeToast(getString(R.string.unknownError_text)+ "Description Code: " + response.code, Toast.LENGTH_SHORT)
                     }
+                    descriptionEditText.setText("Error: Please enter again", TextView.BufferType.EDITABLE)
+
                 }
 
             }
@@ -231,6 +248,9 @@ class SettingsActivity : AppCompatActivity() {
                 200 -> {
                     Log.i(SettingsActivity::class.java.simpleName, getString(R.string.privacyRadiusChanged_text)).toString()
                     LoginActivity.privacyRadius = privacyRadius
+                    privacyRadiusEditText.hint = privacyRadius.toString()
+                    privacyRadiusEditText.text.clear()
+
                 }
                 304 -> {
 
@@ -245,12 +265,14 @@ class SettingsActivity : AppCompatActivity() {
                     withContext(Job() + Dispatchers.Main) {
                         makeToast(getString(R.string.permissionDenied_text), Toast.LENGTH_SHORT)
                     }
+                    privacyRadiusEditText.setText("Error: Please enter again", TextView.BufferType.EDITABLE)
+
                 }
 
 
                 else -> {
                     withContext(Job() + Dispatchers.Main) {
-                        makeToast(getString(R.string.unknownError_text), Toast.LENGTH_SHORT)
+                        makeToast(getString(R.string.unknownError_text) + "Privacy Code: " + response.code, Toast.LENGTH_SHORT)
                     }
                 }
             }
@@ -259,7 +281,17 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    /**
+    private fun changeVisibilityRadius(newRadius: String) {
+
+        val newRadiusInt : Int = newRadius.toInt()
+        visibilityRadius = newRadiusInt
+        visibilityRadiusEditText.hint = newRadiusInt.toString()
+        visibilityRadiusEditText.text.clear()
+
+    }
+
+
+        /**
      * Changes the password of the user with the specified ID.
      *
      * @param newPassword The new password for the user.
@@ -277,15 +309,17 @@ class SettingsActivity : AppCompatActivity() {
                 // 304 = no changes were made (not-modified),
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
-                200 -> Log.i(
-                    SettingsActivity::class.java.simpleName,
-                    getString(R.string.passwordChanged_text)
-                )
-                    .toString()
+                200 -> {
+                    Log.i(SettingsActivity::class.java.simpleName, getString(R.string.passwordChanged_text)).toString()
+                    changePasswordEditText.text.clear()
+                    privacyRadius = 0
+                    privacyRadiusEditText.hint = privacyRadius.toString()  // server sets privacy radius to 0 after the password got changed... don't know why but it is annoying
+                }
                 304 -> {
                     withContext(Job() + Dispatchers.Main) {
                         makeToast(getString(R.string.notModifiedPassword_text), Toast.LENGTH_SHORT)
                     }
+
                 }
                 403 -> {
                     withContext(Job() + Dispatchers.Main) {
@@ -296,8 +330,10 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> {
                     withContext(Job() + Dispatchers.Main) {
-                        makeToast(getString(R.string.unknownError_text), Toast.LENGTH_SHORT)
+                        makeToast(getString(R.string.unknownError_text)+ "Change PW Code: " + response.code, Toast.LENGTH_SHORT)
                     }
+                    changePasswordEditText.setText("Error: Please enter again", TextView.BufferType.EDITABLE)
+
                 }
             }
 
@@ -359,8 +395,12 @@ class SettingsActivity : AppCompatActivity() {
         descriptionTextView = findViewById(R.id.changeDescription_textView)
 
         descriptionEditText.isFocusable = false
-        privacyRadiusEditText.setText(privacyRadius.toString(), TextView.BufferType.EDITABLE)
-        descriptionEditText.setText(description, TextView.BufferType.EDITABLE)
+        //privacyRadiusEditText.setText(privacyRadius.toString(), TextView.BufferType.EDITABLE)
+        privacyRadiusEditText.hint = privacyRadius.toString()
+        //descriptionEditText.setText(description, TextView.BufferType.EDITABLE)
+        descriptionEditText.hint = description
+        //visibilityRadiusEditText.setText(visibilityRadius.toString(), TextView.BufferType.EDITABLE)
+        visibilityRadiusEditText.hint = visibilityRadius.toString()
 
     }
 }
