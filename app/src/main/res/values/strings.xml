@@ -20,6 +20,7 @@
     <string name="successfulLogin">Login successful</string>
     <string name="failedLogin_text">Login failed</string>
     <string name="unknownError_text">Unknown error</string>
+    <string name="error_text">Error</string>
     <string name="userAlreadyExists_text">User already exists</string>
     <string name="successfulRegistration_text">Registration successful</string>
     <string name="confirmPassword_text">Confirm password</string>

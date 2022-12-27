@@ -194,8 +194,10 @@ class SettingsActivity : AppCompatActivity() {
                 // else = other unknown error codes possible
                 200 -> { Log.i(SettingsActivity::class.java.simpleName, getString(R.string.descriptionChanged_text)).toString()
                     LoginActivity.description = description
-                    descriptionEditText.hint = description
-                    descriptionEditText.text.clear()
+                    descriptionEditText.hint = description  // convert text of EditText into a hint
+                    descriptionEditText.text.clear()        // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
+                    privacyRadius = 0                       // server sets privacy radius to 0 after the description got changed... don't know why but it is annoying
+                    privacyRadiusEditText.hint = privacyRadius.toString()
                 }
                 304 -> {
                     withContext(Job() + Dispatchers.Main) {
@@ -214,9 +216,10 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> {
                     withContext(Job() + Dispatchers.Main) {
-                        makeToast(getString(R.string.unknownError_text)+ "Description Code: " + response.code, Toast.LENGTH_SHORT)
+                        makeToast("Description Error: " + response.code, Toast.LENGTH_SHORT)
                     }
-                    descriptionEditText.setText("Error: Please enter again", TextView.BufferType.EDITABLE)
+                    descriptionEditText.text.clear()
+                    descriptionEditText.hint = getString(R.string.error_text)
 
                 }
 
@@ -265,19 +268,18 @@ class SettingsActivity : AppCompatActivity() {
                     withContext(Job() + Dispatchers.Main) {
                         makeToast(getString(R.string.permissionDenied_text), Toast.LENGTH_SHORT)
                     }
-                    privacyRadiusEditText.setText("Error: Please enter again", TextView.BufferType.EDITABLE)
+                    privacyRadiusEditText.text.clear()
+                    privacyRadiusEditText.hint = getString(R.string.error_text)
 
                 }
 
 
                 else -> {
                     withContext(Job() + Dispatchers.Main) {
-                        makeToast(getString(R.string.unknownError_text) + "Privacy Code: " + response.code, Toast.LENGTH_SHORT)
+                        makeToast("PrivacyRadius Error: " + response.code, Toast.LENGTH_SHORT)
                     }
                 }
             }
-
-
         }
     }
 
@@ -311,9 +313,9 @@ class SettingsActivity : AppCompatActivity() {
                 // else = other unknown error codes possible
                 200 -> {
                     Log.i(SettingsActivity::class.java.simpleName, getString(R.string.passwordChanged_text)).toString()
-                    changePasswordEditText.text.clear()
-                    privacyRadius = 0
-                    privacyRadiusEditText.hint = privacyRadius.toString()  // server sets privacy radius to 0 after the password got changed... don't know why but it is annoying
+                    changePasswordEditText.text.clear() // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
+                    privacyRadius = 0                   // server sets privacy radius to 0 after the password got changed... don't know why but it is annoying
+                    privacyRadiusEditText.hint = privacyRadius.toString()
                 }
                 304 -> {
                     withContext(Job() + Dispatchers.Main) {
@@ -330,9 +332,10 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> {
                     withContext(Job() + Dispatchers.Main) {
-                        makeToast(getString(R.string.unknownError_text)+ "Change PW Code: " + response.code, Toast.LENGTH_SHORT)
+                        makeToast("Change PW Error: " + response.code, Toast.LENGTH_SHORT)
                     }
-                    changePasswordEditText.setText("Error: Please enter again", TextView.BufferType.EDITABLE)
+                    changePasswordEditText.text.clear()
+                    changePasswordEditText.hint = getString(R.string.error_text)
 
                 }
             }
