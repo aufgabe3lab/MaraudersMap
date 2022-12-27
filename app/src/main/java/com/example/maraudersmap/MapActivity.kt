@@ -2,6 +2,8 @@ package com.example.maraudersmap
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -18,6 +20,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import okhttp3.Response
 
 /**
  * provides a map which shows your own location
@@ -51,7 +59,7 @@ class MapActivity : AppCompatActivity() {
         mapController = map.controller
         mapController.setZoom(18.0)
 
-        locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(applicationContext), map)
+        locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this@MapActivity), map)
         map.overlays.add(locationOverlay)
         map.postInvalidate()
 
@@ -65,9 +73,16 @@ class MapActivity : AppCompatActivity() {
            // val response1 : Response = userController.updateUserGpsPosition(latitude,longitude, userID)
             //val responseString1 : String = response1.body!!.toString()
 
-            val response : Response = userController.getLocationsWithinRadius(5.0, latitude, longitude)
+
+            val response : Response = userController.getLocationsWithinRadius(5L, latitude, longitude)
             val xmlBody = response.body!!.string()
         }
+
+
+        if(interval != 0L){
+            autoUpdatePos(interval * 1000)
+        }
+
     }
 
 
@@ -99,5 +114,30 @@ class MapActivity : AppCompatActivity() {
                 permissionsToRequest.toTypedArray(),
                 requestPermissionRequestCode)
         }
+    }
+
+    private fun autoUpdatePos(millisInFuture: Long){
+       object : CountDownTimer(millisInFuture, 1000){
+            override fun onTick(millisUntilFinished: Long) {
+                Log.i(MapActivity::class.java.simpleName,"${millisUntilFinished / 1000}")
+                val scope = CoroutineScope(Job() + Dispatchers.IO)
+                scope.launch {
+                    val userControllerAPI = UserControllerAPI()
+                    userControllerAPI.updateUserGpsPosition(map.mapCenter.latitude,map.mapCenter.longitude, userID!!)
+                }
+            }
+
+            override fun onFinish() {
+                if(interval != 0L){
+                    Log.i(MapActivity::class.java.simpleName,"Finish")
+                    start()
+                }else{
+                    cancel()
+                }
+            }
+
+       }.start()
+
+
     }
 }
