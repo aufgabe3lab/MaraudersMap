@@ -110,10 +110,9 @@ class SettingsActivity : AppCompatActivity() {
                     if (intervalEditText.text.isNotEmpty()) {
 
                         interval = intervalEditText.text.toString().toLong()
-                    } else {
-                        interval = 0L
                     }
-                    intervalEditText.hint = interval.toString()
+
+                    intervalEditText.hint = interval.toString() + " seconds"
                     intervalEditText.text.clear()
 
                     makeToast(getString(R.string.saved_messageText), Toast.LENGTH_SHORT)
@@ -197,7 +196,7 @@ class SettingsActivity : AppCompatActivity() {
                     descriptionEditText.hint = description  // convert text of EditText into a hint
                     descriptionEditText.text.clear()        // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
                     privacyRadius = 0                       // server sets privacy radius to 0 after the description got changed... don't know why but it is annoying
-                    privacyRadiusEditText.hint = privacyRadius.toString()
+                    privacyRadiusEditText.hint = privacyRadius.toString() + " km "
                 }
                 304 -> {
                     withContext(Job() + Dispatchers.Main) {
@@ -251,7 +250,7 @@ class SettingsActivity : AppCompatActivity() {
                 200 -> {
                     Log.i(SettingsActivity::class.java.simpleName, getString(R.string.privacyRadiusChanged_text)).toString()
                     LoginActivity.privacyRadius = privacyRadius
-                    privacyRadiusEditText.hint = privacyRadius.toString()
+                    privacyRadiusEditText.hint = privacyRadius.toString() + " km"
                     privacyRadiusEditText.text.clear()
 
                 }
@@ -287,7 +286,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val newRadiusInt : Int = newRadius.toInt()
         visibilityRadius = newRadiusInt
-        visibilityRadiusEditText.hint = newRadiusInt.toString()
+        visibilityRadiusEditText.hint = newRadiusInt.toString() + " km"
         visibilityRadiusEditText.text.clear()
 
     }
@@ -315,7 +314,7 @@ class SettingsActivity : AppCompatActivity() {
                     Log.i(SettingsActivity::class.java.simpleName, getString(R.string.passwordChanged_text)).toString()
                     changePasswordEditText.text.clear() // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
                     privacyRadius = 0                   // server sets privacy radius to 0 after the password got changed... don't know why but it is annoying
-                    privacyRadiusEditText.hint = privacyRadius.toString()
+                    privacyRadiusEditText.hint = privacyRadius.toString() + " km"
                 }
                 304 -> {
                     withContext(Job() + Dispatchers.Main) {
@@ -399,11 +398,13 @@ class SettingsActivity : AppCompatActivity() {
 
         descriptionEditText.isFocusable = false
         //privacyRadiusEditText.setText(privacyRadius.toString(), TextView.BufferType.EDITABLE)
-        privacyRadiusEditText.hint = privacyRadius.toString()
+        privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         //descriptionEditText.setText(description, TextView.BufferType.EDITABLE)
         descriptionEditText.hint = description
         //visibilityRadiusEditText.setText(visibilityRadius.toString(), TextView.BufferType.EDITABLE)
-        visibilityRadiusEditText.hint = visibilityRadius.toString()
+        visibilityRadiusEditText.hint = visibilityRadius.toString() + " km"
+
+        intervalEditText.hint = interval.toString() + " seconds"
 
     }
 }
