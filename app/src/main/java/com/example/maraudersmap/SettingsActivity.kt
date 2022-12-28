@@ -162,7 +162,7 @@ class SettingsActivity : AppCompatActivity() {
         if(privacyRadius!=null || newPassword != "" || description != ""){
             val scope = CoroutineScope(Job() + Dispatchers.IO)
             scope.launch {
-                response = userControllerAPI.changeUserStoredData(newPassword,privacyRadius,description,userID)
+                response = userControllerAPI.changeUserStoredServerData(newPassword,privacyRadius,description,userID)
 
                 when (response.code) {
 
