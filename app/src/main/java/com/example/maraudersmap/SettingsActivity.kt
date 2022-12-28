@@ -102,27 +102,7 @@ class SettingsActivity : AppCompatActivity() {
                     val collectedDescription = descriptionEditText.text.toString()
 
                     changeUserStoredServerInfo(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
-
-                    /**if(privacyRadiusEditText.text.isNotEmpty()){
-                        changePrivacyRadius(collectedPrivacyRadius, userID)
-                    }
-                    if(changePasswordEditText.text.isNotEmpty()){
-                        changePassword(collectedNewPassword, userID)
-                    }
-                    if(descriptionEditText.text.isNotEmpty()){
-                        changeDescription(collectedDescription, userID)
-                    }
-                    if(visibilityRadiusEditText.text.isNotEmpty()){
-                        changeVisibilityRadius(visibilityRadiusEditText.text.toString())
-                    }
-
-                    if (intervalEditText.text.isNotEmpty()) {
-
-                        interval = intervalEditText.text.toString().toLong()
-                    }*/
-
-                    intervalEditText.hint = interval.toString() + " seconds"
-                    intervalEditText.text.clear()
+                    changeInterval(intervalEditText.text.toString())
 
                     makeToast(getString(R.string.saved_messageText), Toast.LENGTH_SHORT)
                     dialog.dismiss()
@@ -142,7 +122,6 @@ class SettingsActivity : AppCompatActivity() {
                 }.show()
         }
     }
-
 
     /**
      * Updates the content of an edit text with the content of another edit text.
@@ -181,52 +160,51 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun changeInterval(newInterval: String ){
+
+        if (newInterval != ""){
+            interval = newInterval.toLong()
+            intervalEditText.hint = interval.toString() + " seconds"
+        }
+        intervalEditText.text.clear()
+    }
 
     private fun changeUserStoredServerInfo(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
 
-        val scope = CoroutineScope(Job() + Dispatchers.IO)
-        scope.launch {
-            response = userControllerAPI.changeUserStoredData(newPassword,privacyRadius,description,userID)
+        if(privacyRadius!=null || newPassword != "" || description != ""){
+            val scope = CoroutineScope(Job() + Dispatchers.IO)
+            scope.launch {
+                response = userControllerAPI.changeUserStoredData(newPassword,privacyRadius,description,userID)
 
-            when (response.code) {
+                when (response.code) {
 
-                200 -> {
-                    toastMessage = getString(R.string.successfulModification_text)
+                    200 -> {
+                        toastMessage = getString(R.string.successfulModification_text)
 
-                    if(changePasswordEditText.text.isNotEmpty()){
-                        changePassword()
-                        if(privacyRadiusEditText.text.isEmpty()){
-                            LoginActivity.privacyRadius = 0 // server sets privacy radius to 0 after the password got changed
-                            privacyRadiusEditText.hint = LoginActivity.privacyRadius.toString() + " km "
+                        if(changePasswordEditText.text.isNotEmpty()){
+                            changePassword()
                         }
-                    }
-                    if(descriptionEditText.text.isNotEmpty()){
-                        changeDescription(descriptionEditText.text.toString())
-                        if(privacyRadiusEditText.text.isEmpty()){
-                            LoginActivity.privacyRadius = 0 // server sets privacy radius to 0 after the description got changed
-                            privacyRadiusEditText.hint = LoginActivity.privacyRadius.toString() + " km "
+                        if(descriptionEditText.text.isNotEmpty()){
+                            changeDescription(descriptionEditText.text.toString())
                         }
-                    }
-                    if(privacyRadiusEditText.text.isNotEmpty()){
-                        changePrivacyRadius(privacyRadiusEditText.text.toString().toLong())
+                        if(privacyRadiusEditText.text.isNotEmpty()){    // needs to be checked after the changePassword() and changeDescription method got called to avoid bugs
+                            changePrivacyRadius(privacyRadiusEditText.text.toString().toLong())
+                        }
+
+                        if(visibilityRadiusEditText.text.isNotEmpty()){
+                            changeVisibilityRadius(visibilityRadiusEditText.text.toString())
+                        }
+
                     }
 
-                    if(visibilityRadiusEditText.text.isNotEmpty()){
-                        changeVisibilityRadius(visibilityRadiusEditText.text.toString())
-                    }
-                    if(intervalEditText.text.isNotEmpty()){
-                        interval = intervalEditText.text.toString().toLong()
-                    }
-
+                    303  -> toastMessage = getString(R.string.notModified_text)
+                    403  -> toastMessage = getString(R.string.permissionDenied_text)
+                    else -> toastMessage = getString(R.string.unknownError_text)
                 }
-                303 -> toastMessage = getString(R.string.notModified_text)
 
-                403 -> toastMessage = getString(R.string.permissionDenied_text)
-                else -> toastMessage = getString(R.string.unknownError_text)
-            }
-
-            withContext(Job() + Dispatchers.Main) {
-                makeToast(toastMessage, Toast.LENGTH_SHORT)
+                withContext(Job() + Dispatchers.Main) {
+                    makeToast(toastMessage, Toast.LENGTH_SHORT)
+                }
             }
         }
     }
@@ -271,8 +249,9 @@ class SettingsActivity : AppCompatActivity() {
         visibilityRadius = newRadiusInt
         visibilityRadiusEditText.hint = newRadiusInt.toString() + " km"
         visibilityRadiusEditText.text.clear()
-
     }
+
+
 
 
         /**
