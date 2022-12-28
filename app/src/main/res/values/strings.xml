@@ -31,9 +31,12 @@
     <!-- Settings Activity -->
     <string name="automaticSendingOfPosition_text">Auto sending</string>
     <string name="interval_text">Interval</string>
-    <string name="successfulModification_text">User data changed</string>
+    <string name="successfulModification_text">Server info modified</string>
     <string name="notModified_text">Modification failed</string>
     <string name="privacyRadius_text">Privacy radius</string>
+
+    <string name="savedRadius_text">Saved new radius</string>
+    <string name="savedInterval_text">Saved new interval</string>
     <string name="deleteAccount_buttonText">Delete Account</string>
     <string name="position_headerText">Position</string>
     <string name="visibility_headerText">Visibility</string>

@@ -90,18 +90,19 @@ class SettingsActivity : AppCompatActivity() {
                 .setMessage(getString(R.string.saveChanges_messageText))
                 .setPositiveButton(getString(R.string.yes_dialogText)) { dialog, _ ->
 
-
-                    var collectedPrivacyRadius : Long? = null
-                    if (privacyRadiusEditText.text.isNotEmpty()){
+                    var collectedPrivacyRadius: Long? = null
+                    if(privacyRadiusEditText.text.isNotEmpty()){
                         collectedPrivacyRadius = privacyRadiusEditText.text.toString().toLong()
                     }
                     val collectedNewPassword = changePasswordEditText.text.toString()
                     val collectedDescription = descriptionEditText.text.toString()
                     val collectedInterval = intervalEditText.text.toString()
+                    val collectedVisibleRadius = visibilityRadiusEditText.text.toString()
 
-                    changeUserStoredInfo(collectedNewPassword,collectedPrivacyRadius,collectedDescription,collectedInterval, userID)
+                    changeUserStoredServerInfo(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
+                    changeUserInterval(collectedInterval)
+                    changeUserVisibilityRadius(collectedVisibleRadius)
 
-                    makeToast(getString(R.string.saved_messageText), Toast.LENGTH_SHORT)
                     dialog.dismiss()
                 }
                 .setNegativeButton(getString(R.string.no_dialogText)) { dialog, _ ->
@@ -156,8 +157,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun changeUserStoredInfo(newPassword: String?, privacyRadius: Long?, description: String?, interval: String, userID: String?){
+    private fun changeUserStoredServerInfo(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
 
         if(privacyRadius!=null || newPassword != "" || description != ""){
             val scope = CoroutineScope(Job() + Dispatchers.IO)
@@ -173,14 +173,10 @@ class SettingsActivity : AppCompatActivity() {
                             changePassword()
                         }
                         if(descriptionEditText.text.isNotEmpty()){
-                            changeDescription(descriptionEditText.text.toString())
+                            changeDescription(description)
                         }
-                        if(privacyRadiusEditText.text.isNotEmpty()){    // needs to be checked after the changePassword() and changeDescription method got called to avoid bugs
-                            changePrivacyRadius(privacyRadiusEditText.text.toString().toLong())
-                        }
-
-                        if(visibilityRadiusEditText.text.isNotEmpty()){
-                            changeVisibilityRadius(visibilityRadiusEditText.text.toString())
+                        if(privacyRadiusEditText.text.isNotEmpty()){ // needs to be checked after the changePassword() and changeDescription method got called to avoid bugs
+                            changePrivacyRadius(privacyRadius)
                         }
                     }
 
@@ -194,16 +190,25 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        changeInterval(interval)
     }
 
-    private fun changeInterval(newInterval: String ){
-
+    private fun changeUserInterval(newInterval: String ){
         if (newInterval != ""){
             interval = newInterval.toLong()
             intervalEditText.hint = interval.toString() + " seconds"
+            makeToast(getString(R.string.savedInterval_text), Toast.LENGTH_SHORT)
+            intervalEditText.text.clear()
         }
-        intervalEditText.text.clear()
+    }
+
+    private fun changeUserVisibilityRadius(newRadius: String) {
+        if (newRadius != "") {
+            val newRadiusInt: Int = newRadius.toInt()
+            visibilityRadius = newRadiusInt
+            visibilityRadiusEditText.hint = newRadiusInt.toString() + " km"
+            makeToast(getString(R.string.savedRadius_text), Toast.LENGTH_SHORT)
+            visibilityRadiusEditText.text.clear()
+        }
     }
 
     /**
@@ -235,14 +240,6 @@ class SettingsActivity : AppCompatActivity() {
         LoginActivity.privacyRadius = privacyRadius
         privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         privacyRadiusEditText.text.clear()
-
-    }
-
-    private fun changeVisibilityRadius(newRadius: String) {
-        val newRadiusInt : Int = newRadius.toInt()
-        visibilityRadius = newRadiusInt
-        visibilityRadiusEditText.hint = newRadiusInt.toString() + " km"
-        visibilityRadiusEditText.text.clear()
     }
 
 
@@ -260,7 +257,7 @@ class SettingsActivity : AppCompatActivity() {
                 privacyRadius = 0                   // server sets privacy radius to 0 after the description got changed
                 privacyRadiusEditText.hint = privacyRadius.toString() + " km "
             }
-    }
+        }
 
     /**
      * Handles the selection of an item in the options menu.
