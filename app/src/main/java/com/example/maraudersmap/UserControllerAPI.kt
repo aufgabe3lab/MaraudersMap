@@ -56,6 +56,7 @@ class UserControllerAPI {
         return server.postRequest(baseURL + "user/login", userXTO)
     }
 
+
     /**
      * Sends a request to the server to change the users password
      *
@@ -101,6 +102,16 @@ class UserControllerAPI {
     suspend fun changeUserDescription(description: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.description = description
+        return server.putRequest(baseURL + "user/$userID", userXTO)
+    }
+
+    @Throws(SocketTimeoutException::class, UnknownHostException::class)
+    suspend fun changeUserStoredData(newPassword: String?,privacyRadius: Long?,description: String?, userID: String?): Response{
+        val userXTO = UserXTO()
+        userXTO.privacyRadius = privacyRadius
+        userXTO.description = description
+        userXTO.password = newPassword
+
         return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
