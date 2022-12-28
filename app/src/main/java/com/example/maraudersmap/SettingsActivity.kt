@@ -21,7 +21,7 @@ import okhttp3.Response
 
 /**
  * Provides the user with a way to change their user settings, such as their password, description, and privacy radius.
- * @author Felix Kuhbier
+ * @author Felix Kuhbier & Julian Ertle
  * @since 2022.12.15
  */
 class SettingsActivity : AppCompatActivity() {
@@ -99,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
                     val collectedInterval = intervalEditText.text.toString()
                     val collectedVisibleRadius = visibilityRadiusEditText.text.toString()
 
-                    changeUserStoredServerInfo(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
+                    changeUserStoredServerData(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
                     changeUserInterval(collectedInterval)
                     changeUserVisibilityRadius(collectedVisibleRadius)
 
@@ -157,7 +157,16 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeUserStoredServerInfo(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
+    /**
+     * Changes the information of a user that are stored on the backend database and informs the user
+     * if the request was successful or not via toast messages.
+     *
+     * @param newPassword The new password for the user.
+     * @param privacyRadius The new privacy radius for the user.
+     * @param description The new description for the user.
+     * @param userID The ID of the user whose data is being changed.
+     */
+    private fun changeUserStoredServerData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
 
         if(privacyRadius!=null || newPassword != "" || description != ""){
             val scope = CoroutineScope(Job() + Dispatchers.IO)
@@ -192,6 +201,12 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Saves the new interval and informs the user about it
+     * and clears the EditText field.
+     *
+     * @param newInterval The new interval for the user.
+     */
     private fun changeUserInterval(newInterval: String ){
         if (newInterval != ""){
             interval = newInterval.toLong()
@@ -201,6 +216,12 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Saves the new radius and informs the user about it
+     * and clears the EditText field.
+     *
+     * @param newRadius The new interval for the user.
+     */
     private fun changeUserVisibilityRadius(newRadius: String) {
         if (newRadius != "") {
             val newRadiusInt: Int = newRadius.toInt()
@@ -212,30 +233,28 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     /**
-     * Changes the description of the user with the specified ID.
+     * Saves the new description and converts it into a displayed hint for the user
+     * and clears the EditText field.
      *
      * @param description The new description for the user.
-     * @param userID The ID of the user whose description is being changed.
-     *
      */
     private fun changeDescription(description: String?) {
 
         LoginActivity.description = description
         descriptionEditText.hint = description  // convert text of EditText into a hint
-        descriptionEditText.text.clear()        // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
+        descriptionEditText.text.clear()        // clearing so text is empty and when using the save button a 2nd time the device doesn't send it again
         if(privacyRadiusEditText.text.isEmpty()){
-            privacyRadius = 0                   // server sets privacy radius to 0 after the description got changed
+            privacyRadius = 0                   // server sets privacy radius to 0 after the description got changed, seems to be a bug on the backend
             privacyRadiusEditText.hint = privacyRadius.toString() + " km "
         }
     }
 
     /**
-     * Changes the privacy radius of the user with the specified ID.
+     * Saves the new privacy Radius and converts it into a displayed hint for the user
+     * and clears the EditText field.
      *
      * @param privacyRadius The new privacy radius for the user.
-     * @param userID The ID of the user whose privacy radius is being changed.
-     *
-     */
+    */
     private fun changePrivacyRadius(privacyRadius: Long?) {
         LoginActivity.privacyRadius = privacyRadius
         privacyRadiusEditText.hint = privacyRadius.toString() + " km"
@@ -243,21 +262,16 @@ class SettingsActivity : AppCompatActivity() {
     }
 
 
-        /**
-     * Changes the password of the user with the specified ID.
-     *
-     * @param newPassword The new password for the user.
-     * @param userID The ID of the user whose password is being changed.
-     *
+    /**
+     * Clears the EditText field
      */
     private fun changePassword() {
-
-            changePasswordEditText.text.clear()     // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
+        changePasswordEditText.text.clear()     // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
             if(privacyRadiusEditText.text.isEmpty()){
-                privacyRadius = 0                   // server sets privacy radius to 0 after the description got changed
+                privacyRadius = 0                   // server sets privacy radius to 0 after the password got changed, seems to be a bug on the backend
                 privacyRadiusEditText.hint = privacyRadius.toString() + " km "
-            }
         }
+    }
 
     /**
      * Handles the selection of an item in the options menu.
