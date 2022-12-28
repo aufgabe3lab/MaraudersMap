@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
-import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Button
@@ -34,10 +33,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var descriptionEditText: EditText
     private lateinit var visibilityRadiusEditText: EditText
     private lateinit var descriptionTextView: TextView
-
     private lateinit var userControllerAPI: UserControllerAPI
     private lateinit var response: Response
-
     private var toastMessage: String = ""
 
     companion object SettingsCompanion {
@@ -100,9 +97,9 @@ class SettingsActivity : AppCompatActivity() {
                     }
                     val collectedNewPassword = changePasswordEditText.text.toString()
                     val collectedDescription = descriptionEditText.text.toString()
+                    val collectedInterval = intervalEditText.text.toString()
 
-                    changeUserStoredServerInfo(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
-                    changeInterval(intervalEditText.text.toString())
+                    changeUserStoredInfo(collectedNewPassword,collectedPrivacyRadius,collectedDescription,collectedInterval, userID)
 
                     makeToast(getString(R.string.saved_messageText), Toast.LENGTH_SHORT)
                     dialog.dismiss()
@@ -111,7 +108,6 @@ class SettingsActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }.show()
         }
-
 
         descriptionTextView.setOnClickListener {
             AlertDialog.Builder(this@SettingsActivity)
@@ -160,16 +156,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeInterval(newInterval: String ){
 
-        if (newInterval != ""){
-            interval = newInterval.toLong()
-            intervalEditText.hint = interval.toString() + " seconds"
-        }
-        intervalEditText.text.clear()
-    }
-
-    private fun changeUserStoredServerInfo(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
+    private fun changeUserStoredInfo(newPassword: String?, privacyRadius: Long?, description: String?, interval: String, userID: String?){
 
         if(privacyRadius!=null || newPassword != "" || description != ""){
             val scope = CoroutineScope(Job() + Dispatchers.IO)
@@ -194,7 +182,6 @@ class SettingsActivity : AppCompatActivity() {
                         if(visibilityRadiusEditText.text.isNotEmpty()){
                             changeVisibilityRadius(visibilityRadiusEditText.text.toString())
                         }
-
                     }
 
                     303  -> toastMessage = getString(R.string.notModified_text)
@@ -207,6 +194,16 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+        changeInterval(interval)
+    }
+
+    private fun changeInterval(newInterval: String ){
+
+        if (newInterval != ""){
+            interval = newInterval.toLong()
+            intervalEditText.hint = interval.toString() + " seconds"
+        }
+        intervalEditText.text.clear()
     }
 
     /**
@@ -235,8 +232,6 @@ class SettingsActivity : AppCompatActivity() {
      *
      */
     private fun changePrivacyRadius(privacyRadius: Long?) {
-
-        //Log.i(SettingsActivity::class.java.simpleName, getString(R.string.privacyRadiusChanged_text)).toString()
         LoginActivity.privacyRadius = privacyRadius
         privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         privacyRadiusEditText.text.clear()
@@ -244,14 +239,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun changeVisibilityRadius(newRadius: String) {
-
         val newRadiusInt : Int = newRadius.toInt()
         visibilityRadius = newRadiusInt
         visibilityRadiusEditText.hint = newRadiusInt.toString() + " km"
         visibilityRadiusEditText.text.clear()
     }
-
-
 
 
         /**
