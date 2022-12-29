@@ -67,18 +67,6 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.31" />
 
-        <TextView
-            android:id="@+id/autoSendPos_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/automaticSendingOfPosition_text"
-            android:textColor="#191919"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline17"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline16" />
-
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline14"
             android:layout_width="wrap_content"
@@ -115,10 +103,10 @@
             android:importantForAutofill="no"
             android:inputType="number"
             android:textColorHint="#757575"
-            app:layout_constraintBottom_toTopOf="@+id/guideline13"
+            app:layout_constraintBottom_toTopOf="@+id/guideline17"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline18"
-            app:layout_constraintTop_toTopOf="@+id/guideline17" />
+            app:layout_constraintTop_toTopOf="@+id/guideline16" />
 
         <EditText
             android:id="@+id/privacyRadius_editTextNumber"
@@ -146,13 +134,13 @@
             android:id="@+id/interval_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:text="@string/interval_text"
             android:textColor="#191919"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline13"
+            app:layout_constraintBottom_toTopOf="@+id/guideline17"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline17" />
+            app:layout_constraintTop_toTopOf="@+id/guideline16" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline8"
@@ -187,17 +175,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.54" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/autoSendPos_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline17"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline18"
-            app:layout_constraintTop_toTopOf="@+id/guideline16" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline16"
