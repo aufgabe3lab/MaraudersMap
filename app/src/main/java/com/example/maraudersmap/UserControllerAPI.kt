@@ -57,50 +57,23 @@ class UserControllerAPI {
     }
 
     /**
-     * Sends a request to the server to change the users password
+     * Sends a request to the server to change the users stored information
      *
      * @param userID id of user (received after a successful login)
+     * @param description new description of the user
+     * @param privacyRadius new privacy radius of the user
      * @param newPassword new password for the user
      * @throws SocketTimeoutException if server not reachable
      * @throws UnknownHostException if no internet connection
      * @return Response of the request
      */
     @Throws(SocketTimeoutException::class, UnknownHostException::class)
-    suspend fun changeUserPassword(newPassword: String?, userID: String?): Response{
-        val userXTO = UserXTO()
-        userXTO.password = newPassword
-        return server.putRequest(baseURL + "user/$userID", userXTO)
-    }
-
-    /**
-     * Sends a request to the server to change the users privacy radius
-     *
-     * @param userID id of user (received after a successful login)
-     * @param privacyRadius new privacy radius of the user
-     * @throws SocketTimeoutException if server not reachable
-     * @throws UnknownHostException if no internet connection
-     * @return Response of the request
-     */
-    @Throws(SocketTimeoutException::class, UnknownHostException::class)
-    suspend fun changeUserPrivacyRadius(privacyRadius: Long?, userID: String?): Response{
+    suspend fun changeUserStoredServerData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?): Response{
         val userXTO = UserXTO()
         userXTO.privacyRadius = privacyRadius
-        return server.putRequest(baseURL + "user/$userID", userXTO)
-    }
-
-    /**
-     * Sends a request to the server to change the users description
-     *
-     * @param userID id of user (received after a successful login)
-     * @param description new description of the user
-     * @throws SocketTimeoutException if server not reachable
-     * @throws UnknownHostException if no internet connection
-     * @return Response of the request
-     */
-    @Throws(SocketTimeoutException::class, UnknownHostException::class)
-    suspend fun changeUserDescription(description: String?, userID: String?): Response{
-        val userXTO = UserXTO()
         userXTO.description = description
+        userXTO.password = newPassword
+
         return server.putRequest(baseURL + "user/$userID", userXTO)
     }
 
