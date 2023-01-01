@@ -14,8 +14,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-
-
+/**
+ * AndroidTest
+ * @author Felix Kuhbier
+ * @since 2023.01.01
+ */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 internal class LoginActivityInstrumentedTest{

@@ -7,14 +7,20 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
-
+/**
+ * AndroidTest
+ * @author Felix Kuhbier
+ * @since 2023.01.01
+ */
 @RunWith(AndroidJUnit4::class)
+@LargeTest
 internal class RegisterActivityInstrumentedTest {
 
     @Rule
@@ -25,7 +31,6 @@ internal class RegisterActivityInstrumentedTest {
         const val USERNAME = "Username"
         const val PASSWORD = "Password"
         const val PASSWORD_CONFIRM_CORRECT = "Password"
-        const val PASSWORD_CONFIRM_WRONG = "WrongPassword"
     }
 
 
