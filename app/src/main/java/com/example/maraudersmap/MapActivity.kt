@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
+import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import kotlinx.coroutines.*
 import okhttp3.Response
 import org.osmdroid.api.IMapController
@@ -91,7 +92,7 @@ class MapActivity : AppCompatActivity() {
             /**
              * requests the location of other users in a radius
              */
-            val response : Response = userController.getLocationsWithinRadius(5.0, latitude, longitude)
+            val response : Response = userController.getLocationsWithinRadius(5L, latitude, longitude)
 
             val xmlBody = response.body!!.string()
             val data = serializer.read(ResponseData::class.java, xmlBody)
@@ -226,6 +227,7 @@ class MapActivity : AppCompatActivity() {
         val marker = Marker(map)
         marker.position = GeoPoint(latitude, longitude)
         return marker
+    }
 
 
     private fun autoUpdatePos(millisInFuture: Long){
@@ -251,3 +253,4 @@ class MapActivity : AppCompatActivity() {
        }.start()
     }
 }
+
