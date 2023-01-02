@@ -28,7 +28,6 @@ class SettingsActivityTest {
         const val SECONDPASSWORD = "password2"
         const val STARTDESCRIPTION = "Start Description"
         const val CHANGEDDESCRIPTION = "Changed Description"
-
     }
     private lateinit var controller: UserControllerAPI
     private lateinit var serializer: Serializer
@@ -65,20 +64,20 @@ class SettingsActivityTest {
         Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
         Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD)).perform(closeSoftKeyboard())
         Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditTexts properly
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("12 km")))
         Espresso.onView(withId(R.id.changeDescription_editText)).check(matches(withHint(CHANGEDDESCRIPTION)))
         Espresso.onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
 
-        // reset to previous user information
+        // reset to previous server user information
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("5")).perform(closeSoftKeyboard())
         Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
         Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
         Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
         Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())      // close AlertDialog
+        Espresso.onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
     }
 
 
@@ -88,14 +87,14 @@ class SettingsActivityTest {
         // update privacy radius to make sure it is not 0 from the beginning
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("20")).perform(closeSoftKeyboard())
         Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
 
         // change user description
         Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
         Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
         Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditTexts properly
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km"))) // should be 0 because of a backend bug
@@ -115,12 +114,28 @@ class SettingsActivityTest {
         Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
         Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
         Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
     }
 
 
     @Test
-    fun asdf() {
+    fun changeUserPasswordTest(): Unit = runBlocking {
 
+        // change server stored user password
+        Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD)).perform(closeSoftKeyboard())
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        // checks if application handles the altered EditText properly
+        Espresso.onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
+
+        // login with new password
+        val response = controller.loginUser(USERNAME, SECONDPASSWORD)
+        assertTrue(response.code==200)
+
+        // reset to previous password
+        Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
     }
 }
