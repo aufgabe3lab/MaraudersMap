@@ -1,16 +1,8 @@
 package com.example.maraudersmap
 
-import android.os.Handler
-import android.os.Looper
-import android.view.View
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.example.maraudersmap.SettingsActivityTest.MyObject.PASSWORD
@@ -19,12 +11,7 @@ import com.example.maraudersmap.SettingsActivityTest.MyObject.USERNAME
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
-import org.junit.Assert.*
-import com.example.maraudersmap.LoginActivity.UserInformation.description
-import com.example.maraudersmap.LoginActivity.UserInformation.privacyRadius
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
-import okhttp3.internal.wait
-import org.hamcrest.Matcher
 import org.junit.Before
 import org.junit.rules.TestName
 import org.simpleframework.xml.Serializer
@@ -52,7 +39,7 @@ class SettingsActivityTest {
         controller = UserControllerAPI()
         serializer = Persister()
 
-        if (testName.methodName == "changeServerStoredUserDataTest") {
+        //if (testName.methodName == "changeServerStoredUserDataTest") {
             var response = controller.loginUser(USERNAME, PASSWORD)
             if(response.code!=200){
                 response = controller.loginUser(USERNAME, SECONDPASSWORD)
@@ -61,11 +48,11 @@ class SettingsActivityTest {
             val userData = serializer.read(LoginActivity.ExtractData::class.java, xmlBody)
             userID = userData.id.toString()
             LoginActivity.jsonWebToken = response.headers.last().second
-        }
+        //}
     }
 
     @Test
-    fun changeServerStoredUserDataTest() {
+    fun changeAllServerStoredUserDataTest() {  // description, password, privacy radius
 
         // change server stored user information
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("12")).perform(closeSoftKeyboard())
@@ -75,7 +62,7 @@ class SettingsActivityTest {
         Espresso.onView(withText("SAVE")).perform(click())
         Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
 
-        // checks if device handles the altered EditTexts correctly
+        // checks if application handles the altered EditTexts properly
         Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("12 km")))
         Espresso.onView(withId(R.id.changeDescription_editText)).check(matches(withHint("Changed Description")))
         Espresso.onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
@@ -87,10 +74,34 @@ class SettingsActivityTest {
         Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
         Espresso.onView(withText("SAVE")).perform(click())
         Espresso.onView(withText("Yes")).perform(click())      // close AlertDialog
-
     }
 
 
+    @Test
+    fun changeUserDescriptionTest() {       // description
+
+        // update privacy radius to make sure it is not 0 from the beginning
+        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("20")).perform(closeSoftKeyboard())
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
+
+        // change user description
+        Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText("Changed Description"))
+        Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+
+        // checks if application handles the altered EditTexts properly
+        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km"))) // should be 0 because of a backend bug
+        Espresso.onView(withId(R.id.changeDescription_editText)).check(matches(withHint("Changed Description")))
+
+        // reset to previous user description
+        Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText("Start Description"))
+        Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog
+    }
 
     @Test
     fun asdf() {

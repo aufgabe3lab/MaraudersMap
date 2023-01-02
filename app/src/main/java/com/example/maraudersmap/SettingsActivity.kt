@@ -245,7 +245,7 @@ class SettingsActivity : AppCompatActivity() {
         descriptionEditText.text.clear()        // clearing so text is empty and when using the save button a 2nd time the device doesn't send it again
         if(privacyRadiusEditText.text.isEmpty()){
             privacyRadius = 0                   // server sets privacy radius to 0 after the description got changed, seems to be a bug on the backend
-            privacyRadiusEditText.hint = privacyRadius.toString() + " km "
+            privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         }
     }
 
@@ -269,7 +269,7 @@ class SettingsActivity : AppCompatActivity() {
         changePasswordEditText.text.clear()     // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
             if(privacyRadiusEditText.text.isEmpty()){
                 privacyRadius = 0                   // server sets privacy radius to 0 after the password got changed, seems to be a bug on the backend
-                privacyRadiusEditText.hint = privacyRadius.toString() + " km "
+                privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         }
     }
 
