@@ -99,9 +99,9 @@ class SettingsActivity : AppCompatActivity() {
                     val collectedInterval = intervalEditText.text.toString()
                     val collectedVisibleRadius = visibilityRadiusEditText.text.toString()
 
-                    changeUserStoredServerData(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
-                    changeUserInterval(collectedInterval)
-                    changeUserVisibilityRadius(collectedVisibleRadius)
+                    changeServerStoredUserData(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
+                    changeInterval(collectedInterval)
+                    changeVisibilityRadius(collectedVisibleRadius)
 
                     dialog.dismiss()
                 }
@@ -166,7 +166,7 @@ class SettingsActivity : AppCompatActivity() {
      * @param description The new description for the user.
      * @param userID The ID of the user whose data is being changed.
      */
-    private fun changeUserStoredServerData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
+    private fun changeServerStoredUserData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
 
         if(privacyRadius!=null || newPassword != "" || description != ""){
             val scope = CoroutineScope(Job() + Dispatchers.IO)
@@ -207,7 +207,7 @@ class SettingsActivity : AppCompatActivity() {
      *
      * @param newInterval The new interval for the user.
      */
-    private fun changeUserInterval(newInterval: String ){
+    private fun changeInterval(newInterval: String ){
         if (newInterval != ""){
             interval = newInterval.toLong()
             intervalEditText.hint = interval.toString() + " seconds"
@@ -222,7 +222,7 @@ class SettingsActivity : AppCompatActivity() {
      *
      * @param newRadius The new interval for the user.
      */
-    private fun changeUserVisibilityRadius(newRadius: String) {
+    private fun changeVisibilityRadius(newRadius: String) {
         if (newRadius != "") {
             val newRadiusInt: Int = newRadius.toInt()
             visibilityRadius = newRadiusInt
