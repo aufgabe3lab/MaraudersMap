@@ -169,7 +169,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun changeServerStoredUserData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
 
         if(privacyRadius!=null || newPassword != "" || description != ""){
-            val scope = CoroutineScope(Job() + Dispatchers.IO)
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
             scope.launch {
                 response = userControllerAPI.changeUserStoredServerData(newPassword,privacyRadius,description,userID)
 
