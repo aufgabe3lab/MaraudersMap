@@ -1,6 +1,7 @@
 package com.example.maraudersmap
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -61,25 +62,25 @@ class SettingsActivityTest {
     fun changeAllServerStoredUserDataTest() {  // description, password, privacy radius
 
         // change server stored user information
-        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("12")).perform(closeSoftKeyboard())
-        Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
-        Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
-        Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD)).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("12")).perform(closeSoftKeyboard())
+        onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
+        onView(withText("Save")).perform(click())      // close AlertDialog
+        onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD)).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditTexts properly
-        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("12 km")))
-        Espresso.onView(withId(R.id.changeDescription_editText)).check(matches(withHint(CHANGEDDESCRIPTION)))
-        Espresso.onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("12 km")))
+        onView(withId(R.id.changeDescription_editText)).check(matches(withHint(CHANGEDDESCRIPTION)))
+        onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
 
         // reset to previous server user information
-        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("5")).perform(closeSoftKeyboard())
-        Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
-        Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
-        Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("5")).perform(closeSoftKeyboard())
+        onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
+        onView(withText("Save")).perform(click())      // close AlertDialog
+        onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
     }
 
 
@@ -87,20 +88,20 @@ class SettingsActivityTest {
     fun changeUserDescriptionTest(): Unit = runBlocking {       // description
 
         // update privacy radius to make sure it is not 0 from the beginning
-        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("20")).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
-        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("20")).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
 
         // change user description
-        Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
-        Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
+        onView(withText("Save")).perform(click())      // close AlertDialog
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditTexts properly
-        Espresso.onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km"))) // should be 0 because of a backend bug
-        Espresso.onView(withId(R.id.changeDescription_editText)).check(matches(withHint(CHANGEDDESCRIPTION)))
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km"))) // should be 0 because of a backend bug
+        onView(withId(R.id.changeDescription_editText)).check(matches(withHint(CHANGEDDESCRIPTION)))
 
         // sends request to the server to get updated user information
         var response = controller.loginUser(USERNAME, PASSWORD)
@@ -113,21 +114,21 @@ class SettingsActivityTest {
         assertTrue( "Expected userData.radius to be '0.0', but it was '${userData.radius}'",userData.radius == "0.0")      // checks if bug on server is still existent, if not this will turn out to be false (20.0 != 0.0)
 
         // reset to previous user description
-        Espresso.onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
-        Espresso.onView(withText("Save")).perform(click())      // close AlertDialog
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
+        onView(withText("Save")).perform(click())      // close AlertDialog
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
     }
 
     @Test
     fun changeUserInterval() {
         // change device stored user interval
-        Espresso.onView(withId(R.id.interval_editTextNumber)).perform(typeText("10")).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.interval_editTextNumber)).perform(typeText("10")).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditText properly
-        Espresso.onView(withId(R.id.interval_editTextNumber)).check(matches(withHint("10 seconds")))
+        onView(withId(R.id.interval_editTextNumber)).check(matches(withHint("10 seconds")))
 
         // check if device saved the input correctly
         assertTrue("Expected interval to be '10', but it was '${interval}'",interval == 10L)
@@ -136,12 +137,12 @@ class SettingsActivityTest {
     @Test
     fun changeUserRadius() {
         // change device stored user visibilityRadius
-        Espresso.onView(withId(R.id.changeRadius_editText)).perform(typeText("10")).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.changeRadius_editText)).perform(typeText("10")).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditText properly
-        Espresso.onView(withId(R.id.changeRadius_editText)).check(matches(withHint("10 km")))
+        onView(withId(R.id.changeRadius_editText)).check(matches(withHint("10 km")))
 
         // check if device saved the input correctly
         assertTrue("Expected  to be '10', but it was '${visibilityRadius}'",visibilityRadius == 10)
@@ -151,20 +152,62 @@ class SettingsActivityTest {
     fun changeUserPasswordTest(): Unit = runBlocking {
 
         // change server stored user password
-        Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD)).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD)).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditText properly
-        Espresso.onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
+        onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
 
         // login with new password
         val response = controller.loginUser(USERNAME, SECONDPASSWORD)
         assertTrue(response.code==200)
 
         // reset to previous password
-        Espresso.onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
-        Espresso.onView(withText("SAVE")).perform(click())
-        Espresso.onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
+        onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
+    }
+
+    @Test
+    fun displayIntervalTest(){
+        onView(withId(R.id.interval_editTextNumber)).check(matches(isDisplayed()))
+        onView(withId(R.id.interval_editTextNumber)).check(matches((isFocusable())))
+    }
+
+    @Test
+    fun displayPrivacyRadiusTest(){
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(isDisplayed()))
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches((isFocusable())))
+    }
+
+    @Test
+    fun displayRadiusTest(){
+        onView(withId(R.id.changeRadius_editText)).check(matches(isDisplayed()))
+        onView(withId(R.id.changeRadius_editText)).check(matches((isFocusable())))
+    }
+
+    @Test
+    fun displayDescriptionTest(){
+        onView(withId(R.id.changeDescription_editText)).check(matches(isDisplayed()))
+        onView(withId(R.id.changeDescription_editText)).check(matches((isNotFocusable())))
+    }
+
+    @Test
+    fun displayPasswordTest(){
+        onView(withId(R.id.changePassword_editText)).check(matches(isDisplayed()))
+        onView(withId(R.id.changePassword_editText)).check(matches((isFocusable())))
+    }
+
+    @Test
+    fun displayDeleteButtonTest(){
+        onView(withId(R.id.deleteAccount_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.deleteAccount_button)).check(matches(isClickable()))
+    }
+
+    @Test
+    fun displaySaveButtonTest(){
+        onView(withId(R.id.saveSettings_button)).check(matches(isDisplayed()))
+        onView(withId(R.id.saveSettings_button)).check(matches(isClickable()))
     }
 }
