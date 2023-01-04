@@ -1,6 +1,5 @@
 package com.example.maraudersmap
 
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -121,7 +120,7 @@ class SettingsActivityTest {
     }
 
     @Test
-    fun changeUserInterval() {
+    fun changeUserIntervalTest() {
         // change device stored user interval
         onView(withId(R.id.interval_editTextNumber)).perform(typeText("10")).perform(closeSoftKeyboard())
         onView(withText("SAVE")).perform(click())
@@ -135,7 +134,7 @@ class SettingsActivityTest {
     }
 
     @Test
-    fun changeUserRadius() {
+    fun changeUserRadiusTest() {
         // change device stored user visibilityRadius
         onView(withId(R.id.changeRadius_editText)).perform(typeText("10")).perform(closeSoftKeyboard())
         onView(withText("SAVE")).perform(click())
@@ -167,6 +166,26 @@ class SettingsActivityTest {
         onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD)).perform(closeSoftKeyboard())
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
+    }
+
+    @Test
+    fun changeUserPrivacyRadiusTest(): Unit = runBlocking {
+
+        // change server stored user privacy radius
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("19")).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        // checks if application handles the altered EditTexts properly
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("19 km")))
+
+        // reset value to 0 to avoid test bugs
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("0")).perform(closeSoftKeyboard())
+        onView(withText("SAVE")).perform(click())
+        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        // checks if application handles the altered EditTexts properly
+        onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km")))
     }
 
     @Test
