@@ -324,7 +324,7 @@ class SettingsActivity : AppCompatActivity() {
         descriptionEditText = findViewById(R.id.changeDescription_editText)
         saveButton = findViewById(R.id.saveSettings_button)
         userControllerAPI = UserControllerAPI()
-        visibilityRadiusEditText = findViewById(R.id.radiusVisibilty_editTextNumber)
+        visibilityRadiusEditText = findViewById(R.id.changeRadius_editText)
         descriptionTextView = findViewById(R.id.changeDescription_textView)
 
         descriptionEditText.isFocusable = false

@@ -12,6 +12,8 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
+import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
+import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
 import com.example.maraudersmap.SettingsActivityTest.MyObject.CHANGEDDESCRIPTION
 import com.example.maraudersmap.SettingsActivityTest.MyObject.STARTDESCRIPTION
 import org.junit.Assert.assertTrue
@@ -117,6 +119,33 @@ class SettingsActivityTest {
         Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
     }
 
+    @Test
+    fun changeUserInterval() {
+        // change device stored user interval
+        Espresso.onView(withId(R.id.interval_editTextNumber)).perform(typeText("10")).perform(closeSoftKeyboard())
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        // checks if application handles the altered EditText properly
+        Espresso.onView(withId(R.id.interval_editTextNumber)).check(matches(withHint("10 seconds")))
+
+        // check if device saved the input correctly
+        assertTrue("Expected interval to be '10', but it was '${interval}'",interval == 10L)
+    }
+
+    @Test
+    fun changeUserRadius() {
+        // change device stored user visibilityRadius
+        Espresso.onView(withId(R.id.changeRadius_editText)).perform(typeText("10")).perform(closeSoftKeyboard())
+        Espresso.onView(withText("SAVE")).perform(click())
+        Espresso.onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        // checks if application handles the altered EditText properly
+        Espresso.onView(withId(R.id.changeRadius_editText)).check(matches(withHint("10 km")))
+
+        // check if device saved the input correctly
+        assertTrue("Expected  to be '10', but it was '${visibilityRadius}'",visibilityRadius == 10)
+    }
 
     @Test
     fun changeUserPasswordTest(): Unit = runBlocking {
