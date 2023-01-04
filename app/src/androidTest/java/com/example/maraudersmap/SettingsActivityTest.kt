@@ -47,7 +47,8 @@ class SettingsActivityTest {
 
     /**
      * Sets up all important objects and data fields to be able
-     * to test all methods.
+     * to test all methods. If all tests fail it might be because the test user
+     * in the data field "USERNAME" got deleted and not recreated again.
      */
     @Before
     fun setUp() = runBlocking {
@@ -63,6 +64,33 @@ class SettingsActivityTest {
         val userData = serializer.read(LoginActivity.ExtractData::class.java, xmlBody)
         userID = userData.id.toString()
         LoginActivity.jsonWebToken = response.headers.last().second
+    }
+
+    /**
+     * Deletes the user from the field USERNAME and creates it again at the end
+     * again to be able to run this test multiple times. If all tests fail
+     * please register the test user manually again.
+     */
+    @Test
+    fun deleteUserTest() = runBlocking {
+
+        // deletes the user
+        onView(withId(R.id.deleteAccount_button)).perform(click())
+        onView(withText("YES")).perform(click())       // close AlertDialog ; info saved
+
+        // try to login into deleted user -> response should not be 200
+        var response = controller.loginUser(USERNAME, PASSWORD)
+        if (response.code != 200) {
+            response = controller.loginUser(USERNAME, SECONDPASSWORD)
+        }
+        assertTrue(response.code != 200)    // user deleted
+
+        // create deleted user again for further test purposes
+        val username = USERNAME
+        val password = PASSWORD
+        val description = STARTDESCRIPTION
+        response = controller.createNewUser(username, password, description)
+        assertTrue(response.isSuccessful)
     }
 
     /**
