@@ -20,12 +20,12 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.Root
-import org.simpleframework.xml.Serializer
+import org.simpleframework.xml.*
 import org.simpleframework.xml.core.Persister
 
-
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Root
 /**
  * provides a map which shows your own location
  * @author Leo Kalmbach
@@ -97,12 +97,7 @@ class MapActivity : AppCompatActivity() {
 
     }
 
-    data class CurrentLocation(
-        @field:Element(name = "latitude")
-        val latitude: Double,
-        @field:Element(name = "longitude")
-        val longitude: Double
-    )
+
 
     override fun onResume() {
         super.onResume()
@@ -177,31 +172,41 @@ class MapActivity : AppCompatActivity() {
      *
      * @property thingXTO Data of a user.
      */
-    @Root(name = "thingXTOs")
+    @Root(name = "thingXTOs", strict = false)
     data class ResponseData(
-        @field:Element(name = "thingXTO")
-        val thingXTOs: ArrayList<ThingXTO>
-    )
+        @field:ElementList(name = "thingXTO", inline = true, required = true)
+        var thingXTOs: List<ThingXTO>?
+    ) {
+        constructor() : this(null)
+    }
 
-    /**
-     * Data class representing a user with an name, description, privacy radius and their current location.
-     *
-     * @property name The user's name.
-     * @property description The user's description.
-     * @property privacyRadius The user's privacy radius.
-     * @property currentLocation The user's current location.
-     */
 
+    @Root(name = "currentLocation", strict = false)
+    data class CurrentLocation(
+        @field:Element(name = "latitude", required = false)
+        var latitude: Double?,
+        @field:Element(name = "longitude", required = false)
+        var longitude: Double?
+    ) {
+        constructor() : this(null, null)
+    }
+
+
+    @Root(name = "thingXTO", strict = false)
     data class ThingXTO(
         @field:Element(name = "name", required = false)
-        val name: String,
+        var name: String?,
         @field:Element(name = "description", required = false)
-        val description: String?,
+        var description: String?,
         @field:Element(name = "privacyRadius", required = false)
-        val privacyRadius: Double,
+        var privacyRadius: Double?,
         @field:Element(name = "currentLocation", required = false)
-        val currentLocation: CurrentLocation
-    )
+        var currentLocation: CurrentLocation?
+    ) {
+        constructor() : this(null, null, null, null)
+    }
+
+
 
     /**class Description {
         @Text(required = false)
@@ -271,7 +276,7 @@ class MapActivity : AppCompatActivity() {
                             e.printStackTrace()
                         }
                     }
-                    start()
+                    //start()
                 }else{
                     cancel()
                 }
