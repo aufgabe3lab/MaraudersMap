@@ -1,6 +1,10 @@
 package com.example.maraudersmap
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
@@ -22,13 +26,12 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import org.simpleframework.xml.*
 import org.simpleframework.xml.core.Persister
-
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
 /**
  * provides a map which shows your own location
- * @author Leo Kalmbach
+ * @author Leo Kalmbach & Julian Ertle
  * @since 2022.12.25
  */
 class MapActivity : AppCompatActivity() {
@@ -180,7 +183,6 @@ class MapActivity : AppCompatActivity() {
         constructor() : this(null)
     }
 
-
     @Root(name = "currentLocation", strict = false)
     data class CurrentLocation(
         @field:Element(name = "latitude", required = false)
@@ -228,47 +230,37 @@ class MapActivity : AppCompatActivity() {
     private fun autoUpdatePos(millisInFuture: Long){
        object : CountDownTimer(millisInFuture,1000){
             override fun onTick(millisUntilFinished: Long) {
-                println("tick")
+                //println("tick")
             }
 
             override fun onFinish() {
                 if(interval != 0L){
                     //Log.i(MapActivity::class.java.simpleName,"Finish")
 
-
                     val scope = CoroutineScope(Job() + Dispatchers.IO)
                     scope.launch {
                         val userController = UserControllerAPI()
-                        val serializer: Serializer = Persister()
 
                         userController.updateUserGpsPosition(map.mapCenter.latitude,map.mapCenter.longitude, userID!!)
 
-                        /**
-                         * requests the location of other users in a radius
-                         */
-                        val fixlatitude : Double = 48.484375367175964
-                        val fixlongitude : Double = 9.208624362945557
-
                         val latitude = map.mapCenter.latitude
-
                         val longitude = map.mapCenter.longitude
-                        println("---- latitude : " + latitude)
-                        println("---- longitude: " + longitude)
+
                         val response : Response = userController.getLocationsWithinRadius(10L,latitude, longitude)
 
                         var xmlBody = response.body!!.string()
                         xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
 
                         try {
-                            val thingXTOs = parseXML(xmlBody)
-                            print(thingXTOs.toString())
-                            val data = serializer.read(ResponseData::class.java, xmlBody)
-                            println(data.toString())
+                            val data = parseXML(xmlBody)
+                            println("Amount of visible accounts: " + data.thingXTOs!!.size)
                             val markers: ArrayList<Marker> = arrayListOf()
-                            /**for (thing in data.things) {
-                                markers.add(createMarker(thing.currentLocation.latitude, thing.currentLocation.longitude))
-                            }*/
-                            markers.add(createMarker(49.1218, 9.2114))
+
+                            markers.add(createMarker(latitude, longitude))  // add own position
+
+                            for (thing in data.thingXTOs!!) {
+                                markers.add(createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!))
+                            }
                             setMarkers(markers)
                         }
                         catch (e : Exception){
@@ -276,7 +268,7 @@ class MapActivity : AppCompatActivity() {
                             e.printStackTrace()
                         }
                     }
-                    //start()
+                    start()
                 }else{
                     cancel()
                 }
