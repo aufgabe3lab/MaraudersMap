@@ -1,10 +1,6 @@
 package com.example.maraudersmap
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
@@ -14,7 +10,11 @@ import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
-import kotlinx.coroutines.*
+import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import okhttp3.Response
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration.getInstance
@@ -24,11 +24,11 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import org.simpleframework.xml.*
-import org.simpleframework.xml.core.Persister
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
+import org.simpleframework.xml.core.Persister
+
 /**
  * provides a map which shows your own location
  * @author Leo Kalmbach & Julian Ertle
@@ -41,7 +41,9 @@ class MapActivity : AppCompatActivity() {
     private lateinit var mapController: IMapController
     private lateinit var locationOverlay: MyLocationNewOverlay
     private lateinit var settingsBtn: Button
+    private lateinit var centerBtn: Button
     private lateinit var toastMessage: String
+    private val markers: ArrayList<Marker> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,11 @@ class MapActivity : AppCompatActivity() {
             val intent = Intent(this@MapActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
+        centerBtn = findViewById(R.id.center_btn)
+        centerBtn.setOnClickListener {
+            locationOverlay.disableFollowLocation()
+            locationOverlay.enableFollowLocation()
+        }
         map = findViewById(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
@@ -63,7 +70,7 @@ class MapActivity : AppCompatActivity() {
         locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this@MapActivity), map)
         map.overlays.add(locationOverlay)
         map.postInvalidate()
-
+/*
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
 
@@ -92,7 +99,7 @@ class MapActivity : AppCompatActivity() {
                 }
             }
         }
-
+*/
 
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
@@ -106,7 +113,6 @@ class MapActivity : AppCompatActivity() {
         super.onResume()
         locationOverlay.enableMyLocation()
         locationOverlay.enableFollowLocation()
-
         map.onResume()
     }
 
@@ -169,11 +175,19 @@ class MapActivity : AppCompatActivity() {
         return marker
     }
 
+    private fun removeMarkers(markers: ArrayList<Marker>) {
+        for (marker in markers) {
+            map.overlays.remove(marker)
+        }
+        markers.clear()
+        map.invalidate()
+    }
+
 
     /**
      * Data class representing all users with their respective data.
      *
-     * @property thingXTO Data of a user.
+     * @property thingXTOs Data of a user.
      */
     @Root(name = "thingXTOs", strict = false)
     data class ResponseData(
@@ -183,17 +197,14 @@ class MapActivity : AppCompatActivity() {
         constructor() : this(null)
     }
 
-    @Root(name = "currentLocation", strict = false)
-    data class CurrentLocation(
-        @field:Element(name = "latitude", required = false)
-        var latitude: Double?,
-        @field:Element(name = "longitude", required = false)
-        var longitude: Double?
-    ) {
-        constructor() : this(null, null)
-    }
-
-
+    /**
+     * Data class representing a user with his data
+     *
+     * @property name The name of the user.
+     * @property description The description of the user.
+     * @property privacyRadius The privacy radius of the user.
+     * @property currentLocation The current location of the user.
+     */
     @Root(name = "thingXTO", strict = false)
     data class ThingXTO(
         @field:Element(name = "name", required = false)
@@ -208,6 +219,21 @@ class MapActivity : AppCompatActivity() {
         constructor() : this(null, null, null, null)
     }
 
+    /**
+     * Data class representing a location with a latitude and longitude.
+     *
+     * @property latitude The latitude of the location.
+     * @property longitude The longitude of the location.
+     */
+    @Root(name = "currentLocation", strict = false)
+    data class CurrentLocation(
+        @field:Element(name = "latitude", required = false)
+        var latitude: Double?,
+        @field:Element(name = "longitude", required = false)
+        var longitude: Double?
+    ) {
+        constructor() : this(null, null)
+    }
 
 
     /**class Description {
@@ -215,12 +241,6 @@ class MapActivity : AppCompatActivity() {
         var text: String? = null
     }*/
 
-    /**
-     * Data class representing a location with a latitude and longitude.
-     *
-     * @property latitude The latitude of the location.
-     * @property longitude The longitude of the location.
-     */
 
     fun parseXML(xmlString: String): ResponseData {
         val serializer = Persister()
@@ -230,13 +250,14 @@ class MapActivity : AppCompatActivity() {
     private fun autoUpdatePos(millisInFuture: Long){
        object : CountDownTimer(millisInFuture,1000){
             override fun onTick(millisUntilFinished: Long) {
-                //println("tick")
             }
 
             override fun onFinish() {
                 if(interval != 0L){
                     //Log.i(MapActivity::class.java.simpleName,"Finish")
 
+                    makeToast(""+ markers.size)
+                    removeMarkers(markers)
                     val scope = CoroutineScope(Job() + Dispatchers.IO)
                     scope.launch {
                         val userController = UserControllerAPI()
@@ -246,7 +267,7 @@ class MapActivity : AppCompatActivity() {
                         val latitude = map.mapCenter.latitude
                         val longitude = map.mapCenter.longitude
 
-                        val response : Response = userController.getLocationsWithinRadius(10L,latitude, longitude)
+                        val response : Response = userController.getLocationsWithinRadius(visibilityRadius, latitude, longitude)
 
                         var xmlBody = response.body!!.string()
                         xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
@@ -254,12 +275,15 @@ class MapActivity : AppCompatActivity() {
                         try {
                             val data = parseXML(xmlBody)
                             println("Amount of visible accounts: " + data.thingXTOs!!.size)
-                            val markers: ArrayList<Marker> = arrayListOf()
 
                             markers.add(createMarker(latitude, longitude))  // add own position
 
                             for (thing in data.thingXTOs!!) {
-                                markers.add(createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!))
+                                val marker =createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!)
+                                marker.title = "User: ${thing.name} " +
+                                        "\nDescription: ${thing.description} " +
+                                        "\nPrivacyRadius: ${thing.privacyRadius} "
+                                markers.add(marker)
                             }
                             setMarkers(markers)
                         }
@@ -273,7 +297,6 @@ class MapActivity : AppCompatActivity() {
                     cancel()
                 }
             }
-
        }.start()
     }
 }

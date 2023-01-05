@@ -39,7 +39,7 @@ class SettingsActivity : AppCompatActivity() {
 
     companion object SettingsCompanion {
         var interval: Long = 0L
-        var visibilityRadius: Int = 5               // Standard search radius set to 5
+        var visibilityRadius: Long = 5               // Standard search radius set to 5
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -224,9 +224,9 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun changeUserVisibilityRadius(newRadius: String) {
         if (newRadius != "") {
-            val newRadiusInt: Int = newRadius.toInt()
-            visibilityRadius = newRadiusInt
-            visibilityRadiusEditText.hint = newRadiusInt.toString() + " km"
+            val newRadiusLong: Long = newRadius.toLong()
+            visibilityRadius = newRadiusLong
+            visibilityRadiusEditText.hint = newRadiusLong.toString() + " km"
             makeToast(getString(R.string.savedRadius_text), Toast.LENGTH_SHORT)
             visibilityRadiusEditText.text.clear()
         }
