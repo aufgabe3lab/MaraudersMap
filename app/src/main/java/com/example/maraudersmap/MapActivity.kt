@@ -1,14 +1,19 @@
 package com.example.maraudersmap
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
+import com.example.maraudersmap.LoginActivity.UserInformation.userID
+import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
 import kotlinx.coroutines.*
 import okhttp3.Response
 import org.osmdroid.api.IMapController
@@ -19,16 +24,14 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.Root
-import org.simpleframework.xml.Serializer
+import org.simpleframework.xml.*
 import org.simpleframework.xml.core.Persister
-import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
-
-
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Root
 /**
  * provides a map which shows your own location
- * @author Leo Kalmbach
+ * @author Leo Kalmbach & Julian Ertle
  * @since 2022.12.25
  */
 class MapActivity : AppCompatActivity() {
@@ -69,9 +72,10 @@ class MapActivity : AppCompatActivity() {
              */
             val serializer: Serializer = Persister()
             val userController = UserControllerAPI()
-            val longitude = map.mapCenter.longitude
-            val latitude = map.mapCenter.latitude
+            val longitude : Double = map.mapCenter.longitude
+            val latitude : Double = map.mapCenter.latitude
             val userID = LoginActivity.userID
+
 
             val response1 : Response = userController.updateUserGpsPosition(latitude, longitude, userID)
             toastMessage = when(response1.code){
@@ -87,21 +91,6 @@ class MapActivity : AppCompatActivity() {
                     makeToast(toastMessage)
                 }
             }
-
-            /**
-             * requests the location of other users in a radius
-             */
-            val response : Response = userController.getLocationsWithinRadius(5.0, latitude, longitude)
-
-            val xmlBody = response.body!!.string()
-            val data = serializer.read(ResponseData::class.java, xmlBody)
-            println(data.toString())
-            val markers: ArrayList<Marker> = arrayListOf()
-            for (thing in data.thingXTO) {
-                markers.add(createMarker(thing.currentLocation.latitude, thing.currentLocation.longitude))
-            }
-            markers.add(createMarker(49.1218, 9.2114))
-            setMarkers(markers)
         }
 
 
@@ -111,55 +100,7 @@ class MapActivity : AppCompatActivity() {
 
     }
 
-    /**
-     * Data class representing all users with their respective data.
-     *
-     * @property thingXTO Data of a user.
-     */
-    @Root(name = "thingXTOs", strict = false)
-    data class ResponseData(
-        @field:Element(name = "thingXTO", required = false)
-        var thingXTO: List<ThingData> = emptyList(),
-    )
 
-    /**
-     * Data class representing a user with an name, description, privacy radius and their current location.
-     *
-     * @property name The user's name.
-     * @property description The user's description.
-     * @property privacyRadius The user's privacy radius.
-     * @property currentLocation The user's current location.
-     */
-
-    @Root(name = "thingXTO", strict = false)
-    data class ThingData(
-        @field:Element(name = "name")
-        var name: String? = null,
-
-        @field:Element(name = "description")
-        var description: String? = null,
-
-        @field:Element(name = "privacyRadius")
-        var privacyRadius: Double? = null,
-
-        @field:Element(name = "currentLocation")
-        var currentLocation: LocationData,
-    )
-
-    /**
-     * Data class representing a location with a latitude and longitude.
-     *
-     * @property latitude The latitude of the location.
-     * @property longitude The longitude of the location.
-     */
-    @Root(name = "currentLocation", strict = false)
-    data class LocationData(
-        @field:Element(name = "latitude")
-        var latitude: Double = 0.0,
-
-        @field:Element(name = "longitude")
-        var longitude: Double = 0.0,
-    )
 
     override fun onResume() {
         super.onResume()
@@ -226,22 +167,107 @@ class MapActivity : AppCompatActivity() {
         val marker = Marker(map)
         marker.position = GeoPoint(latitude, longitude)
         return marker
+    }
 
+
+    /**
+     * Data class representing all users with their respective data.
+     *
+     * @property thingXTO Data of a user.
+     */
+    @Root(name = "thingXTOs", strict = false)
+    data class ResponseData(
+        @field:ElementList(name = "thingXTO", inline = true, required = true)
+        var thingXTOs: List<ThingXTO>?
+    ) {
+        constructor() : this(null)
+    }
+
+    @Root(name = "currentLocation", strict = false)
+    data class CurrentLocation(
+        @field:Element(name = "latitude", required = false)
+        var latitude: Double?,
+        @field:Element(name = "longitude", required = false)
+        var longitude: Double?
+    ) {
+        constructor() : this(null, null)
+    }
+
+
+    @Root(name = "thingXTO", strict = false)
+    data class ThingXTO(
+        @field:Element(name = "name", required = false)
+        var name: String?,
+        @field:Element(name = "description", required = false)
+        var description: String?,
+        @field:Element(name = "privacyRadius", required = false)
+        var privacyRadius: Double?,
+        @field:Element(name = "currentLocation", required = false)
+        var currentLocation: CurrentLocation?
+    ) {
+        constructor() : this(null, null, null, null)
+    }
+
+
+
+    /**class Description {
+        @Text(required = false)
+        var text: String? = null
+    }*/
+
+    /**
+     * Data class representing a location with a latitude and longitude.
+     *
+     * @property latitude The latitude of the location.
+     * @property longitude The longitude of the location.
+     */
+
+    fun parseXML(xmlString: String): ResponseData {
+        val serializer = Persister()
+        return serializer.read(ResponseData::class.java, xmlString)
+    }
 
     private fun autoUpdatePos(millisInFuture: Long){
-       object : CountDownTimer(millisInFuture, 1000){
+       object : CountDownTimer(millisInFuture,1000){
             override fun onTick(millisUntilFinished: Long) {
-                Log.i(MapActivity::class.java.simpleName,"${millisUntilFinished / 1000}")
-                val scope = CoroutineScope(Job() + Dispatchers.IO)
-                scope.launch {
-                    val userControllerAPI = UserControllerAPI()
-                    userControllerAPI.updateUserGpsPosition(map.mapCenter.latitude,map.mapCenter.longitude, userID!!)
-                }
+                //println("tick")
             }
 
             override fun onFinish() {
                 if(interval != 0L){
-                    Log.i(MapActivity::class.java.simpleName,"Finish")
+                    //Log.i(MapActivity::class.java.simpleName,"Finish")
+
+                    val scope = CoroutineScope(Job() + Dispatchers.IO)
+                    scope.launch {
+                        val userController = UserControllerAPI()
+
+                        userController.updateUserGpsPosition(map.mapCenter.latitude,map.mapCenter.longitude, userID!!)
+
+                        val latitude = map.mapCenter.latitude
+                        val longitude = map.mapCenter.longitude
+
+                        val response : Response = userController.getLocationsWithinRadius(10L,latitude, longitude)
+
+                        var xmlBody = response.body!!.string()
+                        xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
+
+                        try {
+                            val data = parseXML(xmlBody)
+                            println("Amount of visible accounts: " + data.thingXTOs!!.size)
+                            val markers: ArrayList<Marker> = arrayListOf()
+
+                            markers.add(createMarker(latitude, longitude))  // add own position
+
+                            for (thing in data.thingXTOs!!) {
+                                markers.add(createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!))
+                            }
+                            setMarkers(markers)
+                        }
+                        catch (e : Exception){
+                            println(e)
+                            e.printStackTrace()
+                        }
+                    }
                     start()
                 }else{
                     cancel()
