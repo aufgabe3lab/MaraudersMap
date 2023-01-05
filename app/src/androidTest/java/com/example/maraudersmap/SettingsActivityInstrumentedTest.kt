@@ -5,17 +5,17 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.example.maraudersmap.SettingsActivityTest.MyObject.PASSWORD
-import com.example.maraudersmap.SettingsActivityTest.MyObject.SECONDPASSWORD
-import com.example.maraudersmap.SettingsActivityTest.MyObject.USERNAME
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.PASSWORD
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.SECONDPASSWORD
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.USERNAME
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
-import com.example.maraudersmap.SettingsActivityTest.MyObject.CHANGEDDESCRIPTION
-import com.example.maraudersmap.SettingsActivityTest.MyObject.STARTDESCRIPTION
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.CHANGEDDESCRIPTION
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.STARTDESCRIPTION
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.rules.TestName
@@ -26,7 +26,7 @@ import org.simpleframework.xml.core.Persister
  * AndroidTests to test the functionality of the SettingsActivity
  * @author Julian Ertle
  */
-class SettingsActivityTest {
+class SettingsActivityInstrumentedTest {
 
     object MyObject {
         const val USERNAME = "Username116"
@@ -102,12 +102,9 @@ class SettingsActivityTest {
     fun changeAllServerStoredUserDataTest() {  // description, password, privacy radius
 
         // change server stored user information
-        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("12"))
-            .perform(closeSoftKeyboard())
-        onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
-        onView(withText("Save")).perform(click())      // close AlertDialog
-        onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("12"))
+        onView(withId(R.id.changeDescription_editText)).perform(replaceText(CHANGEDDESCRIPTION))
+        onView(withId(R.id.changePassword_editText)).perform(replaceText(SECONDPASSWORD))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
@@ -117,12 +114,9 @@ class SettingsActivityTest {
         onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
 
         // reset to previous server user information
-        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("5"))
-            .perform(closeSoftKeyboard())
-        onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
-        onView(withText("Save")).perform(click())      // close AlertDialog
-        onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("5"))
+        onView(withId(R.id.changeDescription_editText)).perform(replaceText(STARTDESCRIPTION))
+        onView(withId(R.id.changePassword_editText)).perform(replaceText(PASSWORD))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
     }
@@ -141,15 +135,13 @@ class SettingsActivityTest {
     fun changeUserDescriptionTest(): Unit = runBlocking {       // description
 
         // update privacy radius to make sure it is not 0 from the beginning
-        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("20"))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("20"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
 
         // change user description
-        onView(withId(R.id.changeDescription_editText)).perform(typeText(CHANGEDDESCRIPTION))
-        onView(withText("Save")).perform(click())      // close AlertDialog
+        onView(withId(R.id.changeDescription_editText)).perform(replaceText(CHANGEDDESCRIPTION))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
@@ -171,8 +163,7 @@ class SettingsActivityTest {
         )      // checks if bug on server is still existent, if not this will turn out to be false (20.0 != 0.0)
 
         // reset to previous user description
-        onView(withId(R.id.changeDescription_editText)).perform(typeText(STARTDESCRIPTION))
-        onView(withText("Save")).perform(click())      // close AlertDialog
+        onView(withId(R.id.changeDescription_editText)).perform(replaceText(STARTDESCRIPTION))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
     }
@@ -185,8 +176,7 @@ class SettingsActivityTest {
     @Test
     fun changeUserIntervalTest() {
         // change device stored user interval
-        onView(withId(R.id.interval_editTextNumber)).perform(typeText("10"))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.interval_editTextNumber)).perform(replaceText("10"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
@@ -205,8 +195,7 @@ class SettingsActivityTest {
     @Test
     fun changeUserRadiusTest() {
         // change device stored user visibilityRadius
-        onView(withId(R.id.changeRadius_editText)).perform(typeText("10"))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.changeRadius_editText)).perform(replaceText("10"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
@@ -231,8 +220,7 @@ class SettingsActivityTest {
     fun changeUserPasswordTest(): Unit = runBlocking {
 
         // change server stored user password
-        onView(withId(R.id.changePassword_editText)).perform(typeText(SECONDPASSWORD))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.changePassword_editText)).perform(replaceText(SECONDPASSWORD))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
@@ -244,8 +232,7 @@ class SettingsActivityTest {
         assertTrue(response.code == 200)
 
         // reset to previous password
-        onView(withId(R.id.changePassword_editText)).perform(typeText(PASSWORD))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.changePassword_editText)).perform(replaceText(PASSWORD))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
     }
@@ -259,8 +246,7 @@ class SettingsActivityTest {
     fun changeUserPrivacyRadiusTest(): Unit = runBlocking {
 
         // change server stored user privacy radius
-        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("19"))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("19"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
@@ -268,8 +254,7 @@ class SettingsActivityTest {
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("19 km")))
 
         // reset value to 0 to avoid test bugs
-        onView(withId(R.id.privacyRadius_editTextNumber)).perform(typeText("0"))
-            .perform(closeSoftKeyboard())
+        onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("0"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
