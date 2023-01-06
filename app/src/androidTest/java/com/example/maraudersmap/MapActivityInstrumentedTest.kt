@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class MapTest {
+class MapActivityInstrumentedTest {
 
     @get:Rule
     val rule = ActivityScenarioRule(MapActivity::class.java)
