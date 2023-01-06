@@ -11,10 +11,7 @@ import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.Response
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration.getInstance
@@ -28,6 +25,7 @@ import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.core.Persister
+
 
 /**
  * provides a map which shows your own location
@@ -43,6 +41,7 @@ class MapActivity : AppCompatActivity() {
     private lateinit var settingsBtn: Button
     private lateinit var centerBtn: Button
     private val markers: ArrayList<Marker> = arrayListOf()
+    private lateinit var toastMessage: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,40 +68,6 @@ class MapActivity : AppCompatActivity() {
         locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this@MapActivity), map)
         map.overlays.add(locationOverlay)
         map.postInvalidate()
-
-
-        val scope = CoroutineScope(Job() + Dispatchers.IO)
-        scope.launch {
-
-            /**
-             * updates current location
-             */
-            val serializer: Serializer = Persister()
-            val userController = UserControllerAPI()
-            val longitude : Double = map.mapCenter.longitude
-            val latitude : Double = map.mapCenter.latitude
-            val userID = LoginActivity.userID
-
-
-            val response1 : Response = userController.updateUserGpsPosition(latitude, longitude, userID)
-            toastMessage = when(response1.code){
-                200 -> ""   //successful
-
-                403 -> ({
-                    getString(R.string.permissionDenied_text)
-                    val intent = Intent(this@MapActivity, LoginActivity::class.java)
-                    startActivity(intent)
-                }).toString()  //Authentication error
-
-
-                else -> getString(R.string.unknownError_text)     // Unknown error
-            }
-            if(toastMessage != "") {
-                withContext(Dispatchers.Main){
-                    makeToast(toastMessage)
-                }
-            }
-        }
 
 
         if(interval != 0L){
