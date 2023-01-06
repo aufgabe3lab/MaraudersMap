@@ -10,7 +10,11 @@ import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
-import kotlinx.coroutines.*
+import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import okhttp3.Response
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration.getInstance
@@ -20,12 +24,15 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import org.simpleframework.xml.*
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Root
 import org.simpleframework.xml.core.Persister
+
 /**
  * provides a map which shows your own location
  * @author Leo Kalmbach & Julian Ertle
- * @since 2022.12.25
+ * @since 2023.01.06
  */
 class MapActivity : AppCompatActivity() {
 
@@ -34,7 +41,8 @@ class MapActivity : AppCompatActivity() {
     private lateinit var mapController: IMapController
     private lateinit var locationOverlay: MyLocationNewOverlay
     private lateinit var settingsBtn: Button
-    private lateinit var toastMessage: String
+    private lateinit var centerBtn: Button
+    private val markers: ArrayList<Marker> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +54,11 @@ class MapActivity : AppCompatActivity() {
             val intent = Intent(this@MapActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
+        centerBtn = findViewById(R.id.center_btn)
+        centerBtn.setOnClickListener {
+            locationOverlay.disableFollowLocation()
+            locationOverlay.enableFollowLocation()
+        }
         map = findViewById(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
@@ -56,6 +69,7 @@ class MapActivity : AppCompatActivity() {
         locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this@MapActivity), map)
         map.overlays.add(locationOverlay)
         map.postInvalidate()
+
 
         val scope = CoroutineScope(Job() + Dispatchers.IO)
         scope.launch {
@@ -90,17 +104,18 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
+
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
-
     }
+
+
 
     override fun onResume() {
         super.onResume()
         locationOverlay.enableMyLocation()
         locationOverlay.enableFollowLocation()
-
         map.onResume()
     }
 
@@ -126,7 +141,6 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
-
     /**
      * creates a toast
      * @param msg message of the toast
@@ -140,11 +154,6 @@ class MapActivity : AppCompatActivity() {
      * @param markers ArrayList of the users current location
      */
     private fun setMarkers(markers: ArrayList<Marker>) {
-        for(overlay in map.overlays){
-            if (overlay != locationOverlay) {
-                map.overlays.remove(overlay)
-            }
-        }
         for (marker in markers) {
             map.overlays.add(marker)
         }
@@ -163,11 +172,22 @@ class MapActivity : AppCompatActivity() {
         return marker
     }
 
+    /**
+     * removes markers of the users
+     * @param markers ArrayList of the users current location
+     */
+    private fun removeMarkers(markers: ArrayList<Marker>) {
+        for (marker in markers) {
+            map.overlays.remove(marker)
+        }
+        markers.clear()
+        map.invalidate()
+    }
 
     /**
      * Data class representing all users with their respective data.
      *
-     * @property thingXTO Data of a user.
+     * @property thingXTOs Data of a user.
      */
     @Root(name = "thingXTOs", strict = false)
     data class ResponseData(
@@ -177,17 +197,14 @@ class MapActivity : AppCompatActivity() {
         constructor() : this(null)
     }
 
-    @Root(name = "currentLocation", strict = false)
-    data class CurrentLocation(
-        @field:Element(name = "latitude", required = false)
-        var latitude: Double?,
-        @field:Element(name = "longitude", required = false)
-        var longitude: Double?
-    ) {
-        constructor() : this(null, null)
-    }
-
-
+    /**
+     * Data class representing a user with his data
+     *
+     * @property name The name of the user.
+     * @property description The description of the user.
+     * @property privacyRadius The privacy radius of the user.
+     * @property currentLocation The current location of the user.
+     */
     @Root(name = "thingXTO", strict = false)
     data class ThingXTO(
         @field:Element(name = "name", required = false)
@@ -202,35 +219,45 @@ class MapActivity : AppCompatActivity() {
         constructor() : this(null, null, null, null)
     }
 
-
-
-    /**class Description {
-        @Text(required = false)
-        var text: String? = null
-    }*/
-
     /**
      * Data class representing a location with a latitude and longitude.
      *
      * @property latitude The latitude of the location.
      * @property longitude The longitude of the location.
      */
+    @Root(name = "currentLocation", strict = false)
+    data class CurrentLocation(
+        @field:Element(name = "latitude", required = false)
+        var latitude: Double?,
+        @field:Element(name = "longitude", required = false)
+        var longitude: Double?
+    ) {
+        constructor() : this(null, null)
+    }
 
+    /**
+     * removes markers of the users
+     * @param xmlString
+     */
     fun parseXML(xmlString: String): ResponseData {
         val serializer = Persister()
         return serializer.read(ResponseData::class.java, xmlString)
     }
 
+    /**
+     * Starts a timer. OnFinish the user location is updated and the position of other
+     * users in a radius are requested
+     * @param millisInFuture Length of the timer
+     */
     private fun autoUpdatePos(millisInFuture: Long){
        object : CountDownTimer(millisInFuture,1000){
             override fun onTick(millisUntilFinished: Long) {
-                //println("tick")
             }
 
             override fun onFinish() {
                 if(interval != 0L){
-                    //Log.i(MapActivity::class.java.simpleName,"Finish")
-
+                    makeToast(""+ markers.size)
+                    removeMarkers(markers)
                     val scope = CoroutineScope(Job() + Dispatchers.IO)
                     scope.launch {
                         val userController = UserControllerAPI()
@@ -240,7 +267,7 @@ class MapActivity : AppCompatActivity() {
                         val latitude = map.mapCenter.latitude
                         val longitude = map.mapCenter.longitude
 
-                        val response : Response = userController.getLocationsWithinRadius(10L,latitude, longitude)
+                        val response : Response = userController.getLocationsWithinRadius(visibilityRadius, latitude, longitude)
 
                         var xmlBody = response.body!!.string()
                         xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
@@ -265,12 +292,15 @@ class MapActivity : AppCompatActivity() {
                         try {
                             val data = parseXML(xmlBody)
                             println("Amount of visible accounts: " + data.thingXTOs!!.size)
-                            val markers: ArrayList<Marker> = arrayListOf()
 
                             markers.add(createMarker(latitude, longitude))  // add own position
 
                             for (thing in data.thingXTOs!!) {
-                                markers.add(createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!))
+                                val marker =createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!)
+                                marker.title = "User: ${thing.name} " +
+                                        "\nDescription: ${thing.description} " +
+                                        "\nPrivacyRadius: ${thing.privacyRadius} "
+                                markers.add(marker)
                             }
                             setMarkers(markers)
                         }
@@ -284,7 +314,6 @@ class MapActivity : AppCompatActivity() {
                     cancel()
                 }
             }
-
        }.start()
     }
 }
