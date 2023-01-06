@@ -21,6 +21,8 @@ import org.simpleframework.xml.core.Persister
  *
  * This class does not test the variety of different input values and edge cases, this will
  * be done in the Android tests for each Activity itself!
+ *
+ * @author Julian Ertle
  */
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)  // needed to be able to time the sequence of the methods, deleting a account must be done after it got created for example

@@ -42,9 +42,6 @@ class SettingsActivityInstrumentedTest {
     @get:Rule
     val rule = ActivityScenarioRule(SettingsActivity::class.java)
 
-    @get:Rule
-    val testName = TestName()
-
     /**
      * Sets up all important objects and data fields to be able
      * to test all methods. If all tests fail it might be because the test user
@@ -203,7 +200,7 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.changeRadius_editText)).check(matches(withHint("10 km")))
 
         // check if device saved the input correctly
-        assertTrue("Expected  to be '10', but it was '${visibilityRadius}'", visibilityRadius == 10)
+        assertTrue("Expected  to be '10', but it was '${visibilityRadius}'", visibilityRadius == 10L)
     }
 
     /**
