@@ -273,7 +273,7 @@
             app:layout_constraintTop_toTopOf="@+id/guideline20" />
 
         <EditText
-            android:id="@+id/radiusVisibilty_editTextNumber"
+            android:id="@+id/changeRadius_editText"
             android:layout_width="140dp"
             android:layout_height="48dp"
             android:ems="10"

@@ -99,9 +99,9 @@ class SettingsActivity : AppCompatActivity() {
                     val collectedInterval = intervalEditText.text.toString()
                     val collectedVisibleRadius = visibilityRadiusEditText.text.toString()
 
-                    changeUserStoredServerData(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
-                    changeUserInterval(collectedInterval)
-                    changeUserVisibilityRadius(collectedVisibleRadius)
+                    changeServerStoredUserData(collectedNewPassword,collectedPrivacyRadius,collectedDescription, userID)
+                    changeInterval(collectedInterval)
+                    changeVisibilityRadius(collectedVisibleRadius)
 
                     dialog.dismiss()
                 }
@@ -166,10 +166,10 @@ class SettingsActivity : AppCompatActivity() {
      * @param description The new description for the user.
      * @param userID The ID of the user whose data is being changed.
      */
-    private fun changeUserStoredServerData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
+    private fun changeServerStoredUserData(newPassword: String?, privacyRadius: Long?, description: String?, userID: String?){
 
         if(privacyRadius!=null || newPassword != "" || description != ""){
-            val scope = CoroutineScope(Job() + Dispatchers.IO)
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
             scope.launch {
                 response = userControllerAPI.changeUserStoredServerData(newPassword,privacyRadius,description,userID)
 
@@ -207,7 +207,7 @@ class SettingsActivity : AppCompatActivity() {
      *
      * @param newInterval The new interval for the user.
      */
-    private fun changeUserInterval(newInterval: String ){
+    private fun changeInterval(newInterval: String ){
         if (newInterval != ""){
             interval = newInterval.toLong()
             intervalEditText.hint = interval.toString() + " seconds"
@@ -222,7 +222,7 @@ class SettingsActivity : AppCompatActivity() {
      *
      * @param newRadius The new interval for the user.
      */
-    private fun changeUserVisibilityRadius(newRadius: String) {
+    private fun changeVisibilityRadius(newRadius: String) {
         if (newRadius != "") {
             val newRadiusInt: Int = newRadius.toInt()
             visibilityRadius = newRadiusInt
@@ -245,7 +245,7 @@ class SettingsActivity : AppCompatActivity() {
         descriptionEditText.text.clear()        // clearing so text is empty and when using the save button a 2nd time the device doesn't send it again
         if(privacyRadiusEditText.text.isEmpty()){
             privacyRadius = 0                   // server sets privacy radius to 0 after the description got changed, seems to be a bug on the backend
-            privacyRadiusEditText.hint = privacyRadius.toString() + " km "
+            privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         }
     }
 
@@ -269,7 +269,7 @@ class SettingsActivity : AppCompatActivity() {
         changePasswordEditText.text.clear()     // clearing so text is empty and when using the save button a 2nd time the device doesn't have to send it again
             if(privacyRadiusEditText.text.isEmpty()){
                 privacyRadius = 0                   // server sets privacy radius to 0 after the password got changed, seems to be a bug on the backend
-                privacyRadiusEditText.hint = privacyRadius.toString() + " km "
+                privacyRadiusEditText.hint = privacyRadius.toString() + " km"
         }
     }
 
@@ -324,7 +324,7 @@ class SettingsActivity : AppCompatActivity() {
         descriptionEditText = findViewById(R.id.changeDescription_editText)
         saveButton = findViewById(R.id.saveSettings_button)
         userControllerAPI = UserControllerAPI()
-        visibilityRadiusEditText = findViewById(R.id.radiusVisibilty_editTextNumber)
+        visibilityRadiusEditText = findViewById(R.id.changeRadius_editText)
         descriptionTextView = findViewById(R.id.changeDescription_textView)
 
         descriptionEditText.isFocusable = false
