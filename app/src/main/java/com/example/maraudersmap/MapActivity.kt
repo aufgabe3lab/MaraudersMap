@@ -70,10 +70,46 @@ class MapActivity : AppCompatActivity() {
         map.overlays.add(locationOverlay)
         map.postInvalidate()
 
+
+        val scope = CoroutineScope(Job() + Dispatchers.IO)
+        scope.launch {
+
+            /**
+             * updates current location
+             */
+            val serializer: Serializer = Persister()
+            val userController = UserControllerAPI()
+            val longitude : Double = map.mapCenter.longitude
+            val latitude : Double = map.mapCenter.latitude
+            val userID = LoginActivity.userID
+
+
+            val response1 : Response = userController.updateUserGpsPosition(latitude, longitude, userID)
+            toastMessage = when(response1.code){
+                200 -> ""   //successful
+
+                403 -> ({
+                    getString(R.string.permissionDenied_text)
+                    val intent = Intent(this@MapActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                }).toString()  //Authentication error
+
+
+                else -> getString(R.string.unknownError_text)     // Unknown error
+            }
+            if(toastMessage != "") {
+                withContext(Dispatchers.Main){
+                    makeToast(toastMessage)
+                }
+            }
+        }
+
+
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
     }
+
 
 
     override fun onResume() {
@@ -235,6 +271,23 @@ class MapActivity : AppCompatActivity() {
 
                         var xmlBody = response.body!!.string()
                         xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
+
+                        toastMessage = when(response.code){
+                            200 -> ""
+                            403 -> ({
+                                getString(R.string.permissionDenied_text)
+                                val intent = Intent(this@MapActivity, LoginActivity::class.java)
+                                startActivity(intent)
+                            }).toString()
+                            else -> getString(R.string.unknownError_text)
+                        }
+
+                        if(toastMessage != "") {
+                            withContext(Dispatchers.Main){
+                                makeToast(toastMessage)
+                            }
+                        }
+
 
                         try {
                             val data = parseXML(xmlBody)

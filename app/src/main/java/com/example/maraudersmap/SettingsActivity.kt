@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
@@ -46,6 +48,8 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
         initSettings()
 
         descriptionEditText.setOnClickListener {
@@ -120,6 +124,13 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.settings_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     /**
      * Updates the content of an edit text with the content of another edit text.
      *
@@ -147,7 +158,10 @@ class SettingsActivity : AppCompatActivity() {
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
                 200 -> getString(R.string.deletedUser_text)
-                403 -> getString(R.string.permissionDenied_text)
+                403  -> ({
+                    getString(R.string.permissionDenied_text)
+                    switchActivity(LoginActivity::class.java)
+                }).toString()
                 else -> getString(R.string.unknownError_text)
             }
 
@@ -190,7 +204,10 @@ class SettingsActivity : AppCompatActivity() {
                     }
 
                     303  -> toastMessage = getString(R.string.notModified_text)
-                    403  -> toastMessage = getString(R.string.permissionDenied_text)
+                    403  -> {
+                        toastMessage = getString(R.string.permissionDenied_text)
+                        switchActivity(LoginActivity::class.java)
+                    }
                     else -> toastMessage = getString(R.string.unknownError_text)
                 }
 
@@ -289,6 +306,13 @@ class SettingsActivity : AppCompatActivity() {
                 switchActivity(MapActivity::class.java)
                 true
             }
+
+            R.id.menu_logOut -> {
+                userID = null
+                switchActivity(LoginActivity::class.java)
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

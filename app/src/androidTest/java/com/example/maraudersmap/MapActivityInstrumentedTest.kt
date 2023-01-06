@@ -12,9 +12,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
  * AndroidTest
  * @author Leo Kalmbach
  * @since 2023.01.06
+
  */
 @RunWith(AndroidJUnit4::class)
 class MapActivityInstrumentedTest {
