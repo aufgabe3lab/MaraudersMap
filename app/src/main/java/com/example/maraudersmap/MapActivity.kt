@@ -32,7 +32,7 @@ import org.simpleframework.xml.core.Persister
 /**
  * provides a map which shows your own location
  * @author Leo Kalmbach & Julian Ertle
- * @since 2022.12.25
+ * @since 2023.01.06
  */
 class MapActivity : AppCompatActivity() {
 
@@ -42,7 +42,6 @@ class MapActivity : AppCompatActivity() {
     private lateinit var locationOverlay: MyLocationNewOverlay
     private lateinit var settingsBtn: Button
     private lateinit var centerBtn: Button
-    private lateinit var toastMessage: String
     private val markers: ArrayList<Marker> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,43 +69,11 @@ class MapActivity : AppCompatActivity() {
         locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this@MapActivity), map)
         map.overlays.add(locationOverlay)
         map.postInvalidate()
-/*
-        val scope = CoroutineScope(Job() + Dispatchers.IO)
-        scope.launch {
-
-            /**
-             * updates current location
-             */
-            val serializer: Serializer = Persister()
-            val userController = UserControllerAPI()
-            val longitude : Double = map.mapCenter.longitude
-            val latitude : Double = map.mapCenter.latitude
-            val userID = LoginActivity.userID
-
-
-            val response1 : Response = userController.updateUserGpsPosition(latitude, longitude, userID)
-            toastMessage = when(response1.code){
-                200 -> ""   //successful
-
-                403 -> "Authentication failed"  //Authentication error
-
-
-                else -> "Unknown Error"     // Unknown error
-            }
-            if(toastMessage != "") {
-                withContext(Dispatchers.Main){
-                    makeToast(toastMessage)
-                }
-            }
-        }
-*/
 
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
-
     }
-
 
 
     override fun onResume() {
@@ -138,7 +105,6 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
-
     /**
      * creates a toast
      * @param msg message of the toast
@@ -152,11 +118,6 @@ class MapActivity : AppCompatActivity() {
      * @param markers ArrayList of the users current location
      */
     private fun setMarkers(markers: ArrayList<Marker>) {
-        for(overlay in map.overlays){
-            if (overlay != locationOverlay) {
-                map.overlays.remove(overlay)
-            }
-        }
         for (marker in markers) {
             map.overlays.add(marker)
         }
@@ -175,6 +136,10 @@ class MapActivity : AppCompatActivity() {
         return marker
     }
 
+    /**
+     * removes markers of the users
+     * @param markers ArrayList of the users current location
+     */
     private fun removeMarkers(markers: ArrayList<Marker>) {
         for (marker in markers) {
             map.overlays.remove(marker)
@@ -182,7 +147,6 @@ class MapActivity : AppCompatActivity() {
         markers.clear()
         map.invalidate()
     }
-
 
     /**
      * Data class representing all users with their respective data.
@@ -235,18 +199,20 @@ class MapActivity : AppCompatActivity() {
         constructor() : this(null, null)
     }
 
-
-    /**class Description {
-        @Text(required = false)
-        var text: String? = null
-    }*/
-
-
+    /**
+     * removes markers of the users
+     * @param xmlString
+     */
     fun parseXML(xmlString: String): ResponseData {
         val serializer = Persister()
         return serializer.read(ResponseData::class.java, xmlString)
     }
 
+    /**
+     * Starts a timer. OnFinish the user location is updated and the position of other
+     * users in a radius are requested
+     * @param millisInFuture Length of the timer
+     */
     private fun autoUpdatePos(millisInFuture: Long){
        object : CountDownTimer(millisInFuture,1000){
             override fun onTick(millisUntilFinished: Long) {
@@ -254,8 +220,6 @@ class MapActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 if(interval != 0L){
-                    //Log.i(MapActivity::class.java.simpleName,"Finish")
-
                     makeToast(""+ markers.size)
                     removeMarkers(markers)
                     val scope = CoroutineScope(Job() + Dispatchers.IO)
