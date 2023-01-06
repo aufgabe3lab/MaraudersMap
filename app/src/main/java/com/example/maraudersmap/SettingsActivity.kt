@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
@@ -46,6 +48,8 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
         initSettings()
 
         descriptionEditText.setOnClickListener {
@@ -118,6 +122,13 @@ class SettingsActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }.show()
         }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.settings_menu,menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     /**
@@ -289,6 +300,13 @@ class SettingsActivity : AppCompatActivity() {
                 switchActivity(MapActivity::class.java)
                 true
             }
+
+            R.id.menu_logOut -> {
+                userID = null
+                switchActivity(LoginActivity::class.java)
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
