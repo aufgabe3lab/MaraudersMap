@@ -158,7 +158,10 @@ class SettingsActivity : AppCompatActivity() {
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
                 200 -> getString(R.string.deletedUser_text)
-                403 -> getString(R.string.permissionDenied_text)
+                403  -> ({
+                    getString(R.string.permissionDenied_text)
+                    switchActivity(LoginActivity::class.java)
+                }).toString()
                 else -> getString(R.string.unknownError_text)
             }
 
@@ -201,7 +204,10 @@ class SettingsActivity : AppCompatActivity() {
                     }
 
                     303  -> toastMessage = getString(R.string.notModified_text)
-                    403  -> toastMessage = getString(R.string.permissionDenied_text)
+                    403  -> {
+                        toastMessage = getString(R.string.permissionDenied_text)
+                        switchActivity(LoginActivity::class.java)
+                    }
                     else -> toastMessage = getString(R.string.unknownError_text)
                 }
 
