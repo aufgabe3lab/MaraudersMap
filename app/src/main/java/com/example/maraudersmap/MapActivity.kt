@@ -1,10 +1,6 @@
 package com.example.maraudersmap
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
@@ -26,9 +22,6 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import org.simpleframework.xml.*
 import org.simpleframework.xml.core.Persister
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Root
 /**
  * provides a map which shows your own location
  * @author Leo Kalmbach & Julian Ertle
@@ -81,10 +74,14 @@ class MapActivity : AppCompatActivity() {
             toastMessage = when(response1.code){
                 200 -> ""   //successful
 
-                403 -> "Authentication failed"  //Authentication error
+                403 -> ({
+                    getString(R.string.permissionDenied_text)
+                    val intent = Intent(this@MapActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                }).toString()  //Authentication error
 
 
-                else -> "Unknown Error"     // Unknown error
+                else -> getString(R.string.unknownError_text)     // Unknown error
             }
             if(toastMessage != "") {
                 withContext(Dispatchers.Main){
@@ -93,14 +90,11 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
-
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
 
     }
-
-
 
     override fun onResume() {
         super.onResume()
@@ -250,6 +244,23 @@ class MapActivity : AppCompatActivity() {
 
                         var xmlBody = response.body!!.string()
                         xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
+
+                        toastMessage = when(response.code){
+                            200 -> ""
+                            403 -> ({
+                                getString(R.string.permissionDenied_text)
+                                val intent = Intent(this@MapActivity, LoginActivity::class.java)
+                                startActivity(intent)
+                            }).toString()
+                            else -> getString(R.string.unknownError_text)
+                        }
+
+                        if(toastMessage != "") {
+                            withContext(Dispatchers.Main){
+                                makeToast(toastMessage)
+                            }
+                        }
+
 
                         try {
                             val data = parseXML(xmlBody)
