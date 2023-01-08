@@ -75,5 +75,7 @@
     <string name="noInternetConnection_text">No internet connection</string>
     <string name="noServerConnection_text">Server not reachable</string>
     <string name="log_out_menu_text">Log out</string>
+    <string name="center_btn">Center</string>
+    <string name="number_tV">Displayed Users: 0</string>
 
 </resources>

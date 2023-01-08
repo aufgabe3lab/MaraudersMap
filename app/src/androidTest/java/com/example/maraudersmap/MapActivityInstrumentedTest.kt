@@ -1,23 +1,21 @@
 package com.example.maraudersmap
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
  * AndroidTest
  * @author Leo Kalmbach
- * @since 2023.01.06
+ * @since 2023.01.08
 
  */
 @RunWith(AndroidJUnit4::class)
@@ -28,9 +26,26 @@ class MapActivityInstrumentedTest {
 
     @Test
     fun mapView() {
-        Espresso.onView(withId(R.id.map)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(withId(R.id.settings_btn)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(withId(R.id.settings_btn)).perform(ViewActions.click())
-        Espresso.onView(withId(R.id.saveSettings_button)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withId(R.id.map)).check(matches(isDisplayed()))
+        onView(withId(R.id.number_tV)).check(matches(isDisplayed()))
+        onView(withId(R.id.number_tV)).check(matches(withText("Displayed Users: 0")))
+        onView(withId(R.id.center_btn)).check(matches(isDisplayed()))
+        onView(withId(R.id.center_btn)).perform(click())
+    }
+
+    @Test
+    fun settingsMenuItem() {
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        onView(withText("Settings")).check(matches(isDisplayed()))
+        onView(withText("Settings")).perform(click())
+        onView(withId(R.id.saveSettings_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun logOutMenuItem() {
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        onView(withText("Log out")).check(matches(isDisplayed()))
+        onView(withText("Log out")).perform(click())
+        onView(withId(R.id.loginButton)).check(matches(isDisplayed()))
     }
 }
