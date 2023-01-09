@@ -3,7 +3,11 @@ package com.example.maraudersmap
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,34 +34,30 @@ import org.simpleframework.xml.core.Persister
 /**
  * provides a map which shows your own location
  * @author Leo Kalmbach & Julian Ertle
- * @since 2023.01.06
+ * @since 2023.01.08
  */
 class MapActivity : AppCompatActivity() {
 
-    private val requestPermissionRequestCode = 1
     private lateinit var map: MapView
     private lateinit var mapController: IMapController
     private lateinit var locationOverlay: MyLocationNewOverlay
-    private lateinit var settingsBtn: Button
     private lateinit var centerBtn: Button
-    private val markers: ArrayList<Marker> = arrayListOf()
+    private lateinit var numberView: TextView
     private lateinit var toastMessage: String
+    private val markers: ArrayList<Marker> = arrayListOf()
+    private val requestPermissionRequestCode = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getInstance().load(this, getDefaultSharedPreferences(this))
         setContentView(R.layout.activity_map)
 
-        settingsBtn = findViewById(R.id.settings_btn)
-        settingsBtn.setOnClickListener {
-            val intent = Intent(this@MapActivity, SettingsActivity::class.java)
-            startActivity(intent)
-        }
         centerBtn = findViewById(R.id.center_btn)
         centerBtn.setOnClickListener {
             locationOverlay.disableFollowLocation()
             locationOverlay.enableFollowLocation()
         }
+        numberView = findViewById(R.id.number_tV)
         map = findViewById(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
@@ -69,13 +69,16 @@ class MapActivity : AppCompatActivity() {
         map.overlays.add(locationOverlay)
         map.postInvalidate()
 
-
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
     }
 
-
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.map_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -201,7 +204,7 @@ class MapActivity : AppCompatActivity() {
     }
 
     /**
-     * removes markers of the users
+     * parses an xmlBody
      * @param xmlString
      */
     fun parseXML(xmlString: String): ResponseData {
@@ -221,16 +224,14 @@ class MapActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 if(interval != 0L){
-                    makeToast(""+ markers.size)
                     removeMarkers(markers)
                     val scope = CoroutineScope(Job() + Dispatchers.IO)
                     scope.launch {
                         val userController = UserControllerAPI()
+                        val latitude = locationOverlay.myLocationProvider.lastKnownLocation.latitude
+                        val longitude = locationOverlay.myLocationProvider.lastKnownLocation.longitude
 
-                        userController.updateUserGpsPosition(map.mapCenter.latitude,map.mapCenter.longitude, userID!!)
-
-                        val latitude = map.mapCenter.latitude
-                        val longitude = map.mapCenter.longitude
+                        userController.updateUserGpsPosition(latitude,longitude, userID!!)
 
                         val response : Response = userController.getLocationsWithinRadius(visibilityRadius, latitude, longitude)
 
@@ -258,8 +259,6 @@ class MapActivity : AppCompatActivity() {
                             val data = parseXML(xmlBody)
                             println("Amount of visible accounts: " + data.thingXTOs!!.size)
 
-                            markers.add(createMarker(latitude, longitude))  // add own position
-
                             for (thing in data.thingXTOs!!) {
                                 val marker =createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!)
                                 marker.title = "User: ${thing.name} " +
@@ -273,6 +272,7 @@ class MapActivity : AppCompatActivity() {
                             println(e)
                             e.printStackTrace()
                         }
+                        numberView.text = "Displayed Users: " + markers.size
                     }
                     start()
                 }else{
@@ -280,5 +280,32 @@ class MapActivity : AppCompatActivity() {
                 }
             }
        }.start()
+    }
+
+    /**
+     * Handles the selection of an item in the options menu.
+     *
+     * @param item The selected item in the options menu.
+     *
+     * @return A boolean indicating whether the selection was handled successfully.
+     * Possible return values are:
+     * - `true`: The selection was handled successfully and the activity should close the options menu.
+     * - `false`: The selection was not handled successfully and the options menu should remain open.
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_settings -> {
+                val intent = Intent(this@MapActivity, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.menu_logOut -> {
+                userID = null
+                val intent = Intent(this@MapActivity, LoginActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

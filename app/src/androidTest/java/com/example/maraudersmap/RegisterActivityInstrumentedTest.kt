@@ -1,5 +1,6 @@
 package com.example.maraudersmap
 
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
@@ -8,6 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -78,7 +80,8 @@ internal class RegisterActivityInstrumentedTest {
         onView(withId(R.id.loginPassword_editText)).perform(replaceText("abc"))
         onView(withId(R.id.loginButton)).perform(click())
         Thread.sleep(1000)
-        onView(withId(R.id.settings_btn)).perform(click())
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        onView(withText("Settings")).perform(click())
         onView(withId(R.id.deleteAccount_button)).perform(click())
         onView(withText(R.string.yes_dialogText)).perform(click())
 
