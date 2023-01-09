@@ -69,6 +69,10 @@ class MapActivity : AppCompatActivity() {
         map.overlays.add(locationOverlay)
         map.postInvalidate()
 
+        if (interval == 0L) {
+            autoUpdatePos(5000)
+        }
+
         if(interval != 0L){
             autoUpdatePos(interval * 1000)
         }
@@ -223,57 +227,55 @@ class MapActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                if(interval != 0L){
-                    removeMarkers(markers)
-                    val scope = CoroutineScope(Job() + Dispatchers.IO)
-                    scope.launch {
-                        val userController = UserControllerAPI()
-                        val latitude = locationOverlay.myLocationProvider.lastKnownLocation.latitude
-                        val longitude = locationOverlay.myLocationProvider.lastKnownLocation.longitude
+                val scope = CoroutineScope(Job() + Dispatchers.IO)
+                scope.launch {
+                    val userController = UserControllerAPI()
+                    val latitude = locationOverlay.myLocationProvider.lastKnownLocation.latitude
+                    val longitude = locationOverlay.myLocationProvider.lastKnownLocation.longitude
 
-                        userController.updateUserGpsPosition(latitude,longitude, userID!!)
+                    userController.updateUserGpsPosition(latitude,longitude, userID!!)
 
-                        val response : Response = userController.getLocationsWithinRadius(visibilityRadius, latitude, longitude)
+                    val response : Response = userController.getLocationsWithinRadius(visibilityRadius, latitude, longitude)
 
-                        var xmlBody = response.body!!.string()
-                        xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
+                    var xmlBody = response.body!!.string()
+                    xmlBody = xmlBody.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
 
-                        toastMessage = when(response.code){
-                            200 -> ""
-                            403 -> ({
-                                getString(R.string.permissionDenied_text)
-                                val intent = Intent(this@MapActivity, LoginActivity::class.java)
-                                startActivity(intent)
-                            }).toString()
-                            else -> getString(R.string.unknownError_text)
-                        }
-
-                        if(toastMessage != "") {
-                            withContext(Dispatchers.Main){
-                                makeToast(toastMessage)
-                            }
-                        }
-
-
-                        try {
-                            val data = parseXML(xmlBody)
-                            println("Amount of visible accounts: " + data.thingXTOs!!.size)
-
-                            for (thing in data.thingXTOs!!) {
-                                val marker =createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!)
-                                marker.title = "User: ${thing.name} " +
-                                        "\nDescription: ${thing.description} " +
-                                        "\nPrivacyRadius: ${thing.privacyRadius} "
-                                markers.add(marker)
-                            }
-                            setMarkers(markers)
-                        }
-                        catch (e : Exception){
-                            println(e)
-                            e.printStackTrace()
-                        }
-                        numberView.text = "Displayed Users: " + markers.size
+                    toastMessage = when(response.code){
+                        200 -> ""
+                        403 -> ({
+                            getString(R.string.permissionDenied_text)
+                            val intent = Intent(this@MapActivity, LoginActivity::class.java)
+                            startActivity(intent)
+                        }).toString()
+                        else -> getString(R.string.unknownError_text)
                     }
+
+                    if(toastMessage != "") {
+                        withContext(Dispatchers.Main){
+                            makeToast(toastMessage)
+                        }
+                    }
+                    removeMarkers(markers)
+                    try {
+                        val data = parseXML(xmlBody)
+                        println("Amount of visible accounts: " + data.thingXTOs!!.size)
+
+                        for (thing in data.thingXTOs!!) {
+                            val marker =createMarker(thing.currentLocation!!.latitude!!, thing.currentLocation!!.longitude!!)
+                            marker.title = "User: ${thing.name} " +
+                                    "\nDescription: ${thing.description} " +
+                                    "\nPrivacyRadius: ${thing.privacyRadius} "
+                            markers.add(marker)
+                        }
+                        setMarkers(markers)
+                    }
+                    catch (e : Exception){
+                        println(e)
+                        e.printStackTrace()
+                    }
+                    numberView.text = "Displayed Users: " + markers.size
+                }
+                if(interval != 0L){
                     start()
                 }else{
                     cancel()
