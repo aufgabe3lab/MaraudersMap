@@ -275,7 +275,7 @@ class MapActivity : AppCompatActivity() {
                         println(e)
                         e.printStackTrace()
                     }
-                    numberView.text = "Displayed Users: " + markers.size
+                    numberView.text = getString(R.string.displayUser_text,markers.size)
                 }
                 if(interval != 0L){
                     start()

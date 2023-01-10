@@ -70,6 +70,8 @@
     <string name="deletedUser_text">User deleted</string>
 
     <!-- Map Activity -->
+    <string name="displayUser_text">Displayed Users: %d</string>
+
 
     <!-- Connection related Strings -->
     <string name="noInternetConnection_text">No internet connection</string>
