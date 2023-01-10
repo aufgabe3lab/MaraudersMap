@@ -1,4 +1,4 @@
-package com.example.maraudersmap
+package com.example.maraudersmap.backend
 
 data class UserXTO(
     var username: String? = null,

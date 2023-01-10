@@ -1,4 +1,4 @@
-package com.example.maraudersmap
+package com.example.maraudersmap.backend
 
 import com.example.maraudersmap.LoginActivity.UserInformation.jsonWebToken
 import okhttp3.*

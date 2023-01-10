@@ -16,9 +16,9 @@ import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
 import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.CHANGEDDESCRIPTION
 import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.STARTDESCRIPTION
+import com.example.maraudersmap.backend.UserControllerAPI
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.rules.TestName
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 

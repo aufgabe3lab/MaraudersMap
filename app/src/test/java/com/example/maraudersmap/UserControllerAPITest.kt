@@ -1,5 +1,6 @@
 package com.example.maraudersmap
 
+import com.example.maraudersmap.backend.UserControllerAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before

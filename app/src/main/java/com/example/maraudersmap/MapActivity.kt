@@ -15,6 +15,7 @@ import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
+import com.example.maraudersmap.backend.UserControllerAPI
 import kotlinx.coroutines.*
 import okhttp3.Response
 import org.osmdroid.api.IMapController
@@ -28,7 +29,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
-import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 
 

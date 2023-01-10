@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.maraudersmap.LoginActivity.UserInformation.description
 import com.example.maraudersmap.LoginActivity.UserInformation.privacyRadius
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
+import com.example.maraudersmap.backend.UserControllerAPI
 import kotlinx.coroutines.*
 import okhttp3.Response
 
