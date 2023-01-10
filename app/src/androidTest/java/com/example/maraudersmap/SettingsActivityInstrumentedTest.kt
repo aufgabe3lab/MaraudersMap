@@ -15,9 +15,7 @@ import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.SECOND
 import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.STARTDESCRIPTION
 import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.USERNAME
 import com.example.maraudersmap.backend.UserControllerAPI
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -98,9 +96,8 @@ class SettingsActivityInstrumentedTest {
         val password = PASSWORD
         val description = STARTDESCRIPTION
 
-        for (i in 1..10000) {
-            print("x")
-        }
+        Thread.sleep(3000)
+
         response = controller.createNewUser(username, password, description)
         assertTrue(response.isSuccessful)
     }
@@ -120,9 +117,7 @@ class SettingsActivityInstrumentedTest {
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
-        for (i in 1..30000) {
-            print("x")
-        }
+        Thread.sleep(3000)
 
         // checks if application handles the altered EditTexts properly
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("12 km")))
@@ -157,9 +152,7 @@ class SettingsActivityInstrumentedTest {
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
-        for (i in 1..50000) {
-            print("x")
-        }
+        Thread.sleep(3000)
 
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
 
@@ -168,9 +161,7 @@ class SettingsActivityInstrumentedTest {
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
-        for (i in 1..50000) {
-            print("x")
-        }
+        Thread.sleep(3000)
 
         // checks if application handles the altered EditTexts properly
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km"))) // should be 0 because of a backend bug
@@ -193,8 +184,6 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.changeDescription_editText)).perform(replaceText(STARTDESCRIPTION))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
-
-
     }
 
     /**
@@ -254,14 +243,9 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.changePassword_editText)).perform(replaceText(SECONDPASSWORD))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())
-        val thread = Thread {
-            onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
-        }
-        thread.start()
-        withContext(Dispatchers.IO) {
-            thread.join()
-        }
 
+        Thread.sleep(3000)
+        onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
 
         // login with new password
         val response = controller.loginUser(USERNAME, SECONDPASSWORD)
@@ -284,12 +268,9 @@ class SettingsActivityInstrumentedTest {
         // change server stored user privacy radius
         onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("19"))
         onView(withText("SAVE")).perform(click())
+        //Thread.sleep(2000)
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
-
-        for (i in 1..20000) {
-            print("x")
-        }
-
+        Thread.sleep(5000)
         // checks if application handles the altered EditTexts properly
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("19 km")))
 
@@ -299,9 +280,8 @@ class SettingsActivityInstrumentedTest {
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditTexts properly
-        for (i in 1..20000) {
-            print("x")
-        }
+        Thread.sleep(3000)
+
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km")))
     }
 

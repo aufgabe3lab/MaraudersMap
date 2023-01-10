@@ -153,17 +153,20 @@ class SettingsActivity : AppCompatActivity() {
         scope.launch {
             response = userControllerAPI.deleteUser(userID)
 
-            toastMessage = when (response.code) {
+            when (response.code) {
                 // Response codes:
                 // 200 = deleted user,
                 // 403 = permission denied (forbidden, json token invalid),
                 // else = other unknown error codes possible
-                200 -> getString(R.string.deletedUser_text)
-                403  -> ({
-                    getString(R.string.permissionDenied_text)
+                200 -> {
+                    toastMessage = getString(R.string.deletedUser_text)
                     switchActivity(LoginActivity::class.java)
-                }).toString()
-                else -> getString(R.string.unknownError_text)
+                }
+                403  -> {
+                    toastMessage = getString(R.string.permissionDenied_text)
+                    switchActivity(LoginActivity::class.java)
+                }
+                else -> toastMessage = getString(R.string.unknownError_text)
             }
 
             withContext(Job() + Dispatchers.Main) {

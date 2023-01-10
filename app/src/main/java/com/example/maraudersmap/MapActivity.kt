@@ -72,7 +72,7 @@ class MapActivity : AppCompatActivity() {
         map.postInvalidate()
 
         if (interval == 0L) {
-            autoUpdatePos(5000)
+            autoUpdatePos(6000)
         }
 
         if(interval != 0L){
