@@ -1,24 +1,27 @@
 package com.example.maraudersmap
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.PASSWORD
-import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.SECONDPASSWORD
-import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.USERNAME
-import kotlinx.coroutines.runBlocking
-import org.junit.Rule
-import org.junit.Test
 import com.example.maraudersmap.LoginActivity.UserInformation.userID
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.interval
 import com.example.maraudersmap.SettingsActivity.SettingsCompanion.visibilityRadius
 import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.CHANGEDDESCRIPTION
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.PASSWORD
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.SECONDPASSWORD
 import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.STARTDESCRIPTION
+import com.example.maraudersmap.SettingsActivityInstrumentedTest.MyObject.USERNAME
 import com.example.maraudersmap.backend.UserControllerAPI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 
@@ -57,6 +60,14 @@ class SettingsActivityInstrumentedTest {
         if (response.code != 200) {
             response = controller.loginUser(USERNAME, SECONDPASSWORD)
         }
+        if (response.code != 200) {
+            val username = USERNAME
+            val password = PASSWORD
+            val description = STARTDESCRIPTION
+            response = controller.createNewUser(username, password, description)
+            assertTrue(response.isSuccessful)
+            response = controller.loginUser(USERNAME, PASSWORD)
+        }
         val xmlBody = response.body!!.string()
         val userData = serializer.read(LoginActivity.ExtractData::class.java, xmlBody)
         userID = userData.id.toString()
@@ -86,6 +97,10 @@ class SettingsActivityInstrumentedTest {
         val username = USERNAME
         val password = PASSWORD
         val description = STARTDESCRIPTION
+
+        for (i in 1..10000) {
+            print("x")
+        }
         response = controller.createNewUser(username, password, description)
         assertTrue(response.isSuccessful)
     }
@@ -105,6 +120,10 @@ class SettingsActivityInstrumentedTest {
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
+        for (i in 1..30000) {
+            print("x")
+        }
+
         // checks if application handles the altered EditTexts properly
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("12 km")))
         onView(withId(R.id.changeDescription_editText)).check(matches(withHint(CHANGEDDESCRIPTION)))
@@ -116,6 +135,8 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.changePassword_editText)).perform(replaceText(PASSWORD))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())      // close AlertDialog ; info saved
+
+
     }
 
     /**
@@ -135,12 +156,21 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.privacyRadius_editTextNumber)).perform(replaceText("20"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        for (i in 1..50000) {
+            print("x")
+        }
+
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("20 km")))
 
         // change user description
         onView(withId(R.id.changeDescription_editText)).perform(replaceText(CHANGEDDESCRIPTION))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+        for (i in 1..50000) {
+            print("x")
+        }
 
         // checks if application handles the altered EditTexts properly
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km"))) // should be 0 because of a backend bug
@@ -163,6 +193,8 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.changeDescription_editText)).perform(replaceText(STARTDESCRIPTION))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
+
     }
 
     /**
@@ -176,6 +208,7 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.interval_editTextNumber)).perform(replaceText("10"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
 
         // checks if application handles the altered EditText properly
         onView(withId(R.id.interval_editTextNumber)).check(matches(withHint("10 seconds")))
@@ -195,6 +228,7 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.changeRadius_editText)).perform(replaceText("10"))
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+
 
         // checks if application handles the altered EditText properly
         onView(withId(R.id.changeRadius_editText)).check(matches(withHint("10 km")))
@@ -219,10 +253,15 @@ class SettingsActivityInstrumentedTest {
         // change server stored user password
         onView(withId(R.id.changePassword_editText)).perform(replaceText(SECONDPASSWORD))
         onView(withText("SAVE")).perform(click())
-        onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
+        onView(withText("Yes")).perform(click())
+        val thread = Thread {
+            onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
+        }
+        thread.start()
+        withContext(Dispatchers.IO) {
+            thread.join()
+        }
 
-        // checks if application handles the altered EditText properly
-        onView(withId(R.id.changePassword_editText)).check(matches(withHint("new password")))
 
         // login with new password
         val response = controller.loginUser(USERNAME, SECONDPASSWORD)
@@ -247,6 +286,10 @@ class SettingsActivityInstrumentedTest {
         onView(withText("SAVE")).perform(click())
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
+        for (i in 1..20000) {
+            print("x")
+        }
+
         // checks if application handles the altered EditTexts properly
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("19 km")))
 
@@ -256,6 +299,9 @@ class SettingsActivityInstrumentedTest {
         onView(withText("Yes")).perform(click())       // close AlertDialog ; info saved
 
         // checks if application handles the altered EditTexts properly
+        for (i in 1..20000) {
+            print("x")
+        }
         onView(withId(R.id.privacyRadius_editTextNumber)).check(matches(withHint("0 km")))
     }
 
