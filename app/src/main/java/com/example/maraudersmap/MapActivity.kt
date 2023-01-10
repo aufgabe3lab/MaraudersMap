@@ -28,6 +28,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
+import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 
 
@@ -46,6 +47,7 @@ class MapActivity : AppCompatActivity() {
     private lateinit var toastMessage: String
     private val markers: ArrayList<Marker> = arrayListOf()
     private val requestPermissionRequestCode = 1
+    private lateinit var timer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -222,7 +224,7 @@ class MapActivity : AppCompatActivity() {
      * @param millisInFuture Length of the timer
      */
     private fun autoUpdatePos(millisInFuture: Long){
-       object : CountDownTimer(millisInFuture,1000){
+       timer = object : CountDownTimer(millisInFuture,1000){
             override fun onTick(millisUntilFinished: Long) {
             }
 
@@ -297,12 +299,14 @@ class MapActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_settings -> {
+                timer.cancel()
                 val intent = Intent(this@MapActivity, SettingsActivity::class.java)
                 startActivity(intent)
                 true
             }
             R.id.menu_logOut -> {
                 userID = null
+                timer.cancel()
                 val intent = Intent(this@MapActivity, LoginActivity::class.java)
                 startActivity(intent)
                 true
