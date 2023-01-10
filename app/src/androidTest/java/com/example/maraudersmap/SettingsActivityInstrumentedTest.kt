@@ -84,6 +84,8 @@ class SettingsActivityInstrumentedTest {
         onView(withId(R.id.deleteAccount_button)).perform(click())
         onView(withText("YES")).perform(click())       // close AlertDialog ; info saved
 
+        Thread.sleep(3000)
+
         // try to login into deleted user -> response should not be 200
         var response = controller.loginUser(USERNAME, PASSWORD)
         if (response.code != 200) {
